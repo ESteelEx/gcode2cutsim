@@ -1,4 +1,6 @@
-"""gcode2cutsim is a parser so that cutsim can read gcode data.
+#!dev\python
+"""
+gcode2cutsim parses -> cutsim can read gcode data now.
 
 STOCK -30 -40 -20 28 33 20 ;
 ADDITIVEBOX 0 0 0 200 200 100 ;
@@ -9,16 +11,14 @@ GENERICTOOL
 CUTTING
 arc pc 0 0.4 ra 0.2 astart 270 asweep 90
 NONCUTTING
-line ps 0.4 0 pe 3 6 ;"""
+line ps 0.4 0 pe 3 6 ;
+"""
 
 import sys, os
 import win32com.shell.shell as shell
 import win32con
 
-
 __author__ = 'mathiasr'
-
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 def sepStr(line, char):
@@ -67,8 +67,10 @@ def main():
     j = 0
     with open(inputf) as fidO:
         fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
-        fidW.write('ADDITIVEBOX 0 0 0 300 300 100 ;\n')
-        fidW.write('GENERICTOOL\nADDING\nCUTTING\narc pc 0 0.4 ra 0.2 astart 270 asweep 90\nNONCUTTING\nline ps 0.4 0 pe 3 6 ;\n')
+        fidW.write('ADDITIVEBOX 0 0 0 300 300 200 ;\n')
+        fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
+        fidW.write('arc pc 0 0.4 ra 0.2 astart 270 asweep 90\n')
+        fidW.write('NONCUTTING\nline ps 0.4 0 pe 3 6 ;\n')
         fidW.write('MOVE  X 0.00000000 Y -50.34838486 Z 19.21260071 TX 0.00000000 TY 0.1 TZ 0.9 ROLL 0.00000000 ;\n\n')
 
         for line in fidO:
