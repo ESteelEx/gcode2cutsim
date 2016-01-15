@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<machine_definition>
+    <machine_data name="OperationSampleMachine" version="1.8" units="metric">
+        <view_transform initialvalue="0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,-1.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+    </machine_data>
+    <axis id="C" type="rotation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">
+        <clamp name="chuck" type="chuck">
+			<geometry name="chuck_geom" geo="chuck.stl" clrr="0.8" clrg="0.8" clrb="0.8" objtype="geometry"/>
+			<geometry name="stock" geo="stock.stl" clrr="0.43137255" clrg="0.65882355" clrb="1.00000000" alpha="0" reflectivity="0.0" reflectivityBitmapFileName="" objtype="stock" samples="300"/>
+			<transform id="jaw01_transform" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+				<chuckjaw name="jaw01" minvalue="0.000000" maxvalue="100.000000" initial_value="100.000000">
+					<geometry name="jaw01_geo" geo="jaw.stl" clrr="0.95" clrg="0.95" clrb="0.95" objtype="geometry"/>
+				</chuckjaw>		
+			</transform>
+			<transform id="jaw02_transform" initialvalue="-0.50000000,-0.86602540,0.00000000,0.00000000,0.86602540,-0.50000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+				<chuckjaw name="jaw02" minvalue="0.000000" maxvalue="100.000000" initial_value="100.000000">
+					<geometry name="jaw02_geo" geo="jaw.stl" clrr="0.95" clrg="0.95" clrb="0.95" objtype="geometry"/>
+				</chuckjaw>		
+			</transform>
+			<transform id="jaw03_transform" initialvalue="-0.50000000,0.86602540,0.00000000,0.00000000,-0.86602540,-0.50000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+				<chuckjaw name="jaw03" minvalue="0.000000" maxvalue="100.000000" initial_value="100.000000">
+					<geometry name="jaw03_geo" geo="jaw.stl" clrr="0.95" clrg="0.95" clrb="0.95" objtype="geometry"/>
+				</chuckjaw>		
+			</transform>
+		</clamp>
+    </axis>
+    <axis id="X" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-10000.000000" maxvalue="1025.000000" valuetype="cont" initial_value="1025.000000">
+        <axis id="Y" type="translation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-325.000000" maxvalue="325.000000" valuetype="cont" initial_value="0.000000">
+            <axis id="Z" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-250.000000" maxvalue="4391.000000" valuetype="cont" initial_value="1000.000000">
+                <axis id="B" type="rotation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-30.000000" maxvalue="240.000000" valuetype="cont" initial_value="90.000000" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">
+                        <axis id="toolrotate" type="rotation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-360.000000" maxvalue="360.000000" valuetype="cont" initial_value="0.000000" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">
+							<axis id="toolspindle" type="rotation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-100000" maxvalue="100000" valuetype="cont" initial_value="0" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">    
+								<geometry name="tool" alpha="0.0" reflectivity="0.5" reflectivityBitmapFileName="" objtype="tool" cuttr="1.00000000" cuttg="0.50196081" cuttb="0.00000000" noncuttr="0.75294119" noncuttg="0.75294119" noncuttb="0.75294119" arborr="0.07843138" arborg="0.07843138" arborb="0.07843138" holderr="0.00000000" holderg="0.50196081" holderb="1.00000000" />
+							</axis>	
+						</axis>
+						<geometry name="milling_head" geo="milling_head.stl" clrr="1.00000000" clrg="0.50196075" clrb="0.00000000" alpha="0.0" reflectivity="0.0" reflectivityBitmapFileName="" objtype="geometry" />
+						<geometry name="milling_support" geo="milling_head_support.stl" clrr="0.02" clrg="0.49" clrb="0.624" alpha="0.0" reflectivity="0.0" reflectivityBitmapFileName="" objtype="geometry" />
+                </axis>
+            </axis>
+        </axis>
+    </axis>
+	<geometry name="housing" geo="housing.stl" clrr="1.00000000" clrg="1.00000000" clrb="1.00000000" alpha="0.0" reflectivity="0.0" reflectivityBitmapFileName="" objtype="geometry" />
+</machine_definition>

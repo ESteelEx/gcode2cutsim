@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<machine_definition>
+    <machine_data name="4AxHead" version="1.8" units="metric">
+        <view_transform initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000" />
+    </machine_data>
+    <axis id="X" type="translation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000">
+        <axis id="Y" type="translation" x="0.00000000" y="1.00000000" z="0.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000">
+            <axis id="Z" type="translation" x="0.00000000" y="0.00000000" z="1.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000">
+                <axis id="A" type="rotation" x="1.00000000" y="0.00000000" z="0.00000000" minvalue="-100000.000000" maxvalue="100000.000000" valuetype="cont" initial_value="0.000000" rzx="0.00000000" rzy="0.00000000" rzz="0.00000000">
+                    <transform id="holder_transform" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+                        <geometry name="tool" geo="tool.stl" alpha="0.0" reflectivity="0.1" reflectivityBitmapFileName="tablereflection.bmp" objtype="tool" cuttr="0.82745099" cuttg="0.78039217" cuttb="0.67450982" noncuttr="0.50196081" noncuttg="0.50196081" noncuttb="0.50196081" arborr="0.39215687" arborg="0.39215687" arborb="0.39215687" holderr="0.36862746" holderg="0.57254905" holderb="0.69019610" />
+                    </transform>
+                </axis>
+            </axis>
+        </axis>
+    </axis>
+    <transform id="workpiece_transform" initialvalue="1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000,0.00000000,0.00000000,0.00000000,0.00000000,1.00000000">
+        <geometry name="fixture" geo="fixture.stl" clrr="0.50196081" clrg="0.50196081" clrb="0.50196081" alpha="0.0" reflectivity="0.0" reflectivityBitmapFileName="" objtype="fixture" />
+        <geometry name="initialstock" geo="stock.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.8" reflectivity="0.0" reflectivityBitmapFileName="" objtype="initialstock" />
+        <geometry name="stock" geo="stock.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.0" reflectivity="0.4" reflectivityBitmapFileName="tablereflection.bmp" objtype="stock" />
+        <geometry name="toolpath" geo="toolpath.asc" clrr="0.00000000" clrg="0.00000000" clrb="0.00000000" alpha="0.0" reflectivity="0.0" reflectivityBitmapFileName="" objtype="toolpath" />
+        <geometry name="workpiece" geo="workpiece.stl" clrr="0.75294119" clrg="0.75294119" clrb="0.75294119" alpha="0.0" reflectivity="0.4" reflectivityBitmapFileName="tablereflection.bmp" objtype="workpiece" />
+    </transform>
+    <collcheck id="cc1" name="cc1" group1="tool" dynamic1="true" dynamic2="false" active="true" group2="workpiece,stock" />
+</machine_definition>
