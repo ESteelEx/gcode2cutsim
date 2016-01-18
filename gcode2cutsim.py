@@ -1,6 +1,6 @@
 #!dev\python
 """
-gcode2cutsim parses -> cutsim can read gcode data now.
+gcode2cutsim parser -> cutsim can read gcode data now.
 
 """
 
@@ -33,9 +33,23 @@ def insertWS(line, char):
     line = line[:posChar+1] + ' ' + line[posChar+1:]
     return line
 
+# ----------------------------------------------------------------------------------------------------------------------
 def calcLayerThickness(zVal):
 
     return layerT
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+def defineTool(fidW, LT, LW):
+
+    fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
+
+    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT/2)
+
+    fidW.write(geometry + ' astart 270 asweep 180\n')
+    fidW.write('NONCUTTING\n')
+    fidW.write('line ps 0.6 0 pe 3 3 ;\n\n')
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
@@ -59,15 +73,12 @@ def main():
 
     j = 0
     zVal = float(0.0)
+    LT = 0.0
+    LWT = 0.095
     with open(inputf) as fidO:
-        # fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
-        fidW.write('STOCK -5 -5 -5 5 5 5 ;\n')
+        fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
         fidW.write('ADDITIVEBOX 0 0 0 300 300 200 ;\n')
-        fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
-        fidW.write('arc pc 0.3 0.2 ra 0.1 astart 270 asweep 180\n')
-        fidW.write('NONCUTTING\n')
-        fidW.write('line ps 0.4 0 pe 3 6 ;\n')
-        fidW.write('MOVE  X 0.00000000 Y 0.00000000 Z 0.00000000 TX 0.00000000 TY 0.00000000 TZ 1.00000000 ROLL 0.00000000 ;\n\n')
+        fidW.write('MOVE  X 0.00000000 Y 0.00000000 Z 0.00000000 TX 0.00000000 TY 0.00000000 TZ 1.00000000 ROLL 0.00000000 ;\n')
 
         for line in fidO:
             j += 1
@@ -78,9 +89,11 @@ def main():
             pos = line.find('Z')
             if pos != -1:
                 zValT = float(line[pos+1:pos+4])
-                LT = zValT - zVal
+                LTT = zValT - zVal
+                if LTT != LT:
+                    defineTool(fidW, LTT, LWT)
+                    LT = LTT
                 zVal = zValT
-                print LT
 
             if j >= 4:
                 line = line.rstrip('\n')
@@ -108,6 +121,7 @@ def main():
             params = outputf
             abscommand = os.path.abspath(command)
             shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+            shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=outputf)
 
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
