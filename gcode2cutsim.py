@@ -2,16 +2,6 @@
 """
 gcode2cutsim parses -> cutsim can read gcode data now.
 
-STOCK -30 -40 -20 28 33 20 ;
-ADDITIVEBOX 0 0 0 200 200 100 ;
-
----- This is the geometry of the nozzle with a diameter of 0.4 mm
-
-GENERICTOOL
-CUTTING
-arc pc 0 0.4 ra 0.2 astart 270 asweep 90
-NONCUTTING
-line ps 0.4 0 pe 3 6 ;
 """
 
 import sys, os
@@ -38,17 +28,20 @@ def sepStr(line, char):
 
 # ----------------------------------------------------------------------------------------------------------------------
 def insertWS(line, char):
-    """inserts a white space after a character"""
+    """inserts a white space after user given character"""
     posChar = line.find(char)
     line = line[:posChar+1] + ' ' + line[posChar+1:]
     return line
 
+def calcLayerThickness(zVal):
+
+    return layerT
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
 
     if len(sys.argv) == 1:
-        print 'no input. EXIT'
+        print 'Input file missing. Pass gcode file to process. [gcode2cutsim [GCODE-DATA] [-sim]]'
         return
     else:
         if not os.path.isfile(sys.argv[1]):
@@ -65,19 +58,29 @@ def main():
     fidW = open(outputf, 'w')
 
     j = 0
+    zVal = float(0.0)
     with open(inputf) as fidO:
-        fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
+        # fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
+        fidW.write('STOCK -5 -5 -5 5 5 5 ;\n')
         fidW.write('ADDITIVEBOX 0 0 0 300 300 200 ;\n')
         fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
-        fidW.write('line ps 0 0 pe 2 2') # arc pc 0 0.4 ra 0.2 astart 270 asweep 90\n')
-        fidW.write('NONCUTTING\nline ps 0.4 0 pe 3 6 ;\n')
-        fidW.write('MOVE  X 0.00000000 Y -50.34838486 Z 19.21260071 TX 0.00000000 TY 0.1 TZ 0.9 ROLL 0.00000000 ;\n\n')
+        fidW.write('arc pc 0.3 0.2 ra 0.1 astart 270 asweep 180\n')
+        fidW.write('NONCUTTING\n')
+        fidW.write('line ps 0.4 0 pe 3 6 ;\n')
+        fidW.write('MOVE  X 0.00000000 Y 0.00000000 Z 0.00000000 TX 0.00000000 TY 0.00000000 TZ 1.00000000 ROLL 0.00000000 ;\n\n')
 
         for line in fidO:
             j += 1
             lineC = line
             if line[0] == ';':
                 continue
+
+            pos = line.find('Z')
+            if pos != -1:
+                zValT = float(line[pos+1:pos+4])
+                LT = zValT - zVal
+                zVal = zValT
+                print LT
 
             if j >= 4:
                 line = line.rstrip('\n')
