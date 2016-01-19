@@ -44,7 +44,7 @@ def defineTool(fidW, LT, LW):
 
     fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
 
-    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT/2)
+    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT/1.8)
 
     fidW.write(geometry + ' astart 270 asweep 180\n')
     fidW.write('NONCUTTING\n')
@@ -73,8 +73,8 @@ def main():
 
     j = 0
     zVal = float(0.0)
-    LT = 0.0
-    LWT = 0.095
+    LT = 1.0
+    LWT = 0.195
     with open(inputf) as fidO:
         fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
         fidW.write('ADDITIVEBOX 0 0 0 300 300 200 ;\n')
