@@ -20,7 +20,7 @@ def sepStr(line, char):
     if posChar != None:
         for i in range(posChar, len(line)):
             if line[i:i+1] == ' ' or i == len(line)-1:
-                line.find('F')
+                # line.find('F')
                 line = line[:posChar] + line[i+1:]
                 break
 
@@ -35,24 +35,50 @@ def insertWS(line, char):
 
 # ----------------------------------------------------------------------------------------------------------------------
 def calcLayerThickness(zVal):
+    pass
 
-    return layerT
+# ----------------------------------------------------------------------------------------------------------------------
+def getExtrusionParams(line, lineLloop):
 
+    posX1 = line.find('X')
+    posX2 = lineLloop.find('X')
+    posY1 = line.find('Y')
+    posY2 = lineLloop.find('Y')
+    posE1 = line.find('E')
+    posE2 = lineLloop.find('E')
+
+    valX1 = float(line[posX1+1:line[posX1:].find(' ') + posX1])
+    valY1 = float(line[posY1+1:line[posY1:].find(' ') + posY1])
+    valE1 = float(line[posE1+1:])
+    valX2 = float(lineLloop[posX2+1:lineLloop[posX2:].find(' ') + posX2])
+    valY2 = float(lineLloop[posY2+1:lineLloop[posY2:].find(' ') + posY2])
+    valE2 = float(lineLloop[posE2+1:])
+
+    eLength = ((valX2 - valX1)**2 + (valY2 - valY1)**2)**0.5
+
+    lWidth = abs(valE1-valE2) / eLength
+
+    print lWidth
+
+    return None
 
 # ----------------------------------------------------------------------------------------------------------------------
 def defineTool(fidW, LT, LW):
 
     fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
 
-    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT/1.8)
+    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT/2)
 
     fidW.write(geometry + ' astart 270 asweep 180\n')
     fidW.write('NONCUTTING\n')
-    fidW.write('line ps 0.6 0 pe 3 3 ;\n\n')
+    fidW.write('line ps 0.6 0 pe 3 3 ;\n')
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
+
+    # define constant vars
+    FILDIAMETER = 0.285 # [mm]
 
     if len(sys.argv) == 1:
         print 'Input file missing. Pass gcode file to process. [gcode2cutsim [GCODE-DATA] [-sim]]'
@@ -71,32 +97,51 @@ def main():
 
     fidW = open(outputf, 'w')
 
-    j = 0
-    zVal = float(0.0)
-    LT = 1.0
-    LWT = 0.195
+    startParsing = False
+    zVal = float(0)
+    LT = float(0)
+    LWT = 0.095
+    lineLloop = None
     with open(inputf) as fidO:
+        # write header
         fidW.write('STOCK -30 -40 -20 28 33 20 ;\n')
         fidW.write('ADDITIVEBOX 0 0 0 300 300 200 ;\n')
-        fidW.write('MOVE  X 0.00000000 Y 0.00000000 Z 0.00000000 TX 0.00000000 TY 0.00000000 TZ 1.00000000 ROLL 0.00000000 ;\n')
+        fidW.write('MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;\n')
 
         for line in fidO:
-            j += 1
+            # save line to lineC to keep original
             lineC = line
-            if line[0] == ';':
+
+            # check where g-code actually starts
+            if line[0:1] == 'G':
+                startParsing = True
+
+            if line[0] == ';': # cancel/go back to loop if line is commented
                 continue
 
+            # get geometry of extrusion lines and layers before proceeding with tool etc.
+            if line[0:2] == 'G1' and line[0:3].find(' ') != -1:
+                if lineLloop is not None:
+                    eLength = getExtrusionParams(line, lineLloop) # calc extrusion length
+                    lineLloop = line
+                else:
+                    lineLloop = line
+
+
+            # check if layer thickness changed during z-level change
             pos = line.find('Z')
             if pos != -1:
                 zValT = float(line[pos+1:pos+4])
-                LTT = zValT - zVal
+                LTT = abs(zValT - zVal)
                 if LTT != LT:
                     defineTool(fidW, LTT, LWT)
                     LT = LTT
                 zVal = zValT
 
-            if j >= 4:
-                line = line.rstrip('\n')
+
+            # write g-code to cutsim format
+            if startParsing == True:
+                line = line.rstrip('\n') # remove next line chars
                 line = sepStr(line, 'F')
                 line = sepStr(line, 'G')
                 line = sepStr(line, 'E')
@@ -104,15 +149,15 @@ def main():
                 line = insertWS(line, 'Y')
                 line = insertWS(line, 'Z')
                 if lineC[0:2] == 'G1':
-                    if len(line) > 5:
-                        machSimStr = 'CUT ' + line + ' TX 0.0 TY 0.0 TZ 1.0 ROLL 0 ;\n'
+                    if len(line) > 5: # feedrate move
+                        machSimStr = 'CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;\n'
                         fidW.write(machSimStr)
-                else:
+                elif lineC[0:2] == 'G0': # rapid move
                     if len(line) > 5:
-                        machSimStr = 'MOVE ' + line + ' TX 0.0 TY 0.0 TZ 1.0 ROLL 0 ;\n'
+                        machSimStr = 'MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;\n'
                         fidW.write(machSimStr)
 
-    print 'Done. CL file written to - > ' + outputf
+    print 'Done. CL file written - > ' + outputf
 
     if len(sys.argv) == 3:
         if sys.argv[2] == '-sim':

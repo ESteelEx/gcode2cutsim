@@ -4,7 +4,7 @@
 
 import sys, os
 import win32com.shell.shell as shell
-import win32con
+import win32con, win32event
 
 __author__ = 'mathiasr'
 
@@ -15,7 +15,12 @@ def start_3DPrintJob():
     command = '3DPrintModule/mw3DPrinter.exe'
     params = ''
     abscommand = os.path.abspath(command)
-    shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+    dict = shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+
+    hh = dict['hProcess']
+    print hh
+    ret = win32event.WaitForSingleObject(hh, -1)
+    print ret
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
@@ -27,6 +32,8 @@ def main():
         if not os.path.isfile(sys.argv[1]):
             print 'no such STL file -> ' + str(sys.argv[1])
             return
+
+    print 'DONE'
 
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
