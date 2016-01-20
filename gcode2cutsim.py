@@ -38,7 +38,7 @@ def calcLayerThickness(zVal):
     pass
 
 # ----------------------------------------------------------------------------------------------------------------------
-def getExtrusionParams(line, lineLloop):
+def getExtrusionParams(line, lineLloop, LTT):
 
     posX1 = line.find('X')
     posX2 = lineLloop.find('X')
@@ -54,11 +54,15 @@ def getExtrusionParams(line, lineLloop):
     valY2 = float(lineLloop[posY2+1:lineLloop[posY2:].find(' ') + posY2])
     valE2 = float(lineLloop[posE2+1:])
 
-    eLength = ((valX2 - valX1)**2 + (valY2 - valY1)**2)**0.5
+    eLength = pow(pow((valX2 - valX1), 2) + pow((valY2 - valY1), 2), 0.5)
 
-    lWidth = abs(valE1-valE2) / eLength
+    areaL = abs(valE2-valE1) / eLength
 
-    print lWidth
+    x = (areaL/LTT) - LTT
+
+    LW = x + LTT
+
+    print LW - (LW*0.15)
 
     return None
 
@@ -119,15 +123,6 @@ def main():
             if line[0] == ';': # cancel/go back to loop if line is commented
                 continue
 
-            # get geometry of extrusion lines and layers before proceeding with tool etc.
-            if line[0:2] == 'G1' and line[0:3].find(' ') != -1:
-                if lineLloop is not None:
-                    eLength = getExtrusionParams(line, lineLloop) # calc extrusion length
-                    lineLloop = line
-                else:
-                    lineLloop = line
-
-
             # check if layer thickness changed during z-level change
             pos = line.find('Z')
             if pos != -1:
@@ -138,6 +133,13 @@ def main():
                     LT = LTT
                 zVal = zValT
 
+            # get geometry of extrusion lines and layers before proceeding with tool etc.
+            if line[0:2] == 'G1' and line[0:3].find(' ') != -1:
+                if lineLloop is not None and LTT != 0:
+                    eLength = getExtrusionParams(line, lineLloop, LTT) # calc extrusion length
+                    lineLloop = line
+                else:
+                    lineLloop = line
 
             # write g-code to cutsim format
             if startParsing == True:
