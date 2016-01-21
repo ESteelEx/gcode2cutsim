@@ -60,9 +60,13 @@ def getExtrusionParams(line, lineLloop, LTT):
 
     x = (areaL/LTT) - LTT
 
+    print x
+
     LW = x + LTT
 
     print LW - (LW*0.15)
+
+    print '----'
 
     return None
 
