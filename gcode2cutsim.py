@@ -4,9 +4,8 @@ gcode2cutsim parser -> cutsim can read gcode data now.
 
 """
 
-import sys, os
+import sys, os, win32con
 import win32com.shell.shell as shell
-import win32con
 
 __author__ = 'mathiasr'
 
@@ -56,20 +55,27 @@ def getExtrusionParams(line, lineLloop, LTT):
 
     eLength = pow(pow((valX2 - valX1), 2) + pow((valY2 - valY1), 2), 0.5)
 
-    areaL = abs(valE2-valE1) / eLength
+    # avoid devision by zero
+    if eLength != 0:
+        areaL = (abs(valE2-valE1)*2) / eLength
+    else:
+        areaL = (abs(valE2-valE1)*2)
 
     x = (areaL/LTT) - LTT
 
-    print x
+    # print x
 
     LW = x + LTT
 
+    """
     print LW
-    print LW - (LW*0.15)
 
-    print '----'
+    print LW + (LW*0.15)
 
-    return None
+    print '---'
+    """
+
+    return x, LW, eLength
 
 # ----------------------------------------------------------------------------------------------------------------------
 def defineTool(fidW, LT, LW):
@@ -90,14 +96,20 @@ def main():
     FILDIAMETER = 0.285 # [mm]
 
     if len(sys.argv) == 1:
+        import UI.selectFile as fselect
+        path, filename = fselect.get_file_list()
         print 'Input file missing. Pass gcode file to process. [gcode2cutsim [GCODE-DATA] [-sim]]'
-        return
+        print 'opening from selection'
+        inputf = path + '\\' + str(filename)[3:-2]
+        sys.argv[]
+        # print inputf
     else:
         if not os.path.isfile(sys.argv[1]):
             print 'no such file -> ' + str(sys.argv[1])
             return
+        else:
+            inputf = str(sys.argv[1])
 
-    inputf = str(sys.argv[1])
     pointpos = inputf.rfind('.')
     if pointpos != -1:
         outputf = inputf[:pointpos+1] + 'cl'
@@ -109,7 +121,7 @@ def main():
     startParsing = False
     zVal = float(0)
     LT = float(0)
-    LWT = 0.095
+    LWT = 0.14
     lineLloop = None
     with open(inputf) as fidO:
         # write header
@@ -141,7 +153,8 @@ def main():
             # get geometry of extrusion lines and layers before proceeding with tool etc.
             if line[0:2] == 'G1' and line[0:3].find(' ') != -1:
                 if lineLloop is not None and LTT != 0:
-                    eLength = getExtrusionParams(line, lineLloop, LTT) # calc extrusion length
+                    x, LWcomp, eLength = getExtrusionParams(line, lineLloop, LTT) # calc extrusion length
+                    LWT = x/2
                     lineLloop = line
                 else:
                     lineLloop = line
