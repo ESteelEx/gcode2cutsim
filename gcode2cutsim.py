@@ -95,20 +95,27 @@ def main():
     # define constant vars
     FILDIAMETER = 0.285 # [mm]
 
-    if len(sys.argv) == 1:
+    # get all input parameters from user
+    inputParams = sys.argv
+
+    if len(inputParams) == 1:
         import UI.selectFile as fselect
         path, filename = fselect.get_file_list()
         print 'Input file missing. Pass gcode file to process. [gcode2cutsim [GCODE-DATA] [-sim]]'
         print 'opening from selection'
         inputf = path + '\\' + str(filename)[3:-2]
-        sys.argv[]
+        # sys.argv = '-sim'
         # print inputf
+        inputParams += [inputf]
+        inputParams += ['-sim']
     else:
-        if not os.path.isfile(sys.argv[1]):
-            print 'no such file -> ' + str(sys.argv[1])
+        if not os.path.isfile(inputParams[1]):
+            print 'no such file -> ' + str(inputParams[1])
             return
         else:
-            inputf = str(sys.argv[1])
+            inputf = str(inputParams[1])
+
+    print inputParams
 
     pointpos = inputf.rfind('.')
     if pointpos != -1:
@@ -179,8 +186,8 @@ def main():
 
     print 'Done. CL file written - > ' + outputf
 
-    if len(sys.argv) == 3:
-        if sys.argv[2] == '-sim':
+    if len(inputParams) == 3:
+        if inputParams[2] == '-sim':
             print 'starting verification'
             command = 'daily/VerifierApplicationSample.exe'
             params = outputf

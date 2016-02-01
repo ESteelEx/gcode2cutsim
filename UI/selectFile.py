@@ -5,7 +5,7 @@ def get_file_list():
     """
     :rtype : list with file names
     """
-    wapp = wx.PySimpleApp()
+    wapp = wx.App(False)
 
     openFileDialog = wx.FileDialog(None, "Choose GCODE file", "", "",
                                    "GCODE files (*.gcode)|*.gcode",
