@@ -8,13 +8,13 @@ import win32con, win32event
 
 __author__ = 'mathiasr'
 
-
 # ----------------------------------------------------------------------------------------------------------------------
 def start_3DPrintJob():
     print 'starting printer job'
-    command = '3DPrintModule/mw3DPrinter.exe'
+    command = '3DPrintModule/mw3DPrinter32.exe'
     params = ''
     abscommand = os.path.abspath(command)
+    abs
     dict = shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
 
     hh = dict['hProcess']

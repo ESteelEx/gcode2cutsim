@@ -82,7 +82,7 @@ def defineTool(fidW, LT, LW):
 
     fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
 
-    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT/2)
+    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT)
 
     fidW.write(geometry + ' astart 270 asweep 180\n')
     fidW.write('NONCUTTING\n')
@@ -153,6 +153,8 @@ def main():
                 zValT = float(line[pos+1:pos+4])
                 LTT = abs(zValT - zVal)
                 if LTT != LT:
+                    # overwrite for testing purpose
+                    LWT = 0.2
                     defineTool(fidW, LTT, LWT)
                     LT = LTT
                 zVal = zValT
