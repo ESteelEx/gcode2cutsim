@@ -6,6 +6,7 @@ gcode2cutsim parser -> cutsim can read gcode data now.
 
 import sys, os, win32con
 import win32com.shell.shell as shell
+from decimal import *
 
 __author__ = 'mathiasr'
 
@@ -63,8 +64,6 @@ def getExtrusionParams(line, lineLloop, LTT):
 
     x = (areaL/LTT) - LTT
 
-    # print x
-
     LW = x + LTT
 
     """
@@ -80,9 +79,20 @@ def getExtrusionParams(line, lineLloop, LTT):
 # ----------------------------------------------------------------------------------------------------------------------
 def defineTool(fidW, LT, LW):
 
+    getcontext().prec = 2
+
+    LW = Decimal(LW) / 1
+    LT = Decimal(LT) / 1
+
+    if LW < 0:
+        LW = 0
+
+    # print LT
+
     fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
 
-    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(LT)
+    geometry = 'arc pc ' + str(LW) + ' ' + str(LT) + ' ra ' + str(Decimal(LT)/2)
+    # geometry = 'arc pc 0.5 0 ' + ' ra 0.48'
 
     fidW.write(geometry + ' astart 270 asweep 180\n')
     fidW.write('NONCUTTING\n')
@@ -115,7 +125,7 @@ def main():
         else:
             inputf = str(inputParams[1])
 
-    print inputParams
+    # print inputParams
 
     pointpos = inputf.rfind('.')
     if pointpos != -1:
@@ -153,14 +163,12 @@ def main():
                 zValT = float(line[pos+1:pos+4])
                 LTT = abs(zValT - zVal)
                 if LTT != LT:
-                    # overwrite for testing purpose
-                    LWT = 0.2
                     defineTool(fidW, LTT, LWT)
                     LT = LTT
                 zVal = zValT
 
             # get geometry of extrusion lines and layers before proceeding with tool etc.
-            if line[0:2] == 'G1' and line[0:3].find(' ') != -1:
+            if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # to intercept G commands over 10
                 if lineLloop is not None and LTT != 0:
                     x, LWcomp, eLength = getExtrusionParams(line, lineLloop, LTT) # calc extrusion length
                     LWT = x/2
