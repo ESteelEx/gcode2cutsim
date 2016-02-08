@@ -40,6 +40,13 @@ def calcLayerThickness(zVal):
 # ----------------------------------------------------------------------------------------------------------------------
 def getExtrusionParams(line, lineLloop, LTT):
 
+    print LTT
+
+    if LTT >= 1.0:
+        print 'here it changed'
+        print line
+        print lineLloop
+
     posX1 = line.find('X')
     posX2 = lineLloop.find('X')
     posY1 = line.find('Y')
@@ -104,6 +111,7 @@ def main():
 
     # define constant vars
     FILDIAMETER = 0.285 # [mm]
+    BEDDIM = [230, 250, 220] # Dimensions of Ultimaker 2
 
     # get all input parameters from user
     inputParams = sys.argv
@@ -125,8 +133,6 @@ def main():
         else:
             inputf = str(inputParams[1])
 
-    # print inputParams
-
     pointpos = inputf.rfind('.')
     if pointpos != -1:
         outputf = inputf[:pointpos+1] + 'cl'
@@ -143,7 +149,8 @@ def main():
     with open(inputf) as fidO:
         # write header
         fidW.write('STOCK 0.1 0.1 0.1 0.2 0.2 0.2 ;\n')
-        fidW.write('ADDITIVEBOX 0 0 0 300 300 200 ;\n')
+        ABstr = 'ADDITIVEBOX 0 0 0 ' + str(BEDDIM[0]) + ' ' + str(BEDDIM[1]) + ' ' + str(BEDDIM[2]) + ' ;\n'
+        fidW.write(ABstr)
         fidW.write('MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;\n')
 
         for line in fidO:
