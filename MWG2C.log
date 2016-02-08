@@ -1,7 +1,6 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-02-08 18:44:03.304000
-INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim/MWG2C.log
+INFO:MWG2C:** Logging started @ : 2016-02-08 23:33:16.405000
+INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting parser ... @ : 2016-02-08 18:44:03.307000
-INFO:MWG2C:** Logging stopped @ : 2016-02-08 18:44:10
+INFO:MWG2C:Starting parser ... @ : 2016-02-08 23:33:16.405000

@@ -11,6 +11,7 @@ from decimal import *
 from CLUtilities import G2CLogging
 from MachineConfig import Tools
 from CLUtilities import CLFileWriter
+from CLUtilities import ExtrusionUtil
 
 __author__ = 'mathiasr'
 
@@ -41,51 +42,7 @@ def insertWS(line, char):
 def calcLayerThickness(zVal):
     pass
 
-# ----------------------------------------------------------------------------------------------------------------------
-def getExtrusionParams(line, lineLloop, LTT):
 
-    # print LTT
-
-    # if LTT >= 1.0:
-       # print 'here it changed'
-       # print line
-       # print lineLloop
-
-    posX1 = line.find('X')
-    posX2 = lineLloop.find('X')
-    posY1 = line.find('Y')
-    posY2 = lineLloop.find('Y')
-    posE1 = line.find('E')
-    posE2 = lineLloop.find('E')
-
-    valX1 = float(line[posX1+1:line[posX1:].find(' ') + posX1])
-    valY1 = float(line[posY1+1:line[posY1:].find(' ') + posY1])
-    valE1 = float(line[posE1+1:])
-    valX2 = float(lineLloop[posX2+1:lineLloop[posX2:].find(' ') + posX2])
-    valY2 = float(lineLloop[posY2+1:lineLloop[posY2:].find(' ') + posY2])
-    valE2 = float(lineLloop[posE2+1:])
-
-    eLength = pow(pow((valX2 - valX1), 2) + pow((valY2 - valY1), 2), 0.5)
-
-    # avoid devision by zero
-    if eLength != 0:
-        areaL = (abs(valE2-valE1)*2) / eLength
-    else:
-        areaL = (abs(valE2-valE1)*2)
-
-    x = (areaL/LTT) - LTT
-
-    LW = x + LTT
-
-    """
-    print LW
-
-    print LW + (LW*0.15)
-
-    print '---'
-    """
-
-    return x, LW, eLength
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -93,10 +50,10 @@ def main():
 
     G2CLOG = G2CLogging.G2CLogging() # start logger
 
-
     try:
 
         Tool = Tools.Tools() # initialize Tools
+        ExUtil = ExtrusionUtil.ExtrusionUtil()
         # define constant vars
         MACHINENAME = 'ULTIMAKER2'
         FILDIAMETER = 0.285 # [mm]
@@ -148,7 +105,7 @@ def main():
 
             # fidW.write('STOCK ' + str(STOCKDEFINITION[0]) + ' ' + str(STOCKDEFINITION[1]) + ' ' + str(STOCKDEFINITION[2]) + ' ' + str(STOCKDEFINITION[3]) + ' ' + str(STOCKDEFINITION[4]) + ' ' + str(STOCKDEFINITION[5]) + ' ;\n')
             # fidW.write(ABstr)
-            # fidW.write('MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;\n')
+            fidW.write('MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;\n')
 
             CLWriter.writeNCCode('STOCK ' + str(STOCKDEFINITION[0]) + ' ' + str(STOCKDEFINITION[1]) + ' ' + str(STOCKDEFINITION[2]) + ' ' + str(STOCKDEFINITION[3]) + ' ' + str(STOCKDEFINITION[4]) + ' ' + str(STOCKDEFINITION[5]) + ' ;')
             ABstr = 'ADDITIVEBOX 0 0 0 ' + str(BEDDIM[0]) + ' ' + str(BEDDIM[1]) + ' ' + str(BEDDIM[2]) + ' ;'
@@ -179,7 +136,7 @@ def main():
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
                 if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # to intercept G commands over 10
                     if lineLloop is not None and LTT != 0:
-                        x, LWcomp, eLength = getExtrusionParams(line, lineLloop, LTT) # calc extrusion length
+                        x, LWcomp, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LTT) # calc extrusion length
                         LWT = x/2
                         lineLloop = line
                     else:
@@ -213,10 +170,26 @@ def main():
                 abscommand = os.path.abspath(command)
                 shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
                 shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=outputf)
+
     except Exception as e:
-        top = traceback.extract_stack()[-1]
+        # message = traceback.print_exc(file=sys.stdout)
+
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print "*** print_tb:"
+        message = traceback.print_tb(exc_traceback, limit=1, file=sys.stdout)
+        print "*** print_exception:"
+        message2 = traceback.print_exception(exc_type, exc_value, exc_traceback,
+                              limit=2, file=sys.stdout)
+
+        # message = traceback.format_exc().splitlines()
+        # message = str(message)
+        print message
+        # top = traceback.extract_stack()[-1]
+        # print top
         errStr = ', '.join([type(e).__name__, os.path.basename(top[0]), str(top[1])])
         G2CLOG.wlog('ERROR', ' Error in main program: ' + str(e.message) + ' ' + errStr)
+        for i in message:
+            G2CLOG.wlog('ERROR', str(i))
 
 # ----------------------------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
