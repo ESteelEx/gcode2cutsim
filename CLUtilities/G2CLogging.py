@@ -1,12 +1,10 @@
 #######################################################################################################################
 # MW PPLogging Module
 #######################################################################################################################
-__author__ = 'Mathias Rohler'
+__author__ = 'MW'
 __version__ = '1.0'
 
-import logging
-import sys
-import os
+import logging, os
 from datetime import *
 
 #help(logging)

@@ -11,12 +11,12 @@ class ExtrusionUtil():
     # ----------------------------------------------------------------------------------------------------------------------
     def getExtrusionParams(self, line, lineLloop, LayerThicknessT):
 
-        # print LTT
-
-        # if LTT >= 1.0:
-           # print 'here it changed'
-           # print line
-           # print lineLloop
+        """
+        calculate all important parameters from gcode input.
+            Layer width, thickness, radius from circle elements outside the extrusion line
+        line: current NC line from gcode
+        lineLloop: gcode NC line from previous loop run
+        """
 
         posX1 = line.find('X')
         posX2 = lineLloop.find('X')
@@ -44,12 +44,8 @@ class ExtrusionUtil():
 
         LayerWidth = x + LayerThicknessT
 
-        """
-        print LW
-
-        print LW + (LW*0.15)
-
-        print '---'
-        """
-
         return x, LayerWidth, extrusionLength
+
+    # ----------------------------------------------------------------------------------------------------------------------
+    def calcLayerThickness(self, zVal):
+        pass

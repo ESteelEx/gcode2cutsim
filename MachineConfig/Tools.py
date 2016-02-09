@@ -11,33 +11,25 @@ class Tools:
     def __init__(self):
         pass
 
-    def getGeometrie(self, LayerThickness = 0.2, LayerWidth = 0.48):
-        """calculation of tool parameters"""
+    def getGeometry(self, LayerThickness=0.2, LayerWidth=0.48, ELOverlap=0.15):
+        """calculation of tool parameters
+        :returns
+        midpoint: mid point of extrusion line as tuple
+        radius: radius of extrusion line
+        geometrieStr: complete NC string to be used for CL file
+        """
 
-        getcontext().prec = 2 # set precision for decimal class
+        getcontext().prec = 4 # set precision for decimal class
 
-        LayerWidth = Decimal(LayerWidth) / 1
-        LayerThickness = Decimal(LayerThickness) / 1
+        R = Decimal(LayerThickness / 2)
+        x = Decimal(LayerWidth - 2*R)
+        xWithOverlap = Decimal(x + x * (2*ELOverlap))
+        RWithOverlap = Decimal(R + R * ELOverlap)
 
-        # avoid division b zero
-        if LayerWidth < 0:
-            LayerWidth = 0
+        geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(R)) + ' ra ' + str(Decimal(RWithOverlap)) \
+                      + ' astart 270 asweep 180'
 
-        # fidW.write('GENERICTOOL\nADDING\nCUTTING\n')
+        midPoint = Decimal(xWithOverlap), Decimal(R)
+        radius = Decimal(R)
 
-        geometry = 'arc pc ' + str(LayerWidth) + ' ' + str(LayerThickness) + ' ra ' + str(Decimal(LayerThickness)/2)
-        # geometry = 'arc pc 0.5 0 ' + ' ra 0.48'
-
-        # fidW.write(geometry + ' astart 270 asweep 180\n')
-        # fidW.write('NONCUTTING\n')
-        # fidW.write('line ps 0.6 0 pe 3 3 ;\n')
-
-        midPoint = (LayerWidth, LayerThickness)
-        radius = LayerThickness / 2
-
-        return midPoint, radius,
-
-
-
-    def calcExtrusionParams(self):
-        pass
+        return geometryStr, midPoint, radius
