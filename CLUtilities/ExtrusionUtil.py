@@ -49,3 +49,7 @@ class ExtrusionUtil():
     # ----------------------------------------------------------------------------------------------------------------------
     def calcLayerThickness(self, zVal):
         pass
+
+    def getOverlap(self, ExtrusionVolume, LayerWidth):
+        overlap = None
+        return overlap

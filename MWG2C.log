@@ -1,13 +1,7 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-02-09 18:13:06.413000
+INFO:MWG2C:** Logging started @ : 2016-02-11 18:17:44.728000
 INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting parser ... @ : 2016-02-09 18:13:06.415000
-ERROR:MWG2C:Traceback (most recent call last):
-ERROR:MWG2C:  File "D:/Development/GitRep/gcode2cutsim/gcode2cutsim.py", line 105, in main
-ERROR:MWG2C:    ELOverlap=ExtrusionLineOverlap)
-ERROR:MWG2C:  File "D:\Development\GitRep\gcode2cutsim\MachineConfig\Tools.py", line 25, in getGeometry
-ERROR:MWG2C:    x = Decimal(LayerWidth - 2*R)
-ERROR:MWG2C:TypeError: unsupported operand type(s) for -: 'float' and 'Decimal'
-INFO:MWG2C:** Logging stopped @ : 2016-02-09 18:13:06
+INFO:MWG2C:Starting parser ... @ : 2016-02-11 18:17:44.730000
+INFO:MWG2C:** Logging stopped @ : 2016-02-11 18:17:54

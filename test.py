@@ -1,12 +1,5 @@
-import traceback, sys
+outputf = r"D:\Development\GitRep\gcode2cutsim\bin\Verifier\test.cl"
 
-source = raw_input(">>> ")
-try:
-    exec source in envdir
-except:
-    print "Exception in user code:"
-    print '-'*60
-    message = traceback.print_exc(file=sys.stdout)
-    message = str(message)
-    print message
-    print '-'*60
+posDir = outputf.rfind('\\')
+
+print outputf[posDir+1:]

@@ -11,7 +11,7 @@ __author__ = 'mathiasr'
 # ----------------------------------------------------------------------------------------------------------------------
 def start_3DPrintJob():
     print 'starting printer job'
-    command = '3DPrintModule/mw3DPrinter32.exe'
+    command = 'bin/3DPrintModule/mw3DPrinter32.exe'
     params = ''
     abscommand = os.path.abspath(command)
     abs

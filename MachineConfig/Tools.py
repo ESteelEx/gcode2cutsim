@@ -21,12 +21,12 @@ class Tools:
 
         getcontext().prec = 4 # set precision for decimal class
 
-        R = Decimal(LayerThickness / 2)
-        x = Decimal(LayerWidth - 2*R)
-        xWithOverlap = Decimal(x + x * (2*ELOverlap))
-        RWithOverlap = Decimal(R + R * ELOverlap)
+        R = Decimal(LayerThickness) / 2
+        x = Decimal(LayerWidth) - 2 * Decimal(R)
+        xWithOverlap = Decimal(x) + (Decimal(x) * 2 * Decimal(ELOverlap))
+        RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
-        geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(R)) + ' ra ' + str(Decimal(RWithOverlap)) \
+        geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + str(Decimal(RWithOverlap)) \
                       + ' astart 270 asweep 180'
 
         midPoint = Decimal(xWithOverlap), Decimal(R)

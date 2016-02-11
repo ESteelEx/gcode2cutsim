@@ -8,7 +8,7 @@ __author__ = 'mathiasr'
 __version__= 1.0
 
 import sys, os, win32con, numpy
-import traceback
+import traceback, subprocess
 import win32com.shell.shell as shell
 # from decimal import *
 from CLUtilities import G2CLogging
@@ -31,7 +31,7 @@ def main():
         # define constant vars
         MACHINENAME = 'ULTIMAKER2'
         FILDIAMETER = 0.285 # [mm]
-        BEDDIM = [230, 250, 220] # Dimensions of Ultimaker 2,
+        BEDDIM = [230, 250, 20] # Dimensions of Ultimaker 2,
         STOCKDEFINITION = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2] # size of stock
 
         # get all input parameters from user
@@ -67,7 +67,7 @@ def main():
         startParsing = False
         zValMachine = 0
         LayerThickness = 0
-        ExtrusionLineOverlap = 0.15 # percent
+        ExtrusionLineOverlap = 0.0 # percent
         LayerWidthMachine = 0.48
         lineLloop = None
 
@@ -141,15 +141,39 @@ def main():
                             NCLine = 'MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;'
                             CLWriter.writeNCCode(NCLine)
 
+        CLWriter.closeNCFile()
+
         print 'Done. CL file written - > ' + outputf
 
         if len(inputParams) == 3:
             if inputParams[2] == '-sim':
                 print 'starting verification'
-                command = 'daily/VerifierApplicationSample.exe'
-                params = outputf
-                abscommand = os.path.abspath(command)
-                shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+                # writing configuration (start options) file for verifier
+                # TODO create own def to write ini file
+                posDir = outputf.rfind('\\')
+                posPoint = outputf[posDir+1:].rfind('.')
+                iniFileName = outputf[posDir+1:posDir+1+posPoint]
+                iniFileName = iniFileName + '.ini'
+                iniDirName = outputf[0:posDir+1]
+                NCiniFile = iniDirName + iniFileName
+
+                fh = open(NCiniFile, 'w')
+
+                fh.write('nc=' + outputf[posDir+1:] + '\n')
+                fh.write('precision=0.05\n')
+                fh.write('model=3\n')
+                fh.close()
+
+                command = 'bin/Verifier/VerifierApplicationSample.exe'
+                params = ' ' + NCiniFile
+
+                startupinfo = subprocess.STARTUPINFO()
+                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
+                # abscommand = os.path.abspath(command)
+                subprocess.Popen(command + params, startupinfo=startupinfo)
+
+                # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
                 shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=outputf)
 
     except Exception as e:
