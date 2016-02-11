@@ -31,6 +31,7 @@ def main():
         # define constant vars
         MACHINENAME = 'ULTIMAKER2'
         FILDIAMETER = 0.285 # [mm]
+        SIMPRECISION = 0.05 # precision of simulation be careful here
         BEDDIM = [230, 250, 20] # Dimensions of Ultimaker 2,
         STOCKDEFINITION = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2] # size of stock
 
@@ -70,6 +71,7 @@ def main():
         ExtrusionLineOverlap = 0.0 # percent
         LayerWidthMachine = 0.48
         lineLloop = None
+
 
         G2CLOG.wlog('INFO', 'Starting parser ...')
 
@@ -160,7 +162,7 @@ def main():
                 fh = open(NCiniFile, 'w')
 
                 fh.write('nc=' + outputf[posDir+1:] + '\n')
-                fh.write('precision=0.05\n')
+                fh.write('precision=' + str(SIMPRECISION) + '\n')
                 fh.write('model=3\n')
                 fh.close()
 
