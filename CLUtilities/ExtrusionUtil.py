@@ -4,6 +4,8 @@
 __author__ = 'Mathias Rohler'
 __version__ = '1.0'
 
+from math import pi
+
 class ExtrusionUtil():
     def __init__(self):
         pass
@@ -36,12 +38,12 @@ class ExtrusionUtil():
 
         # avoid devision by zero
         if extrusionLength != 0:
-            areaExtrusionLine = (abs(valE2-valE1)*2) / extrusionLength
+            areaExtrusionLine = abs(valE2-valE1) / extrusionLength
         else:
-            areaExtrusionLine = (abs(valE2-valE1)*2)
+            areaExtrusionLine = abs(valE2-valE1)
 
-        x = (areaExtrusionLine / LayerThicknessT) - LayerThicknessT
-
+        areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThicknessT/2)**2))
+        x = (areaExtrusionLineRect / LayerThicknessT)
         LayerWidth = x + LayerThicknessT
 
         return x, LayerWidth, extrusionLength

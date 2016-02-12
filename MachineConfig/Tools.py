@@ -26,8 +26,11 @@ class Tools:
         xWithOverlap = Decimal(x) + (Decimal(x) * 2 * Decimal(ELOverlap))
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
-        geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + str(Decimal(RWithOverlap)) \
-                      + ' astart 270 asweep 180'
+        if xWithOverlap >= 0:
+            geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + str(Decimal(RWithOverlap)) \
+                          + ' astart 270 asweep 180'
+        else:
+            geometryStr = None
 
         midPoint = Decimal(xWithOverlap), Decimal(R)
         radius = Decimal(R)

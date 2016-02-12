@@ -17,6 +17,19 @@ from CLUtilities import CLFileWriter
 from CLUtilities import ExtrusionUtil
 from CLUtilities import StrManipulator
 
+def startVerification(CLFile, NCiniFile):
+    command = 'bin/Verifier/VerifierApplicationSample.exe'
+    params = ' ' + NCiniFile
+
+    startupinfo = subprocess.STARTUPINFO()
+    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+
+    # abscommand = os.path.abspath(command)
+    subprocess.Popen(command + params, startupinfo=startupinfo)
+
+    # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+    shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
+
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
 
@@ -31,8 +44,8 @@ def main():
         # define constant vars
         MACHINENAME = 'ULTIMAKER2'
         FILDIAMETER = 0.285 # [mm]
-        SIMPRECISION = 0.05 # precision of simulation be careful here
-        BEDDIM = [230, 250, 20] # Dimensions of Ultimaker 2,
+        SIMPRECISION = 0.1 # precision of simulation be careful here
+        BEDDIM = [230, 250, 200] # Dimensions of Ultimaker 2,
         STOCKDEFINITION = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2] # size of stock
 
         # get all input parameters from user
@@ -81,6 +94,9 @@ def main():
             CLWriter.writeNCCode('ADDITIVEBOX 0 0 0 ' + str(BEDDIM[0]) + ' ' + str(BEDDIM[1]) + ' ' + str(BEDDIM[2]) + ' ;')
             CLWriter.writeNCCode('MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;')
             loopCounter = 0
+
+            # start to read the g-Code file
+            # -----
             for line in fidO:
                 loopCounter += 1
                 # save line to lineC to keep original
@@ -105,22 +121,23 @@ def main():
                         geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                          LayerWidth=LayerWidthMachine,
                                                                          ELOverlap=ExtrusionLineOverlap)
-                        print 'tool change'
-                        print '-'*10
-                        CLWriter.writeNCCode('GENERICTOOL')
-                        CLWriter.writeNCCode('ADDING')
-                        CLWriter.writeNCCode('CUTTING')
-                        CLWriter.writeNCCode(geometryStr)
-                        CLWriter.writeNCCode('NONCUTTING')
-                        CLWriter.writeNCCode('line ps 0.6 0 pe 3 3 ;')
+                        CLWriter.writeToolChange(geometryStr)
                         LayerThickness = LayerThicknessForerun
                     zValMachine = zValForerun
 
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
-                if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # to intercept G commands over 10
+                if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over 10
                     if lineLloop is not None and LayerThicknessForerun != 0:
                         x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
-                        LayerWidthMachine = x/2
+
+                        if numpy.isclose(LayerWidthMachine, LayerWidth, 0.1) is False:
+                            geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
+                                                                             LayerWidth=LayerWidth,
+                                                                             ELOverlap=ExtrusionLineOverlap)
+                            if geometryStr is not None:
+                                CLWriter.writeToolChange(geometryStr)
+
+                        LayerWidthMachine = 0.48#LayerWidth
                         lineLloop = line
                     else:
                         lineLloop = line
@@ -143,7 +160,7 @@ def main():
                             NCLine = 'MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;'
                             CLWriter.writeNCCode(NCLine)
 
-        CLWriter.closeNCFile()
+        CLWriter.closeNCFile() # close CL writer and close CL file
 
         print 'Done. CL file written - > ' + outputf
 
@@ -166,17 +183,7 @@ def main():
                 fh.write('model=3\n')
                 fh.close()
 
-                command = 'bin/Verifier/VerifierApplicationSample.exe'
-                params = ' ' + NCiniFile
-
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-                # abscommand = os.path.abspath(command)
-                subprocess.Popen(command + params, startupinfo=startupinfo)
-
-                # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
-                shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=outputf)
+                startVerification(outputf, NCiniFile)
 
     except Exception as e:
         message = traceback.format_exc().splitlines() # get last error and prepare to write it in logger

@@ -50,6 +50,16 @@ class CLFileWriter:
         except:
             self.logger.wlog('ERROR', 'CLFileWriter.writeNCCode: Error while writing NC-code')
 
+    def writeToolChange(self, geometryStr):
+        """Write new tool geometry to CL file"""
+        self.writeNCCode('GENERICTOOL')
+        self.writeNCCode('ADDING')
+        self.writeNCCode('CUTTING')
+        self.writeNCCode(geometryStr)
+        self.writeNCCode('NONCUTTING')
+        self.writeNCCode('line ps 0.6 0 pe 3 3 ;')
+
+
     def readNCCodeN(self):
         """Read the NC file"""
         rf = open(self.File, 'r')
