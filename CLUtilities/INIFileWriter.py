@@ -14,3 +14,17 @@ class CLFileWriter:
         self.logger = G2CLogging.G2CLogging()
         self.Number = 0
         self.INC = 1
+
+        posDir = outputf.rfind('\\')
+        posPoint = outputf[posDir+1:].rfind('.')
+        iniFileName = outputf[posDir+1:posDir+1+posPoint]
+        iniFileName = iniFileName + '.ini'
+        iniDirName = outputf[0:posDir+1]
+        NCiniFile = iniDirName + iniFileName
+
+        fh = open(NCiniFile, 'w')
+
+        fh.write('nc=' + outputf[posDir+1:] + '\n')
+        fh.write('precision=' + str(SIMPRECISION) + '\n')
+        fh.write('model=3\n')
+        fh.close()

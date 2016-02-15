@@ -1,7 +1,7 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-02-12 14:25:56.630000
-INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim/MWG2C.log
+INFO:MWG2C:** Logging started @ : 2016-02-14 20:01:23.255000
+INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting parser ... @ : 2016-02-12 14:25:56.631000
-INFO:MWG2C:** Logging stopped @ : 2016-02-12 14:26:02
+INFO:MWG2C:File selection canceled ... Nothing to process @ : 2016-02-14 20:01:32.026000
+INFO:MWG2C:** Logging stopped @ : 2016-02-14 20:01:32

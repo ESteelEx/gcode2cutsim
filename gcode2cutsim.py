@@ -13,21 +13,21 @@ import win32com.shell.shell as shell
 # from decimal import *
 from CLUtilities import G2CLogging
 from MachineConfig import Tools
+from MachineConfig import JobSetup
 from CLUtilities import CLFileWriter
 from CLUtilities import ExtrusionUtil
 from CLUtilities import StrManipulator
 
+
 def startVerification(CLFile, NCiniFile):
+    """starting Verification"""
     command = 'bin/Verifier/VerifierApplicationSample.exe'
     params = ' ' + NCiniFile
 
     startupinfo = subprocess.STARTUPINFO()
     startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-    # abscommand = os.path.abspath(command)
     subprocess.Popen(command + params, startupinfo=startupinfo)
-
-    # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
     shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -40,25 +40,26 @@ def main():
         Tool = Tools.Tools() # initialize Tools
         ExUtil = ExtrusionUtil.ExtrusionUtil()
         StrManipulate = StrManipulator.StrManipulator()
+        JobS = JobSetup.JobSetup()
 
         # define constant vars
-        MACHINENAME = 'ULTIMAKER2'
-        FILDIAMETER = 0.285 # [mm]
-        SIMPRECISION = 0.1 # precision of simulation be careful here
-        BEDDIM = [230, 250, 200] # Dimensions of Ultimaker 2,
-        STOCKDEFINITION = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2] # size of stock
+        SIMPRECISION = 0.2 # precision of simulation be careful here because of memory consumption
 
         # get all input parameters from user
         inputParams = sys.argv
 
         if len(inputParams) == 1:
             import UI.selectFile as fselect
-            path, filename = fselect.get_file_list()
             print 'Input file missing. Pass gcode file to process. [gcode2cutsim [GCODE-DATA] [-sim]]'
-            print 'opening from selection'
+            print 'Opening from selection'
+
+            path, filename = fselect.get_file_list()
+            if filename is None:
+                G2CLOG.wlog('INFO', 'File selection canceled ... Nothing to process')
+                print 'Canceled'
+                return
+
             inputf = path + '\\' + str(filename)[3:-2]
-            # sys.argv = '-sim'
-            # print inputf
             inputParams += [inputf]
             inputParams += ['-sim']
         else:
@@ -81,28 +82,31 @@ def main():
         startParsing = False
         zValMachine = 0
         LayerThickness = 0
-        ExtrusionLineOverlap = 0.0 # percent
+        ExtrusionLineOverlap = 0.15 # percent
         LayerWidthMachine = 0.48
         lineLloop = None
 
-
-        G2CLOG.wlog('INFO', 'Starting parser ...')
+        G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
 
         with open(inputf) as fidO:
             # write header
-            CLWriter.writeNCCode('STOCK ' + str(STOCKDEFINITION[0]) + ' ' + str(STOCKDEFINITION[1]) + ' ' + str(STOCKDEFINITION[2]) + ' ' + str(STOCKDEFINITION[3]) + ' ' + str(STOCKDEFINITION[4]) + ' ' + str(STOCKDEFINITION[5]) + ' ;')
-            CLWriter.writeNCCode('ADDITIVEBOX 0 0 0 ' + str(BEDDIM[0]) + ' ' + str(BEDDIM[1]) + ' ' + str(BEDDIM[2]) + ' ;')
-            CLWriter.writeNCCode('MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;')
-            loopCounter = 0
+            stockDimStr = JobS.getStockDimensionStr()
+            bedDimStr = JobS.getBedDimensionStr()
+            homePosStr = JobS.getHomePosStr()
 
-            # start to read the g-Code file
+            CLWriter.writeNCCode(stockDimStr)
+            CLWriter.writeNCCode(bedDimStr)
+            CLWriter.writeNCCode(homePosStr)
+
+            # start reading g-Code file
             # -----
+            loopCounter = 0
             for line in fidO:
                 loopCounter += 1
-                # save line to lineC to keep original
+                # save line to lineC -> keeps original
                 lineC = line
 
-                # check where g-code actually starts
+                # check where g-code actually starts and give green light to parsing functions True/False
                 if line[0] == 'G':
                     startParsing = True
                 else:
@@ -137,7 +141,7 @@ def main():
                             if geometryStr is not None:
                                 CLWriter.writeToolChange(geometryStr)
 
-                        LayerWidthMachine = 0.48#LayerWidth
+                        LayerWidthMachine = LayerWidth
                         lineLloop = line
                     else:
                         lineLloop = line
@@ -152,13 +156,11 @@ def main():
                     line = StrManipulate.insertWS(line, 'Y')
                     line = StrManipulate.insertWS(line, 'Z')
                     if lineC[0:2] == 'G1':
-                        if len(line) > 5: # feedrate move
-                            NCLine = 'CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;'
-                            CLWriter.writeNCCode(NCLine)
+                        # if len(line) > 5: # feed rate move
+                        CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                     elif lineC[0:2] == 'G0': # rapid move
-                        if len(line) > 5:
-                            NCLine = 'MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;'
-                            CLWriter.writeNCCode(NCLine)
+                        # if len(line) > 5:
+                        CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
 
         CLWriter.closeNCFile() # close CL writer and close CL file
 
@@ -166,9 +168,12 @@ def main():
 
         if len(inputParams) == 3:
             if inputParams[2] == '-sim':
-                print 'starting verification'
+                print 'Starting verification'
                 # writing configuration (start options) file for verifier
                 # TODO create own def to write ini file
+
+                # CLUtilities.INIFileWriter()
+
                 posDir = outputf.rfind('\\')
                 posPoint = outputf[posDir+1:].rfind('.')
                 iniFileName = outputf[posDir+1:posDir+1+posPoint]
@@ -184,6 +189,8 @@ def main():
                 fh.close()
 
                 startVerification(outputf, NCiniFile)
+
+        G2CLOG.wlog('INFO', 'All jobs done ...')
 
     except Exception as e:
         message = traceback.format_exc().splitlines() # get last error and prepare to write it in logger
