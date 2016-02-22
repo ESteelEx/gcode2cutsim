@@ -92,22 +92,24 @@ def main():
 
         G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
 
+        # open NC file reader and get a block of code
         flNC = open(inputf, 'r')
-        NCBlock = NCFileR.getNCBlock(flNC, blocklength=10)
+        NCBlock = NCFileR.getNCBlock(flNC, blocklength=5) # get NC block code
         flNC.close()
-        LayerWidthMachine = ExUtil.getInitialLayerWidth(NCBlock)
 
+        # get initial layer width. To calculate initial LW we need a few lines o code.
+        # At least 2 consecutive G1 moves with extrusion value.
+        LayerWidthMachine = ExUtil.getInitialLayerWidth(NCBlock)
 
         # write header
         stockDimStr = JobS.getStockDimensionStr()
         homePosStr = JobS.getHomePosStr()
 
         CLWriter.writeNCCode(stockDimStr)
-        CLWriter.writeNCCode('ADDITIVEBOX') # place holder
+        CLWriter.writeNCCode('ADDITIVEBOX') # place holder. We replace this line with calculated part dimensions. We know them after every line from G-Code is procecssed. We use this line to find the right line to replace
         CLWriter.writeNCCode(homePosStr)
 
         with open(inputf) as fidO:
-
 
             # start reading g-Code file
             # -----
@@ -136,7 +138,7 @@ def main():
                                                                          LayerWidth=LayerWidthMachine,
                                                                          ELOverlap=ExtrusionLineOverlap)
                         CLWriter.writeToolChange(geometryStr)
-                        LayerThickness = LayerThicknessForerun
+                        LayerThickness = 0.48 # LayerThicknessForerun
                     zValMachine = zValForerun
 
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
@@ -149,9 +151,10 @@ def main():
                                                                              LayerWidth=LayerWidth,
                                                                              ELOverlap=ExtrusionLineOverlap)
                             if geometryStr is not None:
-                                CLWriter.writeToolChange(geometryStr)
+                                pass
+                                # CLWriter.writeToolChange(geometryStr)
 
-                        LayerWidthMachine = LayerWidth
+                        LayerWidthMachine = 0.48 #LayerWidth
                         lineLloop = line
                     else:
                         lineLloop = line

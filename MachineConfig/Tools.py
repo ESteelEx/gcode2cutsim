@@ -14,7 +14,7 @@ class Tools:
     def getGeometry(self, LayerThickness=0.2, LayerWidth=0.48, ELOverlap=0.15):
         """calculation of tool parameters
         :returns
-        midpoint: mid point of extrusion line as tuple
+        midpoint: mid point of extrusion line as vector
         radius: radius of extrusion line
         geometrieStr: complete NC string to be used for CL file
         """

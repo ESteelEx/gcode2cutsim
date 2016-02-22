@@ -11,12 +11,12 @@ class NCFileReader:
     def getNCBlock(self, NCfileHandler, blocklength=10):
         # NC forerun to get initial layer width
         loopCounter = 0
-        NCBlock = ''
+        NCBlock = []
         for line in NCfileHandler:
             if line[0] == ';' or line[0] != 'G':
                 continue
             loopCounter += 1
-            NCBlock += line
+            NCBlock += [line]
             if loopCounter == blocklength:
                 break
 

@@ -14,7 +14,7 @@ class JobSetup:
         self.MACHINENAME = 'ULTIMAKER2'
         self.FILAMENTDIAMETER = 0.285 # [mm] diameter
         self.HOMEPOSITION = [0, 0, 0]
-        self.BEDDEFINITION = [230, 250, 200] # Dimensions of Ultimaker 2 print area [mm^3]
+        self.BEDDEFINITION = [50, 50, 100] # Dimensions of Ultimaker 2 print area [mm^3]
         self.STOCKDEFINITION = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2] # size of stock. Is needed for cutsim set up.
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ class JobSetup:
     # ------------------------------------------------------------------------------------------------------------------
     def getBedDimensionStr(self):
 
-        beddimstr = 'ADDITIVEBOX 0 0 0 '
+        beddimstr = 'ADDITIVEBOX -50 -50 0 '
         for i in self.BEDDEFINITION:
             beddimstr += str(i) + ' '
 
