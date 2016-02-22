@@ -10,7 +10,7 @@ class ExtrusionUtil():
     def __init__(self):
         pass
 
-    # ----------------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     def getExtrusionParams(self, line, lineLloop, LayerThicknessT):
 
         """
@@ -48,10 +48,28 @@ class ExtrusionUtil():
 
         return x, LayerWidth, extrusionLength
 
-    # ----------------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     def calcLayerThickness(self, zVal):
         pass
 
+    # ------------------------------------------------------------------------------------------------------------------
     def getOverlap(self, ExtrusionVolume, LayerWidth):
         overlap = None
         return overlap
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def getExtrusionDelta(self, E1, E2):
+        EDelta = E2 - E1
+        return EDelta
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def getInitialLayerWidth(self, NCBlock):
+
+        loopCounter = 0
+        for i in NCBlock:
+            loopCounter += 1
+            if i[0:2] == 'G1':
+                posExtrusionParameter = i.find('E')
+
+        initialLayerWidth = 0.48
+        return initialLayerWidth

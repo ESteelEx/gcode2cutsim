@@ -24,7 +24,7 @@ class Tools:
         R = Decimal(LayerThickness) / 2
         x = Decimal(LayerWidth) - 2 * Decimal(R)
         xWithOverlap = Decimal(x) + (Decimal(x) * Decimal(ELOverlap))
-        RWithOverlap = Decimal(R) # + Decimal(R) * Decimal(ELOverlap)
+        RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
         if xWithOverlap >= 0:
             geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + str(Decimal(RWithOverlap)) \

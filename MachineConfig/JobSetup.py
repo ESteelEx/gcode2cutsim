@@ -42,3 +42,12 @@ class JobSetup:
         homeposstr = 'MOVE  X 0 Y 0 Z 0 TX 0 TY 0 TZ 1 ROLL 0 ;'
 
         return homeposstr
+
+    def getPartDimensionStr(self, PARTDEFINITION=[0, 0, 0, 200, 200, 200]):
+        partdimstr = 'ADDITIVEBOX '
+        for i in PARTDEFINITION:
+            partdimstr += str(i) + ' '
+
+        partdimstr += ' ;'
+
+        return partdimstr

@@ -8,7 +8,7 @@ __author__ = 'mathiasr'
 __version__= 1.0
 
 import sys, os, win32con, numpy
-import traceback, subprocess
+import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
 # from decimal import *
 from CLUtilities import G2CLogging
@@ -17,6 +17,8 @@ from MachineConfig import JobSetup
 from CLUtilities import CLFileWriter
 from CLUtilities import ExtrusionUtil
 from CLUtilities import StrManipulator
+from CLUtilities import evaluateGCode
+from CLUtilities import NCFileReader
 
 
 def startVerification(CLFile, NCiniFile):
@@ -41,9 +43,11 @@ def main():
         ExUtil = ExtrusionUtil.ExtrusionUtil()
         StrManipulate = StrManipulator.StrManipulator()
         JobS = JobSetup.JobSetup()
+        evalGcode = evaluateGCode.evaluateGcode()
+        NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.2 # precision of simulation be careful here because of memory consumption
+        SIMPRECISION = 0.1 # precision of simulation be careful here because of memory consumption
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -88,15 +92,22 @@ def main():
 
         G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
 
-        with open(inputf) as fidO:
-            # write header
-            stockDimStr = JobS.getStockDimensionStr()
-            bedDimStr = JobS.getBedDimensionStr()
-            homePosStr = JobS.getHomePosStr()
+        flNC = open(inputf, 'r')
+        NCBlock = NCFileR.getNCBlock(flNC, blocklength=10)
+        flNC.close()
+        LayerWidthMachine = ExUtil.getInitialLayerWidth(NCBlock)
 
-            CLWriter.writeNCCode(stockDimStr)
-            CLWriter.writeNCCode(bedDimStr)
-            CLWriter.writeNCCode(homePosStr)
+
+        # write header
+        stockDimStr = JobS.getStockDimensionStr()
+        homePosStr = JobS.getHomePosStr()
+
+        CLWriter.writeNCCode(stockDimStr)
+        CLWriter.writeNCCode('ADDITIVEBOX') # place holder
+        CLWriter.writeNCCode(homePosStr)
+
+        with open(inputf) as fidO:
+
 
             # start reading g-Code file
             # -----
@@ -118,8 +129,7 @@ def main():
                 # check if layer thickness changed during z-level change
                 pos = line.find('Z')
                 if pos != -1:
-                    # TODO automatic detection of white space
-                    zValForerun = float(line[pos+1:pos+8]) # get z value
+                    zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space i line string
                     LayerThicknessForerun = zValForerun - zValMachine
                     if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:
                         geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
@@ -156,13 +166,23 @@ def main():
                     line = StrManipulate.insertWS(line, 'Y')
                     line = StrManipulate.insertWS(line, 'Z')
                     if lineC[0:2] == 'G1':
-                        # if len(line) > 5: # feed rate move
                         CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                        evalGcode.saveAxValLimits('X', lineC)
+                        evalGcode.saveAxValLimits('Y', lineC)
+
                     elif lineC[0:2] == 'G0': # rapid move
-                        # if len(line) > 5:
                         CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                        evalGcode.saveAxValLimits('Z', lineC)
 
         CLWriter.closeNCFile() # close CL writer and close CL file
+
+        AdditiveBoxDim = evalGcode.getSavedAxLimits()
+        partDimStr = JobS.getPartDimensionStr(PARTDEFINITION=[AdditiveBoxDim[0]['X'], AdditiveBoxDim[0]['Y'],
+                                                              AdditiveBoxDim[0]['Z'], AdditiveBoxDim[1]['X'],
+                                                              AdditiveBoxDim[1]['Y'], AdditiveBoxDim[1]['Z']])
+
+        for line in fileinput.input(outputf, inplace = 1):
+            print line.replace("ADDITIVEBOX", partDimStr),
 
         print 'Done. CL file written - > ' + outputf
 

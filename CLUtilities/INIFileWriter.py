@@ -1,11 +1,11 @@
 ########################################################################################################################
 # INI File Writer
 ########################################################################################################################
+
+import G2CLogging
+
 __author__ = 'Mathias Rohler'
 __version__= 1.0
-
-import logging
-import G2CLogging
 
 class CLFileWriter:
     def __init__(self, filename='clfile.cl'):
