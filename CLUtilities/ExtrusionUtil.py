@@ -13,7 +13,11 @@ class ExtrusionUtil():
 
     # ------------------------------------------------------------------------------------------------------------------
     def getCoordinates(self, NCline):
-        """extract X,Y,Z,F,E coordinates from NCline when available"""
+        """
+        extract X,Y,Z,F,E coordinates from NCline when available
+        :param NCline:
+        :return:
+        """
 
         posG = NCline.find('G')
         posX = NCline.find('X')
@@ -42,7 +46,7 @@ class ExtrusionUtil():
             if NCline[posZ:].find(' ') != -1:
                 valZ1 = float(NCline[posZ+1:NCline[posZ:].find(' ') + posZ])
             else:
-                valZ1 = float(NCline[posZ+1:NCline[posZ:]])
+                valZ1 = float(NCline[posZ+1:])
         else:
             valZ1 = None
 
@@ -66,18 +70,25 @@ class ExtrusionUtil():
 
     # ------------------------------------------------------------------------------------------------------------------
     def getExtrusionLength(self, XYpairs):
+        """
+        :param XYpairs:
+        :return:
+        """
         pass
 
     # ------------------------------------------------------------------------------------------------------------------
     def getMoveLength(self, valX, valY):
-
+        """
+        :param valX:
+        :param valY:
+        :return:
+        """
         moveLength = pow(pow((valX[1] - valX[0]), 2) + pow((valY[1] - valY[0]), 2), 0.5)
 
         return moveLength
 
     # ------------------------------------------------------------------------------------------------------------------
     def getExtrusionParams(self, line, lineLloop, LayerThicknessT):
-
         """
         calculate all important parameters from gcode input.
             Layer width, thickness, radius from circle elements outside the extrusion line
@@ -115,19 +126,35 @@ class ExtrusionUtil():
 
     # ------------------------------------------------------------------------------------------------------------------
     def calcLayerThickness(self, NCData):
+        """
+        :param NCData:
+        :return:
+        """
         for i in range(len(NCData)):
             if NCData[i][3] is not None:
                 LayerThickness = NCData[i][3]
+            else:
+                LayerThickness = None
 
         return LayerThickness
 
     # ------------------------------------------------------------------------------------------------------------------
     def getOverlap(self, ExtrusionVolume, LayerWidth):
+        """
+        :param ExtrusionVolume:
+        :param LayerWidth:
+        :return:
+        """
         overlap = None
         return overlap
 
     # ------------------------------------------------------------------------------------------------------------------
     def getExtrusionDelta(self, E1, E2):
+        """
+        :param E1:
+        :param E2:
+        :return:
+        """
         if E2 is not None and E1 is not None:
             EDelta = E2 - E1
         else:
@@ -137,7 +164,11 @@ class ExtrusionUtil():
 
     # ------------------------------------------------------------------------------------------------------------------
     def getInitialLayerWidth(self, NCBlock, LayerThickness=0.2):
-        """get initial Layer width"""
+        """
+        :param NCBlock:
+        :param LayerThickness:
+        :return:
+        """
         NCData = []
         arrayMoveLength = []
         arrayEDelta= []
@@ -146,7 +177,9 @@ class ExtrusionUtil():
             # split up NClineand store G,X,Y,Z,F,E data
             NCData.append(self.getCoordinates(i))
 
-        LayerThickness = self.calcLayerThickness(NCData)
+        LayerThicknessAnswer = self.calcLayerThickness(NCData)
+        if LayerThicknessAnswer is not None:
+            LayerThickness = LayerThicknessAnswer
 
         for i in range(1, len(NCData)):
             arrayMoveLength.append(self.getMoveLength([NCData[i-1][1], NCData[i][1]], [NCData[i-1][2], NCData[i][2]]))
@@ -163,6 +196,43 @@ class ExtrusionUtil():
                 LayerWidth += x + LayerThickness
 
         initialLayerWidth = LayerWidth / numCalc
+
         print initialLayerWidth
 
         return initialLayerWidth
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def getInitialExtrusionVal(self, NCBlock):
+        """
+        :param NCBlock:
+        :return:
+        """
+        for NCline in NCBlock:
+            pos = NCline.find('E')
+            if pos != -1:
+                if NCline[pos:].find(' ') != -1:
+                    valE = float(NCline[pos+1:NCline[pos:].find(' ') + pos])
+                else:
+                    valE = float(NCline[pos+1:])
+                break
+
+        return valE
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def getExtrusionVal(line, NCline):
+        """
+        :param NCline:
+        :return:
+        """
+        pos = NCline.find('E')
+        if NCline[pos:].find(' ') != -1:
+            valE = float(NCline[pos+1:NCline[pos:].find(' ') + pos])
+        else:
+            valE = float(NCline[pos+1:])
+
+        return valE
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def getLayerWidth(self, NCline, LayerThickness=0.2 ):
+        pass
+

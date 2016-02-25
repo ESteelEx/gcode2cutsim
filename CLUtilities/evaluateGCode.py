@@ -48,3 +48,9 @@ class evaluateGcode:
         if axToSave not in self.minAxVal:
             # value is random set. Needs to be a value that will never be reached by machine
             self.minAxVal[axToSave] = 100000
+
+    def proofZlevelChange(self, NCline):
+        return False
+
+    def getCurrentMachinePos(self, NCLine):
+        pass

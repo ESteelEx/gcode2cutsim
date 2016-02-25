@@ -8,7 +8,9 @@ class NCFileReader:
     def __init__(self):
         pass
 
-    def getNCBlock(self, NCfileHandler, blocklength=10):
+    def getNCBlock(self, NCfileHandler, blocklength=10, rewindHandler=False):
+        # get current file position
+        filePos = NCfileHandler.tell()
         # NC forerun to get initial layer width
         loopCounter = 0
         NCBlock = []
@@ -20,4 +22,7 @@ class NCFileReader:
             if loopCounter == blocklength:
                 break
 
-        return NCBlock
+        if rewindHandler:
+            NCfileHandler.seek(filePos)
+
+        return NCBlock, NCfileHandler

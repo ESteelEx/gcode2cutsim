@@ -87,19 +87,19 @@ def main():
         zValMachine = 0
         LayerThickness = 0
         ExtrusionLineOverlap = 0.15 # percent
-        LayerWidthMachine = 0.48
         lineLloop = None
 
         G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
 
         # open NC file reader and get a block of code
-        flNC = open(inputf, 'r')
-        NCBlock = NCFileR.getNCBlock(flNC, blocklength=5) # get NC block code
+        flNC = open(inputf, 'r') # read only
+        NCBlock, flNC = NCFileR.getNCBlock(flNC, blocklength=5) # get NC block code
         flNC.close()
 
-        # get initial layer width. To calculate initial LW we need a few lines o code.
+        # get initial layer width. To calculate initial LW we need a few lines of code.
         # At least 2 consecutive G1 moves with extrusion value.
         LayerWidthMachine = ExUtil.getInitialLayerWidth(NCBlock)
+        currentExtrusionVal = ExUtil.getInitialExtrusionVal(NCBlock)
 
         # write header
         stockDimStr = JobS.getStockDimensionStr()
@@ -128,6 +128,8 @@ def main():
                 if line[0] == ';': # cancel/go back to loop if line is commented
                     continue
 
+                # zLevelChange = evalGcode.proofZlevelChange(line) # True or False
+
                 # check if layer thickness changed during z-level change
                 pos = line.find('Z')
                 if pos != -1:
@@ -138,7 +140,7 @@ def main():
                                                                          LayerWidth=LayerWidthMachine,
                                                                          ELOverlap=ExtrusionLineOverlap)
                         CLWriter.writeToolChange(geometryStr)
-                        LayerThickness = 0.48 # LayerThicknessForerun
+                        LayerThickness = LayerThicknessForerun
                     zValMachine = zValForerun
 
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
@@ -146,18 +148,23 @@ def main():
                     if lineLloop is not None and LayerThicknessForerun != 0:
                         x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
 
-                        if numpy.isclose(LayerWidthMachine, LayerWidth, 0.1) is False:
+                        if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:
                             geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                              LayerWidth=LayerWidth,
                                                                              ELOverlap=ExtrusionLineOverlap)
                             if geometryStr is not None:
-                                pass
-                                # CLWriter.writeToolChange(geometryStr)
+                                CLWriter.writeToolChange(geometryStr)
 
-                        LayerWidthMachine = 0.48 #LayerWidth
+                        LayerWidthMachine = LayerWidth
                         lineLloop = line
+                        currentExtrusionVal = ExUtil.getExtrusionVal(line)
                     else:
                         lineLloop = line
+
+                # get current positions and extrusion values
+                currentMachinePos = ExUtil.getCoordinates(line)
+                if currentMachinePos is not None:
+                    currentMachinePos = (currentMachinePos[1], currentMachinePos[2])
 
                 # write g-code to cutsim format
                 if startParsing == True:
