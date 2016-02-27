@@ -233,6 +233,31 @@ class ExtrusionUtil():
         return valE
 
     # ------------------------------------------------------------------------------------------------------------------
-    def getLayerWidth(self, NCline, LayerThickness=0.2 ):
-        pass
+    def getLayerWidth(self, currentMachinePos, forerunMachinePos, currentExtrusionVal, forerunExtrusionVal, LayerThickness ):
+        """
+        :param ExtrusionVal:
+        :param LayerThickness:
+        :return:
+        """
+
+        moveLength = self.getMoveLength(currentMachinePos, forerunMachinePos)
+        ExtrusionDelta = self.getExtrusionDelta(currentExtrusionVal, forerunExtrusionVal)
+
+        print moveLength
+        print ExtrusionDelta
+
+        if moveLength != 0:
+            areaExtrusionLine = ExtrusionDelta / moveLength
+            areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThickness/2)**2))
+            x = (areaExtrusionLineRect / LayerThickness)
+            LayerWidth = x + LayerThickness
+        else:
+            LayerWidth = 0
+
+        print LayerThickness
+        print LayerWidth
+
+        print '-'*20
+
+        return LayerWidth
 

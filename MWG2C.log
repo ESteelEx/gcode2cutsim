@@ -1,9 +1,15 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-02-25 18:46:34.018000
+INFO:MWG2C:** Logging started @ : 2016-02-26 17:26:46.871000
 INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting G2C conversion ... @ : 2016-02-25 18:46:34.018000
-INFO:MWG2C:Additivebox calculated @ : 2016-02-25 18:46:37.259000
-INFO:MWG2C:All jobs done ... @ : 2016-02-25 18:46:37.361000
-INFO:MWG2C:** Logging stopped @ : 2016-02-25 18:46:37
+INFO:MWG2C:Starting G2C conversion ... @ : 2016-02-26 17:26:46.876000
+ERROR:MWG2C:Traceback (most recent call last):
+ERROR:MWG2C:  File "D:/Development/GitRep/gcode2cutsim/gcode2cutsim.py", line 157, in main
+ERROR:MWG2C:    LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal, forerunExtrusionVal, LayerThicknessForerun)
+ERROR:MWG2C:  File "D:\Development\GitRep\gcode2cutsim\CLUtilities\ExtrusionUtil.py", line 243, in getLayerWidth
+ERROR:MWG2C:    moveLength = self.getMoveLength(currentMachinePos, forerunMachinePos)
+ERROR:MWG2C:  File "D:\Development\GitRep\gcode2cutsim\CLUtilities\ExtrusionUtil.py", line 86, in getMoveLength
+ERROR:MWG2C:    moveLength = pow(pow((valX[1] - valX[0]), 2) + pow((valY[1] - valY[0]), 2), 0.5)
+ERROR:MWG2C:TypeError: 'NoneType' object has no attribute '__getitem__'
+INFO:MWG2C:** Logging stopped @ : 2016-02-26 17:26:47

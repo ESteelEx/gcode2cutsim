@@ -146,7 +146,15 @@ def main():
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
                 if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over 10
                     if lineLloop is not None and LayerThicknessForerun != 0:
-                        x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
+                        # x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
+
+                        # get current positions and extrusion values
+                        forerunMachinePos = ExUtil.getCoordinates(line)
+                        if forerunMachinePos is not None:
+                            forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
+
+                        forerunExtrusionVal = ExUtil.getExtrusionVal(line)
+                        LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal, forerunExtrusionVal, LayerThicknessForerun)
 
                         if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:
                             geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
@@ -161,10 +169,10 @@ def main():
                     else:
                         lineLloop = line
 
-                # get current positions and extrusion values
+                # get current machine position from NC line
                 currentMachinePos = ExUtil.getCoordinates(line)
                 if currentMachinePos is not None:
-                    currentMachinePos = (currentMachinePos[1], currentMachinePos[2])
+                    currentMachinePos = (currentMachinePos[1], currentMachinePos[2]) # X,Y
 
                 # write g-code to cutsim format
                 if startParsing == True:
