@@ -22,7 +22,7 @@ class Tools:
         getcontext().prec = 4 # set precision for decimal class
 
         R = Decimal(LayerThickness) / 2
-        x = Decimal(LayerWidth) - 2 * Decimal(R)
+        x = (Decimal(LayerWidth) - 2 * Decimal(R)) / 2
         xWithOverlap = Decimal(x) + (Decimal(x) * Decimal(ELOverlap))
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 

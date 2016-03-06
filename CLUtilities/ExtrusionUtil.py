@@ -77,13 +77,14 @@ class ExtrusionUtil():
         pass
 
     # ------------------------------------------------------------------------------------------------------------------
-    def getMoveLength(self, valX, valY):
+    def getMoveLength(self, pos1, pos2):
         """
         :param valX:
         :param valY:
         :return:
         """
-        moveLength = pow(pow((valX[1] - valX[0]), 2) + pow((valY[1] - valY[0]), 2), 0.5)
+
+        moveLength = pow(pow((pos1[0] - pos2[0]), 2) + pow((pos1[1] - pos2[1]), 2), 0.5)
 
         return moveLength
 
@@ -243,9 +244,6 @@ class ExtrusionUtil():
         moveLength = self.getMoveLength(currentMachinePos, forerunMachinePos)
         ExtrusionDelta = self.getExtrusionDelta(currentExtrusionVal, forerunExtrusionVal)
 
-        print moveLength
-        print ExtrusionDelta
-
         if moveLength != 0:
             areaExtrusionLine = ExtrusionDelta / moveLength
             areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThickness/2)**2))
@@ -253,11 +251,6 @@ class ExtrusionUtil():
             LayerWidth = x + LayerThickness
         else:
             LayerWidth = 0
-
-        print LayerThickness
-        print LayerWidth
-
-        print '-'*20
 
         return LayerWidth
 

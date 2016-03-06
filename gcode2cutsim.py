@@ -47,7 +47,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.1 # precision of simulation be careful here because of memory consumption
+        SIMPRECISION = 0.1 # precision of simulation be careful here / memory consumption
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -83,11 +83,17 @@ def main():
         # open and create CL file
         CLWriter.openCLFile()
 
+        # initialize const
+        # ------------------------------------------------------------------------------------------------------------
         startParsing = False
         zValMachine = 0
         LayerThickness = 0
-        ExtrusionLineOverlap = 0.15 # percent
+        # EXTRUSIONLINEOVERLAP = 0 # [mm]
+        ExtrusionLineOverlap = 0 # percent
+        # EXTENDADDITIVEBOX = 1 # [mm]
+        extendAdditiveBox = 1 # [mm]
         lineLloop = None
+        # ------------------------------------------------------------------------------------------------------------
 
         G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
 
@@ -133,7 +139,7 @@ def main():
                 # check if layer thickness changed during z-level change
                 pos = line.find('Z')
                 if pos != -1:
-                    zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space i line string
+                    zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space in line string
                     LayerThicknessForerun = zValForerun - zValMachine
                     if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:
                         geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
@@ -144,7 +150,7 @@ def main():
                     zValMachine = zValForerun
 
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
-                if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over 10
+                if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over and equal 10
                     if lineLloop is not None and LayerThicknessForerun != 0:
                         # x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
 
@@ -154,7 +160,8 @@ def main():
                             forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
 
                         forerunExtrusionVal = ExUtil.getExtrusionVal(line)
-                        LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal, forerunExtrusionVal, LayerThicknessForerun)
+                        LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal,
+                                                          forerunExtrusionVal, LayerThicknessForerun)
 
                         if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:
                             geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
@@ -169,10 +176,12 @@ def main():
                     else:
                         lineLloop = line
 
-                # get current machine position from NC line
-                currentMachinePos = ExUtil.getCoordinates(line)
-                if currentMachinePos is not None:
-                    currentMachinePos = (currentMachinePos[1], currentMachinePos[2]) # X,Y
+                if line[0:3] == "G1 " or line[0:3] == 'G0 ':
+                    # get current machine position from NC line
+                    currentMachinePos = ExUtil.getCoordinates(line)
+                    if currentMachinePos is not None:
+                        currentMachinePos = (currentMachinePos[1], currentMachinePos[2]) # X,Y
+
 
                 # write g-code to cutsim format
                 if startParsing == True:
@@ -195,9 +204,10 @@ def main():
         CLWriter.closeNCFile() # close CL writer and close CL file
 
         AdditiveBoxDim = evalGcode.getSavedAxLimits()
-        partDimStr = JobS.getPartDimensionStr(PARTDEFINITION=[AdditiveBoxDim[0]['X'], AdditiveBoxDim[0]['Y'],
-                                                              AdditiveBoxDim[0]['Z'], AdditiveBoxDim[1]['X'],
-                                                              AdditiveBoxDim[1]['Y'], AdditiveBoxDim[1]['Z']])
+
+        partDimStr = JobS.getPartDimensionStr(PARTDEFINITION=[AdditiveBoxDim[0]['X'] - extendAdditiveBox, AdditiveBoxDim[0]['Y'] - extendAdditiveBox,
+                                                              AdditiveBoxDim[0]['Z'] - extendAdditiveBox, AdditiveBoxDim[1]['X'] + extendAdditiveBox,
+                                                              AdditiveBoxDim[1]['Y'] + extendAdditiveBox, AdditiveBoxDim[1]['Z'] + extendAdditiveBox])
 
         for line in fileinput.input(outputf, inplace = 1):
             print line.replace("ADDITIVEBOX", partDimStr),
