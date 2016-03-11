@@ -11,10 +11,9 @@ __author__ = 'mathiasr'
 # ----------------------------------------------------------------------------------------------------------------------
 def start_3DPrintJob():
     print 'starting printer job'
-    command = 'bin/3DPrintModule/mw3DPrinter32.exe'
-    params = ''
+    command = 'bin/3DPrintModule/mw3DPrinter.exe'
+    params = 'A380_scaled.stl'
     abscommand = os.path.abspath(command)
-    abs
     dict = shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
 
     hh = dict['hProcess']

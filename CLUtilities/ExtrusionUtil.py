@@ -176,7 +176,9 @@ class ExtrusionUtil():
         LayerWidth = 0
         for i in NCBlock:
             # split up NClineand store G,X,Y,Z,F,E data
-            NCData.append(self.getCoordinates(i))
+            coordinates = self.getCoordinates(i)
+            if coordinates is not None:
+                NCData.append(coordinates)
 
         LayerThicknessAnswer = self.calcLayerThickness(NCData)
         if LayerThicknessAnswer is not None:
@@ -197,8 +199,6 @@ class ExtrusionUtil():
                 LayerWidth += x + LayerThickness
 
         initialLayerWidth = LayerWidth / numCalc
-
-        print initialLayerWidth
 
         return initialLayerWidth
 

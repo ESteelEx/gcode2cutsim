@@ -7,7 +7,7 @@ gcode2cutsim parser -> cutsim can read gcode data now.
 __author__ = 'mathiasr'
 __version__= 1.0
 
-import sys, os, win32con, numpy
+import sys, os, win32con, numpy, warnings
 import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
 # from decimal import *
@@ -20,6 +20,7 @@ from CLUtilities import StrManipulator
 from CLUtilities import evaluateGCode
 from CLUtilities import NCFileReader
 
+warnings.filterwarnings("ignore")
 
 def startVerification(CLFile, NCiniFile):
     """starting Verification"""
@@ -47,7 +48,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.1 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.2 # precision of simulation be careful here / memory consumption
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -89,7 +90,7 @@ def main():
         zValMachine = 0
         LayerThickness = 0
         # EXTRUSIONLINEOVERLAP = 0 # [mm]
-        ExtrusionLineOverlap = 0 # percent
+        ExtrusionLineOverlap = 0.15 # percent
         # EXTENDADDITIVEBOX = 1 # [mm]
         extendAdditiveBox = 1 # [mm]
         lineLloop = None
@@ -99,7 +100,7 @@ def main():
 
         # open NC file reader and get a block of code
         flNC = open(inputf, 'r') # read only
-        NCBlock, flNC = NCFileR.getNCBlock(flNC, blocklength=5) # get NC block code
+        NCBlock, flNC = NCFileR.getNCBlock(flNC, blocklength=15) # get NC block code
         flNC.close()
 
         # get initial layer width. To calculate initial LW we need a few lines of code.
