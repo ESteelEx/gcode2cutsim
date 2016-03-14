@@ -1,8 +1,8 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-03-11 16:20:23.753000
-INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim/MWG2C.log
+INFO:MWG2C:** Logging started @ : 2016-03-12 11:47:57.025000
+INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:G-Code Evaluation started @ : 2016-03-11 16:20:23.753000
-INFO:MWG2C:File selection canceled ... Nothing to process @ : 2016-03-11 16:20:26.293000
-INFO:MWG2C:** Logging stopped @ : 2016-03-11 16:20:26
+INFO:MWG2C:G-Code Evaluation started @ : 2016-03-12 11:47:57.025000
+INFO:MWG2C:File selection canceled ... Nothing to process @ : 2016-03-12 11:48:03.772000
+INFO:MWG2C:** Logging stopped @ : 2016-03-12 11:48:03

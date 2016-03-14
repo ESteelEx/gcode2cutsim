@@ -48,7 +48,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.2 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.5 # precision of simulation be careful here / memory consumption
 
         # get all input parameters from user
         inputParams = sys.argv
