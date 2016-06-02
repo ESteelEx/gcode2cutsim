@@ -27,7 +27,7 @@ class TestStage(threading.Thread):
     # ------------------------------------------------------------------------------------------------------------------
     def run(self):
         try:
-            self.start3DPrintJob()
+            self.start3DPrintJob(self.fileName)
             print 'TS<=: COMPARING ' + bcolors.WARNING
             if os.path.isfile(self.path + self.fileName[:-3] + 'gcode') and  \
                     os.path.isfile(self.WORKINGDIR + self.RELATIVEFODLERTOCOMPARE + self.fileName[:-3] + 'gcode'):
@@ -35,37 +35,51 @@ class TestStage(threading.Thread):
                 answer = filecmp.cmp(self.WORKINGDIR + self.RELATIVEFODLERTOCOMPARE + self.fileName[:-3] + 'gcode',
                                      self.path + self.fileName[:-3] + 'gcode')
 
-
-
                 if answer:
                     print bcolors.OKGREEN + 'TS<=: NO CHANGES'
                 else:
                     print bcolors.WARNING + 'TS<=: CHANGES'
 
         except:
-            pass
+            raise
 
         print '' + bcolors.HEADER
 
-        return 0
+        return
 
     # ----------------------------------------------------------------------------------------------------------------------
-    def start3DPrintJob(self):
+    def start3DPrintJob(self, stl_file):
+        """
+
+        :return:
+        """
+
         command = 'bin/3DPrintModule/mw3DPrinter.exe'
-        abscommand = os.path.abspath(command)
+        #abscommand = os.path.abspath(command)
         startTime = time.time()
-        FNULL = open(os.devnull, 'w')
-        p = subprocess.Popen(abscommand + ' ' + self.path + self.fileName, stdout=FNULL, stderr=subprocess.STDOUT).wait()
+        #FNULL = open(os.devnull, 'w')
+        #p = subprocess.Popen(abscommand + ' ' + self.path + self.fileName, stdout=FNULL, stderr=subprocess.STDOUT).wait()
+
+        abscommand = os.path.abspath(command)
+
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
+
+        output = subprocess.Popen(abscommand, startupinfo=startupinfo, stdout=subprocess.PIPE,
+                                  stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
+
+        output = output[0].strip()  # filter version number from output
 
         stopTime = time.time()
         delta = stopTime - startTime
         print 'TS<=: Duration: ' + str(delta) + ' sec' + ' -> ' + self.fileName
 
+        return output
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
 
-    print 'TESTING STAGE INITIALIZING ...  ' + bcolors.HEADER
+    print 'MW 3DPRINTER STAGE INITIALIZING ...  ' # + bcolors.HEADER
 
     _MAXTHREADS = 5
     _RELATIVEFOLDERTESTFILES = 'bin\\3DPrintModule\\'
@@ -103,14 +117,13 @@ def main():
                     if jj >= len(test_file_list):
                         break
 
+            print '<ALL THREADS AND TESTING STAGE RUNNING>'
+
         else:
             if not os.path.isfile(sys.argv[1]):
-                print 'no such STL file -> ' + str(sys.argv[1])
+                print 'No such STL file -> "' + str(sys.argv[1]) + '" ... Please proof INPUT'
             else:
-                TestStage(sys.argv[1]).start3DPrintJob()
-
-
-    print '<ALL THREADS AND TESTING STAGE RUNNING>'
+                TestStage(sys.argv[1]).start3DPrintJob(sys.argv[1])
 
 
 

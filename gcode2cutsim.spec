@@ -1,6 +1,6 @@
 # -*- mode: python -*-
 a = Analysis(['gcode2cutsim.py'],
-             pathex=['C:\\Users\\ModuleWoks\\Documents\\Development\\GitRep\\gcode2cutsim'],
+             pathex=['D:\\Development\\GitRep\\gcode2cutsim'],
              hiddenimports=[],
              hookspath=None,
              runtime_hooks=None)

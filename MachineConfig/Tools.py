@@ -19,6 +19,10 @@ class Tools:
         geometrieStr: complete NC string to be used for CL file
         """
 
+        LayerThickness = 0.2
+        LayerWidth = 0.3
+        ELOverlap = 0
+
         getcontext().prec = 4 # set precision for decimal class
 
         R = Decimal(LayerThickness) / 2
@@ -27,8 +31,9 @@ class Tools:
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
         if xWithOverlap >= 0:
-            geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + str(Decimal(RWithOverlap)) \
-                          + ' astart 270 asweep 180'
+            geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
+                          str(Decimal(RWithOverlap)) + \
+                          ' astart 270 asweep 180'
         else:
             geometryStr = None
 

@@ -20,22 +20,26 @@ from CLUtilities import StrManipulator
 from CLUtilities import evaluateGCode
 from CLUtilities import NCFileReader
 
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
 
 def startVerification(CLFile, NCiniFile):
     """starting Verification"""
-    command = 'bin/Verifier/VerifierApplicationSample.exe'
-    params = ' ' + NCiniFile
+    command = '/bin/Verifier/VerifierApplicationSample.exe'
+    abscommand = os.getcwd() + command
+    params = NCiniFile
+    print 'Opening ' + abscommand + ' with ' + NCiniFile
 
-    startupinfo = subprocess.STARTUPINFO()
-    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
 
-    subprocess.Popen(command + params, startupinfo=startupinfo)
     shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
-
+    """
+    gcode2cutsim needs to be compiled to executable to
+    :return: Nothing
+    """
     G2CLOG = G2CLogging.G2CLogging() # start logger
 
     try:
@@ -48,7 +52,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.5 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.05 # precision of simulation be careful here / memory consumption
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -142,7 +146,7 @@ def main():
                 if pos != -1:
                     zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space in line string
                     LayerThicknessForerun = zValForerun - zValMachine
-                    if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:
+                    if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:  # check if in tolerance after subtraction
                         geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                          LayerWidth=LayerWidthMachine,
                                                                          ELOverlap=ExtrusionLineOverlap)
@@ -164,7 +168,7 @@ def main():
                         LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal,
                                                           forerunExtrusionVal, LayerThicknessForerun)
 
-                        if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:
+                        if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:  # check if in tolerance after subtraction
                             geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                              LayerWidth=LayerWidth,
                                                                              ELOverlap=ExtrusionLineOverlap)
