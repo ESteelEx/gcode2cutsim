@@ -19,8 +19,8 @@ class Tools:
         geometrieStr: complete NC string to be used for CL file
         """
 
-        LayerThickness = 0.2
-        LayerWidth = 0.3
+        LayerThickness = 0.15
+        LayerWidth = 0.2
         ELOverlap = 0
 
         getcontext().prec = 4 # set precision for decimal class

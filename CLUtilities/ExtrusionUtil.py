@@ -198,7 +198,10 @@ class ExtrusionUtil():
                 x = (areaExtrusionLineRect / LayerThickness)
                 LayerWidth += x + LayerThickness
 
-        initialLayerWidth = LayerWidth / numCalc
+        if numCalc == 0:
+            initialLayerWidth = LayerWidth / 1
+        else:
+            initialLayerWidth = LayerWidth / numCalc
 
         return initialLayerWidth
 
@@ -216,6 +219,8 @@ class ExtrusionUtil():
                 else:
                     valE = float(NCline[pos+1:])
                 break
+            else:
+                valE = 1
 
         return valE
 
@@ -226,10 +231,14 @@ class ExtrusionUtil():
         :return:
         """
         pos = NCline.find('E')
-        if NCline[pos:].find(' ') != -1:
-            valE = float(NCline[pos+1:NCline[pos:].find(' ') + pos])
+
+        if pos != -1:
+            if NCline[pos:].find(' ') != -1:
+                valE = float(NCline[pos+1:NCline[pos:].find(' ') + pos])
+            else:
+                valE = float(NCline[pos+1:])
         else:
-            valE = float(NCline[pos+1:])
+            valE = 1  # work around for SLM process. Here the extrusion rate is missing.
 
         return valE
 

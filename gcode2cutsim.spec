@@ -1,22 +1,42 @@
+import shutil, psutil
+
+for proc in psutil.process_iter():
+    try:
+        if proc.name() == 'gcode2cutsim.exe':
+            try:
+                proc.kill()
+            except:
+                pass
+    except:
+        pass
+
 # -*- mode: python -*-
 a = Analysis(['gcode2cutsim.py'],
-             pathex=['D:\\Development\\GitRep\\gcode2cutsim'],
-             hiddenimports=[],
-             hookspath=None,
-             runtime_hooks=None)
+              pathex=['.'], 
+              hiddenimports=[], 
+              hookspath=None, 
+              runtime_hooks=None) 
+a.datas.append(('cacert.pem', 'cacert.pem', 'DATA')) 
+
+for d in a.datas:
+    if 'pyconfig' in d[0]:
+        a.datas.remove(d)
+        break
+
 pyz = PYZ(a.pure)
-exe = EXE(pyz,
-          a.scripts,
-          exclude_binaries=True,
-          name='gcode2cutsim.exe',
-          debug=False,
-          strip=None,
-          upx=True,
-          console=True )
-coll = COLLECT(exe,
-               a.binaries,
-               a.zipfiles,
-               a.datas,
-               strip=None,
-               upx=True,
-               name='gcode2cutsim')
+exe = EXE( 
+    pyz, 
+    a.scripts, 
+    a.binaries, 
+    a.zipfiles, 
+    a.datas, 
+    name=os.path.join('dist', 'gcode2cutsim.exe'),
+    debug=False, 
+    strip=None, 
+    upx=True, 
+    console=False,
+    icon='dat\\images\\icon.ico' )
+
+if os.path.isfile('getdaily.exe'):
+    os.remove('getdaily.exe')
+    shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsim.exe')
