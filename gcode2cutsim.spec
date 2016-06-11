@@ -16,7 +16,7 @@ a = Analysis(['gcode2cutsim.py'],
               hiddenimports=[], 
               hookspath=None, 
               runtime_hooks=None) 
-a.datas.append(('cacert.pem', 'cacert.pem', 'DATA')) 
+# a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
 
 for d in a.datas:
     if 'pyconfig' in d[0]:
@@ -34,9 +34,9 @@ exe = EXE(
     debug=False, 
     strip=None, 
     upx=True, 
-    console=False,
-    icon='dat\\images\\icon.ico' )
+    console=False )
+    # icon='dat\\images\\icon.ico' )
 
-if os.path.isfile('getdaily.exe'):
-    os.remove('getdaily.exe')
+if os.path.isfile('gcode2cutsim.exe'):
+    os.remove('gcode2cutsim.exe')
     shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsim.exe')

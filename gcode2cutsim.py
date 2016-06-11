@@ -10,6 +10,7 @@ __version__= 1.0
 import sys, os, win32con, numpy, warnings
 import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
+
 # from decimal import *
 from CLUtilities import G2CLogging
 from MachineConfig import Tools
