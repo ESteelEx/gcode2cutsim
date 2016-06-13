@@ -38,7 +38,7 @@ def startVerification(CLFile, NCiniFile):
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
     """
-    gcode2cutsim needs to be compiled to executable to
+    gcode2cutsim needs to be compiled to exe
     :return: Nothing
     """
     G2CLOG = G2CLogging.G2CLogging() # start logger
@@ -118,7 +118,9 @@ def main():
         homePosStr = JobS.getHomePosStr()
 
         CLWriter.writeNCCode(stockDimStr)
-        CLWriter.writeNCCode('ADDITIVEBOX') # place holder. We replace this line with calculated part dimensions. We know them after every line from G-Code is procecssed. We use this line to find the right line to replace
+        CLWriter.writeNCCode('ADDITIVEBOX') # place holder. We replace this line with calculated part dimensions.
+                                            # We know them after every line from G-Code is procecssed.
+                                            # We use this line to find the right line to replace
         CLWriter.writeNCCode(homePosStr)
 
         with open(inputf) as fidO:

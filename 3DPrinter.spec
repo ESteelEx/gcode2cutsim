@@ -16,7 +16,7 @@ a = Analysis(['3DPrinter.py'],
               hiddenimports=[], 
               hookspath=None, 
               runtime_hooks=None) 
-a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
+# a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
 
 for d in a.datas:
     if 'pyconfig' in d[0]:
@@ -34,9 +34,11 @@ exe = EXE(
     debug=False, 
     strip=None, 
     upx=True, 
-    console=False,
-    icon='dat\\images\\icon.ico' )
+    console=True )
+    # icon='dat\\images\\icon.ico' )
 
-if os.path.isfile('getdaily.exe'):
-    os.remove('getdaily.exe')
+if os.path.isfile('3DPrinter.exe'):
+    os.remove('3DPrinter.exe')
+    shutil.copy('dist\\3DPrinter.exe', '3DPrinter.exe')
+else:
     shutil.copy('dist\\3DPrinter.exe', '3DPrinter.exe')
