@@ -2,30 +2,107 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="da80087b-afc7-4a42-9999-ebcdcc823c9f" name="Default" comment="- Teststage ... To be disconneced from gcode2cutsim&#10;">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Utilities/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Utilities/console.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Utilities/help.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Utilities/ini_worker.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/3DPrintModule/MW_Logo.gcode" afterPath="$PROJECT_DIR$/bin/3DPrintModule/MW_Logo.gcode" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/3DPTestStage.exe" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/3DPTestStage.exe.manifest" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/Microsoft.VC90.CRT.manifest" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/Microsoft.VC90.MFC.manifest" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/_hashlib.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/_socket.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/_ssl.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/_win32sysloader.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/bz2.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/include/pyconfig.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/mfc90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/mfc90u.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/mfcm90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/mfcm90u.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/msvcm90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/msvcp90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/msvcr90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/python27.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/pythoncom27.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/pywintypes27.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/select.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/unicodedata.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/win32api.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/win32com.shell.shell.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/win32event.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/win32trace.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/3DPrinterTeststage/win32ui.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/Include/pyconfig.h" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/Microsoft.VC90.CRT.manifest" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/Microsoft.VC90.MFC.manifest" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/_ctypes.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/_hashlib.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/_multiprocessing.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/_socket.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/_ssl.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/_win32sysloader.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/bz2.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/gcode2cutsim.exe" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/gcode2cutsim.exe.manifest" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/mfc90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/mfc90u.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/mfcm90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/mfcm90u.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/msvcm90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/msvcp90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/msvcr90.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/numpy.core.multiarray.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/numpy.core.umath.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/numpy.fft.fftpack_lite.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/numpy.linalg._umath_linalg.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/numpy.linalg.lapack_lite.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/numpy.random.mtrand.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/pyexpat.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/python27.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/pythoncom27.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/pywintypes27.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/select.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/unicodedata.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/win32api.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/win32com.shell.shell.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/win32pdh.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/win32pipe.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/win32trace.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/win32ui.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wx._controls_.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wx._core_.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wx._gdi_.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wx._misc_.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wx._windows_.pyd" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wxbase30u_net_vc90_x64.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wxbase30u_vc90_x64.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wxmsw30u_adv_vc90_x64.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wxmsw30u_core_vc90_x64.dll" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/dist/gcode2cutsim/wxmsw30u_html_vc90_x64.dll" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-PKG.pkg" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-PKG.pkg" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-PYZ.pyz" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-PYZ.pyz" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/gcode2cutsim.exe" afterPath="$PROJECT_DIR$/build/gcode2cutsim/gcode2cutsim.exe" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-PKG.pkg" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-PKG.pkg" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-PYZ.pyz" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-PYZ.pyz" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/gcode2cutsim.iml" afterPath="$PROJECT_DIR$/.idea/gcode2cutsim.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/3DPrinter.py" afterPath="$PROJECT_DIR$/3DPrinter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/3DPrinter.spec" afterPath="$PROJECT_DIR$/3DPrinter.spec" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CLUtilities/CLFileWriter.py" afterPath="$PROJECT_DIR$/CLUtilities/CLFileWriter.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MWG2C.log" afterPath="$PROJECT_DIR$/MWG2C.log" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/3DPrintModule/HurcoLogo.ini" afterPath="$PROJECT_DIR$/bin/3DPrintModule/HurcoLogo.ini" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/MachineConfig/Tools.py" afterPath="$PROJECT_DIR$/MachineConfig/Tools.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/3DPrintModule/config.ini" afterPath="$PROJECT_DIR$/bin/3DPrintModule/config.ini" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/3DPrintModule/sphere_02.ini" afterPath="$PROJECT_DIR$/bin/3DPrintModule/sphere_02.ini" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bin/Verifier/VerifierApplicationSample.ini" afterPath="$PROJECT_DIR$/bin/Verifier/VerifierApplicationSample.ini" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/3DPrinter.exe.manifest" afterPath="$PROJECT_DIR$/build/3DPrinter/3DPrinter.exe.manifest" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/logdict2.7.9.final.0-1.log" afterPath="$PROJECT_DIR$/build/3DPrinter/logdict2.7.9.final.0-1.log" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-Analysis.toc" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-Analysis.toc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-COLLECT.toc" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-COLLECT.toc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-EXE.toc" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-EXE.toc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-PKG.toc" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-PKG.toc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/out00-PYZ.toc" afterPath="$PROJECT_DIR$/build/3DPrinter/out00-PYZ.toc" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/3DPrinter/warn3DPrinter.txt" afterPath="$PROJECT_DIR$/build/3DPrinter/warn3DPrinter.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gcode2cutsim.py" afterPath="$PROJECT_DIR$/gcode2cutsim.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/logdict2.7.9.final.0-1.log" afterPath="$PROJECT_DIR$/build/gcode2cutsim/logdict2.7.9.final.0-1.log" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-Analysis.toc" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-Analysis.toc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-COLLECT.toc" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-COLLECT.toc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-EXE.toc" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-EXE.toc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-PKG.toc" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-PKG.toc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/out00-PYZ.toc" afterPath="$PROJECT_DIR$/build/gcode2cutsim/out00-PYZ.toc" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/gcode2cutsim/warngcode2cutsim.txt" afterPath="$PROJECT_DIR$/build/gcode2cutsim/warngcode2cutsim.txt" />
     </list>
     <ignored path="gcode2cutsim.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,11 +116,18 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/gcode2cutsim$gcode2cutsim.coverage" NAME="gcode2cutsim Coverage Results" MODIFIED="1465725234057" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/gcode2cutsim$3DPrinter.coverage" NAME="3DPrinter Coverage Results" MODIFIED="1465738398819" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/gcode2cutsim$gcode2cutsim.coverage" NAME="gcode2cutsim Coverage Results" MODIFIED="1465918205622" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/gcode2cutsim$3DPrinter.coverage" NAME="3DPrinter Coverage Results" MODIFIED="1465818560578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="DatabaseView">
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_TABLE_DETAILS" value="true" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FavoritesManager">
@@ -51,11 +135,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="3DPrinter.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="3DPrinter.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/3DPrinter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279">
-              <caret line="123" column="47" selection-start-line="123" selection-start-column="47" selection-end-line="123" selection-end-column="47" />
+            <state relative-caret-position="567">
+              <caret line="170" column="41" selection-start-line="170" selection-start-column="41" selection-end-line="170" selection-end-column="41" />
               <folding>
                 <element signature="e#267#319#0" expanded="true" />
               </folding>
@@ -86,8 +170,8 @@
       <file leaf-file-name="3DPrinter.spec" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/3DPrinter.spec">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="612">
-              <caret line="36" column="16" selection-start-line="36" selection-start-column="16" selection-end-line="36" selection-end-column="16" />
+            <state relative-caret-position="697">
+              <caret line="41" column="55" selection-start-line="41" selection-start-column="55" selection-end-line="41" selection-end-column="55" />
               <folding />
             </state>
           </provider>
@@ -106,8 +190,8 @@
       <file leaf-file-name="gcode2cutsim.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gcode2cutsim.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="251">
-              <caret line="130" column="29" selection-start-line="130" selection-start-column="29" selection-end-line="130" selection-end-column="29" />
+            <state relative-caret-position="1981">
+              <caret line="225" column="40" selection-start-line="225" selection-start-column="40" selection-end-line="225" selection-end-column="40" />
               <folding>
                 <element signature="e#120#161#0" expanded="true" />
               </folding>
@@ -125,11 +209,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Tools.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Tools.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MachineConfig/Tools.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
+            <state relative-caret-position="357">
+              <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
               <folding />
             </state>
           </provider>
@@ -169,8 +253,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/CLUtilities/ExtrusionUtil.py" root0="SKIP_INSPECTION" />
     <setting file="file://$PROJECT_DIR$/gcode2cutsim.py" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/CLUtilities/ExtrusionUtil.py" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -180,7 +264,6 @@
         <option value="$PROJECT_DIR$/CLUtilities/evaluateGCode.py" />
         <option value="$PROJECT_DIR$/CLUtilities/NCFileReader.py" />
         <option value="$PROJECT_DIR$/CLUtilities/ExtrusionUtil.py" />
-        <option value="$PROJECT_DIR$/MachineConfig/Tools.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/gcode2cutsim.py" />
         <option value="$PROJECT_DIR$/CLUtilities/CLFileWriter.py" />
@@ -188,6 +271,7 @@
         <option value="$PROJECT_DIR$/Utilities/ini_worker.py" />
         <option value="$PROJECT_DIR$/Utilities/help.py" />
         <option value="$PROJECT_DIR$/3DPrinter.py" />
+        <option value="$PROJECT_DIR$/MachineConfig/Tools.py" />
       </list>
     </option>
   </component>
@@ -201,7 +285,7 @@
     <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1936" />
-    <option name="height" value="1066" />
+    <option name="height" value="1186" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -244,7 +328,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
+              <option name="myItemId" value="gcode2cutsim_V2" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -254,7 +338,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
+              <option name="myItemId" value="gcode2cutsim_V2" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -268,67 +352,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
+              <option name="myItemId" value="gcode2cutsim_V2" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Utilities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="UI" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Math" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MachineConfig" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="gcode2cutsim" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="CLUtilities" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -347,7 +375,7 @@
       <recent name="C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\Math" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.3DPrinter">
+  <component name="RunManager" selected="Python.gcode2cutsim">
     <configuration default="false" name="gcode2cutsim" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -636,8 +664,8 @@
     </list>
     <recent_temporary>
       <list size="4">
-        <item index="0" class="java.lang.String" itemvalue="Python.3DPrinter" />
-        <item index="1" class="java.lang.String" itemvalue="Python.gcode2cutsim" />
+        <item index="0" class="java.lang.String" itemvalue="Python.gcode2cutsim" />
+        <item index="1" class="java.lang.String" itemvalue="Python.3DPrinter" />
         <item index="2" class="java.lang.String" itemvalue="Python.Tools" />
         <item index="3" class="java.lang.String" itemvalue="Python.ExtrusionUtil" />
       </list>
@@ -682,28 +710,28 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1066" extended-state="6" />
-    <editor active="true" />
+    <frame x="-8" y="-8" width="1936" height="1186" extended-state="6" />
+    <editor active="false" />
     <layout>
-      <window_info id="PlantUML" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10021322" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3290461" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32791957" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32995737" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32732448" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3085847" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4801272" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.35607675" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.09914712" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32869297" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47974414" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24946696" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35607675" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39907193" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="PlantUML" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32925472" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32869297" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -735,7 +763,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -766,9 +793,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="62" column="21" selection-start-line="62" selection-start-column="21" selection-end-line="62" selection-end-column="21" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -786,7 +811,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -817,9 +841,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="62" column="21" selection-start-line="62" selection-start-column="21" selection-end-line="62" selection-end-column="21" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -860,9 +882,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="47" selection-end-column="0" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -903,9 +923,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -939,9 +957,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -967,9 +983,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="23" column="35" selection-start-line="23" selection-start-column="35" selection-end-line="23" selection-end-column="35" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -995,9 +1009,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1015,13 +1027,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python27/Lib/filecmp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/Python27/Lib/filecmp.py" />
     <entry file="file://$PROJECT_DIR$/CLUtilities/INIFileWriter.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="68">
@@ -1040,7 +1046,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="952">
           <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1063,16 +1068,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4046">
           <caret line="238" column="8" selection-start-line="238" selection-start-column="8" selection-end-line="238" selection-end-column="8" />
-          <folding>
-            <marker date="1464975571866" expanded="true" signature="5675:6944" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1085,13 +1080,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/Python27/Lib/site-packages/numpy/core/numeric.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="2280" column="4" selection-start-line="2280" selection-start-column="4" selection-end-line="2280" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/Python27/Lib/site-packages/numpy/core/numeric.py" />
     <entry file="file://$PROJECT_DIR$/CLUtilities/CLFileWriter.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
@@ -1100,36 +1089,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gcode2cutsim.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="251">
-          <caret line="130" column="29" selection-start-line="130" selection-start-column="29" selection-end-line="130" selection-end-column="29" />
-          <folding>
-            <element signature="e#120#161#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gcode2cutsim.spec">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="697">
           <caret line="41" column="61" selection-start-line="0" selection-start-column="0" selection-end-line="41" selection-end-column="61" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/3DPrinter.spec">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="36" column="16" selection-start-line="36" selection-start-column="16" selection-end-line="36" selection-end-column="16" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/MachineConfig/Tools.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="14" column="0" selection-start-line="14" selection-start-column="0" selection-end-line="14" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1158,13 +1121,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/3DPrinter.spec">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="697">
+          <caret line="41" column="55" selection-start-line="41" selection-start-column="55" selection-end-line="41" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="0" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/3DPrinter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="123" column="47" selection-start-line="123" selection-start-column="47" selection-end-line="123" selection-end-column="47" />
+        <state relative-caret-position="567">
+          <caret line="170" column="41" selection-start-line="170" selection-start-column="41" selection-end-line="170" selection-end-column="41" />
           <folding>
             <element signature="e#267#319#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gcode2cutsim.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1981">
+          <caret line="225" column="40" selection-start-line="225" selection-start-column="40" selection-end-line="225" selection-end-column="40" />
+          <folding>
+            <element signature="e#120#161#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MachineConfig/Tools.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>

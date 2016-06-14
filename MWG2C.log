@@ -1,8 +1,9 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-06-12 11:53:55.866000
-INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
+INFO:MWG2C:** Logging started @ : 2016-06-14 17:30:10.526000
+INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim_V2/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:G-Code Evaluation started @ : 2016-06-12 11:53:55.867000
-INFO:MWG2C:File selection canceled ... Nothing to process @ : 2016-06-12 11:54:03.234000
-INFO:MWG2C:** Logging stopped @ : 2016-06-12 11:54:03
+INFO:MWG2C:Starting G2C conversion ... @ : 2016-06-14 17:30:10.530000
+INFO:MWG2C:Additivebox calculated @ : 2016-06-14 17:31:14.075000
+INFO:MWG2C:All jobs done ... @ : 2016-06-14 17:31:15.640000
+INFO:MWG2C:** Logging stopped @ : 2016-06-14 17:31:15

@@ -1,9 +1,9 @@
-('C:\\Users\\ModuleWoks\\Documents\\Development\\GitRep\\gcode2cutsim\\build\\gcode2cutsim\\gcode2cutsim.exe',
- True,
+('D:\\Development\\GitRep\\gcode2cutsim_V2\\dist\\gcode2cutsim.exe',
+ False,
  False,
  None,
  None,
  [],
  None,
  False,
- 1457881478L)
+ 1465475340L)

@@ -97,6 +97,44 @@ class TestStage(threading.Thread):
         return output
 
 # ----------------------------------------------------------------------------------------------------------------------
+def test_stage_coordinator(max_threads=2, test_folder='bin\\3DPrintModule\\'):
+    """
+    the coordinator controls the maximum threads and starts one test stage after the other
+    :return:
+    """
+
+    _MAXTHREADS = max_threads
+    _RELATIVEFOLDERTESTFILES = test_folder
+
+    file_list = os.listdir(_RELATIVEFOLDERTESTFILES)  # get directory list
+    test_file_list = []
+    for i in file_list:
+        if i.find('.stl') != -1:
+            test_file_list.append(i)
+
+    print '\n' + bcolors.BOLD + 'TESTNG STL SET:' + '-'*60 + '\n' + bcolors.END
+
+    for i, j in zip(test_file_list, range(len(test_file_list)) ):
+        print bcolors.DARKGREY + '+-> ' + str(j) + ' ' + i + bcolors.END
+
+    print '-'*60 + '\n'
+
+    jj = 0
+    while 1:
+        if (threading.activeCount() - 1) <= _MAXTHREADS:
+            i = test_file_list[jj]
+            message = '\n' + 'TS<=: Starting test ' + str(jj + 1) + ' of ' + str(len(test_file_list)) + \
+                      ' with: ' + i + ' - Running threads [' + str(threading.activeCount()-1) + ']'
+            print bcolors.UNDERLINE + bcolors.BOLD + message + bcolors.END + '\n'
+            TestStage(path=_RELATIVEFOLDERTESTFILES, fileName=i).start()
+            jj += 1
+            if jj >= len(test_file_list):
+                break
+
+    print bcolors.BOLD + '<ALL THREADS AND TESTING STAGES RUNNING>' + bcolors.END
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 def main():
     """Main module admins the additional arguments passed with 3DPrinter.exe
 
@@ -104,8 +142,12 @@ def main():
     Also all exceptions when passing wrong commands are handled here.
     """
 
-    _MAXTHREADS = 2
-    _RELATIVEFOLDERTESTFILES = 'bin\\3DPrintModule\\'
+    _COMMAND_LIST_TEST_STAGE = [{'TS': {'TS': False, 'MT': True}}, ]
+    _COMMAND_LIST_SINGLE_FILE = [{'STL': {'STL': True, 'SIM': True}},
+                                 {'SIM': {'P': True}}]
+
+
+
     _H = help.helper()
 
     print '\n' + bcolors.UNDERLINE + bcolors.BOLD + 'MW 3DPRINTER MULTIOPERATOR ... ' + bcolors.END
@@ -117,59 +159,84 @@ def main():
         TS = TestStage()
         TS.start3DPrintJob(STL_file=section_dict['fileName'])  # not necessary to pass over stl. default is None
     else:
-        for i, j in zip(sys.argv, range(len(sys.argv))):
 
-            if sys.argv[i][0] == '-':
-                if len(sys.argv[1]) > 1:
-                    if sys.argv[1][1:] == 'TS':
-                        file_list = os.listdir(_RELATIVEFOLDERTESTFILES)  # get directory list
-                        test_file_list = []
-                        for i in file_list:
-                            if i.find('.stl') != -1:
-                                test_file_list.append(i)
+        bool_list = ['-' in s for s in sys.argv]  # proof if commands are complete or if a command is given
 
-                        print '\n' + bcolors.BOLD + 'TESTNG STL SET:' + '-'*60 + '\n' + bcolors.END
+        if bool_list[1]:  # we expect an command with prefix '-' here
+            if sys.argv[1][1:] == 'TS':  # this is test stage
 
-                        for i, j in zip(test_file_list, range(len(test_file_list)) ):
-                            print bcolors.DARKGREY + '+-> ' + str(j) + ' ' + i + bcolors.END
+                if len(sys.argv) > 2:
 
-                        print '-'*60 + '\n'
+                    for i in range(2, len(sys.argv)):
+                        print sys.argv[i]
 
-                        jj = 0
-                        while 1:
-                            if (threading.activeCount() - 1) <= _MAXTHREADS:
-                                i = test_file_list[jj]
-                                message = '\n' + 'TS<=: Starting test ' + str(jj + 1) + ' of ' + str(len(test_file_list)) + \
-                                          ' with: ' + i + ' - Running threads [' + str(threading.activeCount()-1) + ']'
-                                print bcolors.UNDERLINE + bcolors.BOLD + message + bcolors.END + '\n'
-                                TestStage(path=_RELATIVEFOLDERTESTFILES, fileName=i).start()
-                                jj += 1
-                                if jj >= len(test_file_list):
-                                    break
+                        # check command list
+                        if sys.argv[i] in _COMMAND_LIST_TEST_STAGE[0][0][]:
 
-                        print bcolors.BOLD + '<ALL THREADS AND TESTING STAGES RUNNING>' + bcolors.END
 
-                    elif sys.argv[1][1:] == 'SF':  # SF for single file [STL]
-                        # we passed a storage place to a stl file
-                        if len(sys.argv) == 3:
-                            if not os.path.isfile(sys.argv[2]):
-                                print bcolors.FAIL + 'No such STL file -> "' + str(sys.argv[2]) + '" ... Please proof INPUT' + bcolors.END
-                            else:
-                                print 'Processing >> ' + sys.argv[2] + '\n'
-                                TestStage(sys.argv[2]).start3DPrintJob(sys.argv[2])
-                        else:
-                            print bcolors.RED + 'Please provide STL file' + bcolors.END
-
-                    else:
-                        print bcolors.RED + 'No known command.' + bcolors.END + '\n'
-                        _H.print_help()
                 else:
-                    print bcolors.RED + 'No command.' + bcolors.END + '\n'
-                    _H.print_help()
-            else:
-                print bcolors.RED + 'If you want to pass a command use the - operator with following commandline' \
-                      + bcolors.END + '\n'
-                _H.print_help()
+                    # seems there is only one command. So start test stage with default parameters
+                    test_stage_coordinator()
+
+
+            elif sys.argv[1][1:] == 'STL':  # process a single STL
+
+                for i in range(1, len(sys.argv)):
+                    print sys.argv[i]
+
+
+
+            # if sys.argv[i][0] == '-':
+            #     if len(sys.argv[i]) > 1:
+            #         if sys.argv[i][1:] == 'TS':
+            #             file_list = os.listdir(_RELATIVEFOLDERTESTFILES)  # get directory list
+            #             test_file_list = []
+            #             for i in file_list:
+            #                 if i.find('.stl') != -1:
+            #                     test_file_list.append(i)
+            #
+            #             print '\n' + bcolors.BOLD + 'TESTNG STL SET:' + '-'*60 + '\n' + bcolors.END
+            #
+            #             for i, j in zip(test_file_list, range(len(test_file_list)) ):
+            #                 print bcolors.DARKGREY + '+-> ' + str(j) + ' ' + i + bcolors.END
+            #
+            #             print '-'*60 + '\n'
+            #
+            #             jj = 0
+            #             while 1:
+            #                 if (threading.activeCount() - 1) <= _MAXTHREADS:
+            #                     i = test_file_list[jj]
+            #                     message = '\n' + 'TS<=: Starting test ' + str(jj + 1) + ' of ' + str(len(test_file_list)) + \
+            #                               ' with: ' + i + ' - Running threads [' + str(threading.activeCount()-1) + ']'
+            #                     print bcolors.UNDERLINE + bcolors.BOLD + message + bcolors.END + '\n'
+            #                     TestStage(path=_RELATIVEFOLDERTESTFILES, fileName=i).start()
+            #                     jj += 1
+            #                     if jj >= len(test_file_list):
+            #                         break
+            #
+            #             print bcolors.BOLD + '<ALL THREADS AND TESTING STAGES RUNNING>' + bcolors.END
+            #
+            #         elif sys.argv[i][1:] == 'SF':  # SF for single file [STL]
+            #             # we passed a storage place to a stl file
+            #             if len(sys.argv) == 3:
+            #                 if not os.path.isfile(sys.argv[2]):
+            #                     print bcolors.FAIL + 'No such STL file -> "' + str(sys.argv[2]) + '" ... Please proof INPUT' + bcolors.END
+            #                 else:
+            #                     print 'Processing >> ' + sys.argv[2] + '\n'
+            #                     TestStage(sys.argv[2]).start3DPrintJob(sys.argv[2])
+            #             else:
+            #                 print bcolors.RED + 'Please provide STL file' + bcolors.END
+            #
+            #         else:
+            #             print bcolors.RED + 'No known command.' + bcolors.END + '\n'
+            #             _H.print_help()
+            #     else:
+            #         print bcolors.RED + 'No command.' + bcolors.END + '\n'
+            #         _H.print_help()
+            # else:
+            #     print bcolors.RED + 'If you want to pass a command use the - operator with following commandline' \
+            #           + bcolors.END + '\n'
+            #     _H.print_help()
 
 
     print bcolors.DARKGREY +'TS<=:DONE' + bcolors.END

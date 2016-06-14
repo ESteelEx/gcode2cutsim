@@ -25,8 +25,8 @@ class Tools:
         ELOverlap = 0
 
         # Renishaw
-        LayerThickness = 0.15
-        LayerWidth = 0.3
+        LayerThickness = 0.1
+        LayerWidth = 0.15
         ELOverlap = 0.1
 
         getcontext().prec = 4 # set precision for decimal class
