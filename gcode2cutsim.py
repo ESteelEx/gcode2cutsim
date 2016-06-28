@@ -7,7 +7,7 @@ gcode2cutsim parser -> cutsim can read gcode data now.
 __author__ = 'mathiasr'
 __version__= 1.0
 
-import sys, os, win32con, numpy, warnings
+import sys, os, win32con, numpy, warnings, wx
 import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
 
@@ -30,9 +30,15 @@ def startVerification(CLFile, NCiniFile):
     params = NCiniFile
     print 'Opening ' + abscommand + ' with ' + NCiniFile
 
-    shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+    try:
+        shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+    except:
+        raise
 
-    shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
+    try:
+        shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
+    except:
+        raise
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -41,6 +47,7 @@ def main():
     gcode2cutsim needs to be compiled to exe
     :return: Nothing
     """
+
     G2CLOG = G2CLogging.G2CLogging() # start logger
 
     try:
@@ -54,6 +61,9 @@ def main():
 
         # define constant vars
         SIMPRECISION = 0.05 # precision of simulation be careful here / memory consumption
+        SLIDERPOSITION_START = 25  # percentage
+        SLIDERPOSITION_END = 33  # percentage
+
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -123,6 +133,16 @@ def main():
                                             # We use this line to find the right line to replace
         CLWriter.writeNCCode(homePosStr)
 
+        app = wx.App(False)
+
+        pulse_dlg = wx.ProgressDialog(title="G2C Converting ...",
+                                      message="Initializing ...",
+                                      maximum=int(101),
+                                      style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
+
+        num_lines = sum(1 for line in open(inputf))
+        next_update_block = 0
+        keepGoin = 1
         with open(inputf) as fidO:
 
             # start reading g-Code file
@@ -132,6 +152,18 @@ def main():
                 loopCounter += 1
                 # save line to lineC -> keeps original
                 lineC = line
+
+                perc = round((loopCounter / float(num_lines) * 100))
+                if  perc > next_update_block:
+                    next_update_block += 0.1
+                    updmessage = 'Line ' + str(loopCounter) + ' of ' + str(num_lines) + ' - ' + str(perc) + '%'
+
+                    (keepGoin, skip) = pulse_dlg.Update(perc, updmessage)
+                    if not keepGoin:
+                        G2CLOG.wlog('INFO', 'User canceled at line: ' + str(loopCounter) + ' - ' + str(perc) + '%')
+                        existent = 2
+                        break
+
 
                 # check where g-code actually starts and give green light to parsing functions True/False
                 if line[0] == 'G':

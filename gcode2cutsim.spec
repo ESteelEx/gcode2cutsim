@@ -34,8 +34,8 @@ exe = EXE(
     debug=False, 
     strip=None, 
     upx=True, 
-    console=False )
-    # icon='dat\\images\\icon.ico' )
+    console=False,
+    icon='bin\\images\\3dPrintVer.ico' )
 
 if os.path.isfile('gcode2cutsim.exe'):
     os.remove('gcode2cutsim.exe')
