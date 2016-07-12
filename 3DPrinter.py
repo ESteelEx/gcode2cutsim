@@ -96,15 +96,16 @@ class TestStage(threading.Thread):
 
         return output
 
+
 # ----------------------------------------------------------------------------------------------------------------------
-def test_stage_coordinator(max_threads=2, test_folder='bin\\3DPrintModule\\'):
+def test_stage_coordinator(TF='bin\\3DPrintModule\\', MT=2, GT=None):
     """
     the coordinator controls the maximum threads and starts one test stage after the other
     :return:
     """
 
-    _MAXTHREADS = max_threads
-    _RELATIVEFOLDERTESTFILES = test_folder
+    _MAXTHREADS = MT
+    _RELATIVEFOLDERTESTFILES = TF
 
     file_list = os.listdir(_RELATIVEFOLDERTESTFILES)  # get directory list
     test_file_list = []
@@ -142,11 +143,9 @@ def main():
     Also all exceptions when passing wrong commands are handled here.
     """
 
-    _COMMAND_LIST_TEST_STAGE = [{'TS': {'TS': False, 'MT': True}}, ]
+    _COMMAND_LIST_TEST_STAGE = [{'TS': {'TS': False, 'MT': True, 'GT': False}}, ]
     _COMMAND_LIST_SINGLE_FILE = [{'STL': {'STL': True, 'SIM': True}},
                                  {'SIM': {'P': True}}]
-
-
 
     _H = help.helper()
 
@@ -163,27 +162,41 @@ def main():
         bool_list = ['-' in s for s in sys.argv]  # proof if commands are complete or if a command is given
 
         if bool_list[1]:  # we expect an command with prefix '-' here
+
+            command_line = ''
             if sys.argv[1][1:] == 'TS':  # this is test stage
 
                 if len(sys.argv) > 2:
 
                     for i in range(2, len(sys.argv)):
-                        print sys.argv[i]
-
                         # check command list
-                        if sys.argv[i] in _COMMAND_LIST_TEST_STAGE[0][0][]:
+                        TS_DICT = _COMMAND_LIST_TEST_STAGE[0]['TS']
 
+                        if sys.argv[i][1:] in TS_DICT:
+
+                            if TS_DICT[sys.argv[i][1:]]:
+                                if len(sys.argv)-1 > i:
+                                    if sys.argv[i+1][0] == '-':
+                                        print 'Input for parameter expected.'
+                                    else:
+                                        command_line = command_line + sys.argv[i][1:] + '=' + sys.argv[i+1]
+                                        print command_line
+                                else:
+                                    print 'Input for parameter expected.'
+                            else:
+                                command_line = command_line + sys.argv[i][1:] + '=True'
+                                print command_line
+
+                    test_stage_coordinator(eval(command_line))
 
                 else:
                     # seems there is only one command. So start test stage with default parameters
                     test_stage_coordinator()
 
-
             elif sys.argv[1][1:] == 'STL':  # process a single STL
 
                 for i in range(1, len(sys.argv)):
                     print sys.argv[i]
-
 
 
             # if sys.argv[i][0] == '-':

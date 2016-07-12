@@ -60,7 +60,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.05 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.25 # precision of simulation be careful here / memory consumption
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
 
@@ -88,6 +88,7 @@ def main():
                 return
             else:
                 inputf = str(inputParams[1])
+                inputParams += ['-sim']
 
         pointpos = inputf.rfind('.')
         if pointpos != -1:
@@ -105,7 +106,7 @@ def main():
         zValMachine = 0
         LayerThickness = 0
         # EXTRUSIONLINEOVERLAP = 0 # [mm]
-        ExtrusionLineOverlap = 0.15 # percent
+        ExtrusionLineOverlap = 0.2 # percent
         # EXTENDADDITIVEBOX = 1 # [mm]
         extendAdditiveBox = 1 # [mm]
         lineLloop = None
@@ -141,6 +142,9 @@ def main():
                                       style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
 
         num_lines = sum(1 for line in open(inputf))
+
+        # line_start
+
         next_update_block = 0
         keepGoin = 1
         with open(inputf) as fidO:

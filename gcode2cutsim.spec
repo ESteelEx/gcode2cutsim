@@ -39,4 +39,5 @@ exe = EXE(
 
 if os.path.isfile('gcode2cutsim.exe'):
     os.remove('gcode2cutsim.exe')
-    shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsim.exe')
+
+shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsim.exe')
