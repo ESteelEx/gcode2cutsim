@@ -60,7 +60,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.25 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.15 # precision of simulation be careful here / memory consumption
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
 
