@@ -125,10 +125,11 @@ def main():
         currentExtrusionVal = ExUtil.getInitialExtrusionVal(NCBlock)
 
         # write header
-        stockDimStr = JobS.getStockDimensionStr()
+        # stockDimStr = JobS.getStockDimensionStr()
         homePosStr = JobS.getHomePosStr()
 
-        CLWriter.writeNCCode(stockDimStr)
+        # CLWriter.writeNCCode(stockDimStr)
+        CLWriter.writeNCCode('STOCK')
         CLWriter.writeNCCode('ADDITIVEBOX') # place holder. We replace this line with calculated part dimensions.
                                             # We know them after every line from G-Code is procecssed.
                                             # We use this line to find the right line to replace
@@ -256,6 +257,10 @@ def main():
         for line in fileinput.input(outputf, inplace = 1):
             print line.replace("ADDITIVEBOX", partDimStr),
 
+        for line in fileinput.input(outputf, inplace = 1):
+            stockDimStr = JobS.getStockDimensionStr()
+            print line.replace("STOCK", partDimStr),
+
         print 'Done. CL file written - > ' + outputf
 
         if len(inputParams) == 3:
@@ -269,7 +274,7 @@ def main():
                 posDir = outputf.rfind('\\')
                 posPoint = outputf[posDir+1:].rfind('.')
                 iniFileName = outputf[posDir+1:posDir+1+posPoint]
-                iniFileName = iniFileName + '.ini'
+                iniFileName = iniFileName + '_SIMULATION.ini'
                 iniDirName = outputf[0:posDir+1]
                 NCiniFile = iniDirName + iniFileName
 

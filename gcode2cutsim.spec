@@ -18,7 +18,6 @@ a = Analysis(['gcode2cutsim.py'],
               runtime_hooks=None) 
 # a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
 
-for d in a.datas:
     if 'pyconfig' in d[0]:
         a.datas.remove(d)
         break

@@ -18,7 +18,7 @@ class CLFileWriter:
         posDir = outputf.rfind('\\')
         posPoint = outputf[posDir+1:].rfind('.')
         iniFileName = outputf[posDir+1:posDir+1+posPoint]
-        iniFileName = iniFileName + '.ini'
+        iniFileName = iniFileName + '_SIMULATION.ini'
         iniDirName = outputf[0:posDir+1]
         NCiniFile = iniDirName + iniFileName
 
