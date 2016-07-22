@@ -28,3 +28,18 @@ def get_section_from_ini(fileName, section):
                         break
 
     return section_dict
+
+# ------------------------------------------------------------------------------------------------------------------
+def get_sections_list_from_ini(fileName):
+    """
+    :param fileName: pass relative ini-file location as string
+    :return: all sections in ini file as list of strings
+    """
+    with open(fileName) as fh:
+        ini_content = fh.readlines()
+        sections_list = []
+        for i, j in zip(ini_content, range(len(ini_content))):
+            if i.strip().find('[') == 0:
+                sections_list += [i[1:-2].strip()]
+
+    return sections_list

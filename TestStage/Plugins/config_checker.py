@@ -1,17 +1,18 @@
 """This module checks on consistency of config file"""
 import hashlib
-
+from Utilities import ini_worker
+import global_parameter
 
 # ----------------------------------------------------------------------------------------------------------------------
 class config_checker():
-    def __init__(self, config_test, config_orig):
-        self.config_test = config_test
+    def __init__(self, config_orig, config_test):
         self.config_orig = config_orig
+        self.config_test = config_test
 
-    # ------------------------------------------------------------------------------------------------------------------
-    def load_hash(self, file):
+        self.config_orig_MD5 = self.checksum_md5(self.config_orig)
+        self.config_test_MD5 = self.checksum_md5(self.config_test)
 
-        hash_number = hashlib.sha256()
+        self.warning = {}
 
     # ------------------------------------------------------------------------------------------------------------------
     def checksum_md5(self, filename):
@@ -22,6 +23,41 @@ class config_checker():
 
         return md5.digest()
 
+    # ------------------------------------------------------------------------------------------------------------------
+    def compare_hashtags(self):
+        """
 
-CC = config_checker('config_checker.py', 'config_checker.py')
-print CC.checksum_md5('config_checker.py')
+        :return: bool
+        """
+        if self.config_orig_MD5 == self.config_test_MD5:
+            changes = False
+        else:
+            changes = True
+
+        return changes
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def compare_sections(self):
+        section_list_org = ini_worker.get_sections_list_from_ini(self.config_orig)
+        section_list_test = ini_worker.get_sections_list_from_ini(self.config_test)
+
+        for section in section_list_org:
+            if section not in section_list_test:
+                self.warning['section'] = True
+
+        return
+
+def main():
+    CC = config_checker('config.ini', 'config - Copy.ini')
+    print CC.config_orig_MD5
+    print CC.config_test_MD5
+    if CC.compare_hashtags():
+        # continue here with code
+        CC.compare_sections()
+    else:
+        # nothing changed so stage must not compare. We safe time here.
+        pass
+
+
+main()
+
