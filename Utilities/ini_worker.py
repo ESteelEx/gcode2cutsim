@@ -9,17 +9,16 @@ def get_section_from_ini(fileName, section):
     """
     with open(fileName) as fh:
         ini_content = fh.readlines()
+        section_dict = {}
         for i, j in zip(ini_content, range(len(ini_content))):
             if i.strip().find('[') == 0:
                 if i.find(section) != -1:
-                    section_dict = {}
                     section_end = False
                     for ii in ini_content[j+1:]:
                         if len(ii.strip()) != 0:
                             if ii.strip()[0] != ';':
 
                                 if ii.strip().find('[') == 0 or ii.strip().find('=') == -1:
-                                    print ii.strip()
                                     section_end = True
                                     break
                                 key = ii[:ii.strip().find('=')].strip()
