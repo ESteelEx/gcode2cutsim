@@ -13,19 +13,24 @@ def get_section_from_ini(fileName, section):
             if i.strip().find('[') == 0:
                 if i.find(section) != -1:
                     section_dict = {}
+                    section_end = False
                     for ii in ini_content[j+1:]:
-                        if ii.strip().find('[') == 0 or ii.strip().find('=') == -1:
-                            section_end = True
+                        if len(ii.strip()) != 0:
+                            if ii.strip()[0] != ';':
+
+                                if ii.strip().find('[') == 0 or ii.strip().find('=') == -1:
+                                    print ii.strip()
+                                    section_end = True
+                                    break
+                                key = ii[:ii.strip().find('=')].strip()
+                                value = ii[ii.strip().find('=')+1:].strip()
+                                try:
+                                    value = float(value)
+                                except:
+                                    pass
+                                section_dict[key] = value
+                        if section_end:
                             break
-                        key = ii[:ii.strip().find('=')].strip()
-                        value = ii[ii.strip().find('=')+1:].strip()
-                        try:
-                            value = float(value)
-                        except:
-                            pass
-                        section_dict[key] = value
-                    if section_end:
-                        break
 
     return section_dict
 
