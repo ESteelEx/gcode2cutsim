@@ -12,7 +12,8 @@ def get_section_from_ini(fileName, section):
         section_dict = {}
         for i, j in zip(ini_content, range(len(ini_content))):
             if i.strip().find('[') == 0:
-                if i.find(section) != -1:
+                # if i.find(section) != -1:
+                if i[1:-2] == section:
                     section_end = False
                     for ii in ini_content[j+1:]:
                         if len(ii.strip()) != 0:

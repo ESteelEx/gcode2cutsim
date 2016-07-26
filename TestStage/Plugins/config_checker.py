@@ -8,6 +8,7 @@ __version__ = '1.0.0'
 
 # ----------------------------------------------------------------------------------------------------------------------
 class config_checker():
+    """"""
     def __init__(self, config_orig, config_test):
         self.config_orig = config_orig
         self.config_test = config_test
@@ -72,7 +73,10 @@ class config_checker():
 
     # ------------------------------------------------------------------------------------------------------------------
     def compare_parameters(self):
+        """
 
+        :return:
+        """
         print bcolors.BOLD + '\nMATCHING SECTION PARAMETER' + bcolors.END
 
         for section in self.section_list_orig:
@@ -82,37 +86,71 @@ class config_checker():
             self.section_param_test[section] = ini_worker.get_section_from_ini(self.config_test, section)
 
         intersection_list = list(set(self.section_list_orig).intersection(self.section_list_test))
-        differ_list = list(set(self.section_list_orig).difference(self.section_list_test))
 
-        if len(differ_list) != 0:
-            print bcolors.RED + str(differ_list) + ' -> MISSING' + bcolors.END
+        differ_list_orig = list(set(self.section_list_orig).difference(self.section_list_test))
+        differ_list_test = list(set(self.section_list_test).difference(self.section_list_orig))
 
+        # proof -> seen from original MASTER document
+        if len(differ_list_orig) != 0:
+            print bcolors.RED + str(differ_list_orig) + ' -> MISSING' + bcolors.END
+
+        # proof -> seen from WANT TO COMMIT document
+        if len(differ_list_test) != 0:
+            print bcolors.LIGHTRED + str(differ_list_test) + ' -> COMMIT REQUEST' + bcolors.END
+
+        # proof parameters of sections
         section_differ = []
         for key in intersection_list:
 
             print bcolors.BOLD + 'TESTING: ' + key + bcolors.END
 
-            differ_params = list(set(self.section_param_orig[key]).
+            # from MASTER side
+            differ_params_orig = list(set(self.section_param_orig[key]).
                                  difference(self.section_param_test[key]))
 
-            if len(differ_params) == 0:
+            # from TESTER side
+            differ_params_test = list(set(self.section_param_test[key]).
+                                      difference(self.section_param_orig[key]))
+
+            if len(differ_params_orig) == 0 and len(differ_params_test) == 0:
                 print bcolors.GREEN + key + ' -> MATCH' + bcolors.END
             else:
-                section_differ.append(key)
+                if len(differ_params_orig) != 0:
 
-                differ_param_list = list(set(self.section_param_orig[key]).
-                                         difference(self.section_param_test[key]))
+                    section_differ.append(key)
 
-                print bcolors.RED + key + ' -> DIFFERENCES -> ' + str(differ_param_list) + bcolors.END
+                    differ_param_list = list(set(self.section_param_orig[key]).
+                                             difference(self.section_param_test[key]))
+
+                    print bcolors.RED + key + ' -> MISSING -> ' + str(differ_param_list) + bcolors.END
+
+                if len(differ_params_test) != 0:
+
+                    section_differ.append(key)
+
+                    differ_param_list = list(set(self.section_param_test[key]).
+                                             difference(self.section_param_orig[key]))
+
+                    print bcolors.LIGHTRED + key + ' -> REQUEST -> ' + str(differ_param_list) + bcolors.END
+
+
 
 # ------------------------------------------------------------------------------------------------------------------
 def init_plugin():
+    """
+
+    :return:
+    """
     print bcolors.BOLD + 'INIT CONFIG CHECKER' + bcolors.END
     print bcolors.BOLD + 'VERSION: ' + __version__ + bcolors.END
 
 
 # ------------------------------------------------------------------------------------------------------------------
 def main():
+    """
+
+    :return:
+    """
     init_plugin()
     CC = config_checker('config_MASTER.ini', 'config_TESTER.ini')
     if CC.compare_hashtags():
