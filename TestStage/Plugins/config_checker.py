@@ -1,5 +1,5 @@
 """This module checks consistency of config file"""
-import hashlib
+import hashlib, filecmp
 from difflib import SequenceMatcher
 from Utilities import ini_worker
 from Utilities.console import bcolors
@@ -73,7 +73,7 @@ class config_checker():
     # ------------------------------------------------------------------------------------------------------------------
     def compare_parameters(self):
 
-        print '\nMATCHING SECTION PARAMETER'
+        print bcolors.BOLD + '\nMATCHING SECTION PARAMETER' + bcolors.END
 
         for section in self.section_list_orig:
             self.section_param_orig[section] = ini_worker.get_section_from_ini(self.config_orig, section)
@@ -84,7 +84,8 @@ class config_checker():
         intersection_list = list(set(self.section_list_orig).intersection(self.section_list_test))
         differ_list = list(set(self.section_list_orig).difference(self.section_list_test))
 
-        print bcolors.RED + str(differ_list) + ' -> MISSING' + bcolors.END
+        if len(differ_list) != 0:
+            print bcolors.RED + str(differ_list) + ' -> MISSING' + bcolors.END
 
         section_differ = []
         for key in intersection_list:
