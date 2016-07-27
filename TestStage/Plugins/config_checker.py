@@ -22,6 +22,9 @@ class config_checker():
         self.section_param_orig = {}
         self.section_param_test = {}
 
+        self.section_comments_orig = {}
+        self.section_comments_test = {}
+
         self.warning = {}
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -86,7 +89,6 @@ class config_checker():
             self.section_param_test[section] = ini_worker.get_section_from_ini(self.config_test, section)
 
         intersection_list = list(set(self.section_list_orig).intersection(self.section_list_test))
-
         differ_list_orig = list(set(self.section_list_orig).difference(self.section_list_test))
         differ_list_test = list(set(self.section_list_test).difference(self.section_list_orig))
 
@@ -101,9 +103,7 @@ class config_checker():
         # proof parameters of sections
         section_differ = []
         for key in intersection_list:
-
             print bcolors.BOLD + 'TESTING: ' + key + bcolors.END
-
             # from MASTER side
             differ_params_orig = list(set(self.section_param_orig[key]).
                                  difference(self.section_param_test[key]))
@@ -116,22 +116,53 @@ class config_checker():
                 print bcolors.GREEN + key + ' -> MATCH' + bcolors.END
             else:
                 if len(differ_params_orig) != 0:
-
                     section_differ.append(key)
-
                     differ_param_list = list(set(self.section_param_orig[key]).
                                              difference(self.section_param_test[key]))
 
                     print bcolors.RED + key + ' -> MISSING -> ' + str(differ_param_list) + bcolors.END
 
                 if len(differ_params_test) != 0:
-
                     section_differ.append(key)
-
                     differ_param_list = list(set(self.section_param_test[key]).
                                              difference(self.section_param_orig[key]))
 
                     print bcolors.LIGHTRED + key + ' -> REQUEST -> ' + str(differ_param_list) + bcolors.END
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def proof_comments(self):
+        """
+
+        :return:
+        """
+        print bcolors.BOLD + '\nMATCHING COMMENTS' + bcolors.END
+
+        for section in self.section_list_orig:
+            self.section_param_orig[section] = ini_worker.get_section_from_ini(self.config_orig, section)
+            self.section_comments_orig[section] = ini_worker.get_comments_by_section(self.config_orig, section)
+
+        for section in self.section_list_test:
+            self.section_param_test[section] = ini_worker.get_section_from_ini(self.config_test, section)
+            self.section_comments_test[section] = ini_worker.get_comments_by_section(self.config_test, section)
+
+        for key_section, comments_dict in self.section_comments_test.iteritems():
+            print 'TESTING: ' + key_section
+            if len(comments_dict) == 0:
+                print bcolors.RED + 'SECTION ' + key_section + ': COMMENT -> MISSING ' + bcolors.END
+            else:
+                for param_orig in self.section_param_orig[section]:
+                    print param_orig
+                    if param_orig in comments_dict:
+                        print 'i am in'
+
+
+
+                    #print param_orig
+                    #print key
+                    #print comments_dict
+
+
+
 
 
 
@@ -157,6 +188,7 @@ def main():
         # continue here with code
         CC.compare_sections()
         CC.compare_parameters()
+        CC.proof_comments()
     else:
         # nothing changed so stage must not compare. We safe time here.
         print bcolors.BOLD + 'NOTHING CHANGED. FILES ARE THE SAME' + bcolors.END

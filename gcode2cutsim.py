@@ -61,6 +61,7 @@ def main():
 
         # define constant vars
         SIMPRECISION = 0.15 # precision of simulation be careful here / memory consumption
+        # TODO define number of layer by a layer interval -> slider
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
 
