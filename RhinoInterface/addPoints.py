@@ -5,6 +5,8 @@ except:
     pass
 
 _FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\Bottle_Opener.gcode'
+_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\bench_5-4-2016.gcode'
+#_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\Figure_of_man.gcode'
 
 X1 = 0
 Y1 = 0
@@ -17,6 +19,8 @@ Z2 = 0
 radius = 0.4
 
 _z_level_change = False
+_from_to_layer = [0, -1]
+
 _layer = 0
 LayerPoints = []
 
@@ -51,6 +55,8 @@ with open(_FILE) as fid:
 
         break
 
+    rs.AddLayer(name='MW 3D Printer Slices')
+
     for line in fid:
 
         if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
@@ -84,8 +90,15 @@ with open(_FILE) as fid:
                 # rs.AddPoint(X,Y,Z)
                 # rs.AddCylinder((X1, Y1, Z1), (X2, Y2 ,Z2), radius)
                 if len(LayerPoints) > 1:
-                    # rs.AddPolyline(LayerPoints)
-                    rs.AddPointCloud(LayerPoints)
+                    #rs.AddPolyline(LayerPoints)
+                    obj = rs.AddPointCloud(LayerPoints)
+                    obj2 = rs.AddPointCloud(LayerPoints)
+                if _layer == 1:
+                    rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
+                else:
+                    rs.AddLayer(name=str(_layer), visible=False, parent='MW 3D Printer Slices')
+
+                rs.ObjectLayer(obj, layer=str(_layer))
                 LayerPoints = []
                 _z_level_change = False
                 _layer += 1
@@ -98,6 +111,7 @@ with open(_FILE) as fid:
         Y1 = copy.deepcopy(Y2)
         Z1 = copy.deepcopy(Z2)
 
-        if _layer == 150:
-            break
+        if _from_to_layer[1] != -1:
+            if _layer == _from_to_layer[1]:
+                break
 
