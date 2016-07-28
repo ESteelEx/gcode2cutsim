@@ -5,7 +5,8 @@ except:
     pass
 
 _FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\Bottle_Opener.gcode'
-_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\bench_5-4-2016.gcode'
+_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\bench_5-4-2016.gcode'
+#_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\bench_5-4-2016.gcode'
 #_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\Figure_of_man.gcode'
 
 X1 = 0
@@ -19,7 +20,11 @@ Z2 = 0
 radius = 0.4
 
 _z_level_change = False
-_from_to_layer = [0, -1]
+
+layer_start = raw_input('Please define start layer: ')
+layer_end = raw_input('Please define end layer: ')
+
+_from_to_layer = [int(layer_start), int(layer_end)]
 
 _layer = 0
 LayerPoints = []
@@ -83,26 +88,29 @@ with open(_FILE) as fid:
                     Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
                 _z_level_change = True
 
-            LayerPoints.append((X2, Y2, Z2))
+            if _layer >= _from_to_layer[0]:
+                LayerPoints.append((X2, Y2, Z2))
 
         if _z_level_change:
             try:
                 # rs.AddPoint(X,Y,Z)
                 # rs.AddCylinder((X1, Y1, Z1), (X2, Y2 ,Z2), radius)
-                if len(LayerPoints) > 1:
-                    #rs.AddPolyline(LayerPoints)
-                    obj = rs.AddPointCloud(LayerPoints)
-                    obj2 = rs.AddPointCloud(LayerPoints)
-                if _layer == 1:
-                    rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
-                else:
-                    rs.AddLayer(name=str(_layer), visible=False, parent='MW 3D Printer Slices')
+                if _layer >= _from_to_layer[0]:
+                    if len(LayerPoints) > 1:
+                        #rs.AddPolyline(LayerPoints)
+                        obj = rs.AddPointCloud(LayerPoints)
+                        #obj2 = rs.AddPointCloud(LayerPoints)
 
-                rs.ObjectLayer(obj, layer=str(_layer))
+                    if _layer == 1:
+                        rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
+                    else:
+                        rs.AddLayer(name=str(_layer), visible=False, parent='MW 3D Printer Slices')
+
+                    rs.ObjectLayer(obj, layer=str(_layer))
                 LayerPoints = []
                 _z_level_change = False
                 _layer += 1
-                print _layer
+                # print _layer
             except:
                 raise
                 pass
