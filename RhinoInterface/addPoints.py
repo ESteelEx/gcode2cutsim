@@ -4,8 +4,15 @@ try:
 except:
     pass
 
-_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\Bottle_Opener.gcode'
-_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\bench_5-4-2016.gcode'
+def getRGBfromI(RGBint):
+    blue =  RGBint & 255
+    green = (RGBint >> 8) & 255
+    red =   (RGBint >> 16) & 255
+    return red, green, blue
+
+#_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\Bottle_Opener.gcode'
+#_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\bench_5-4-2016.gcode'
+_FILE = r'D:\StoreDaily\Mesh.gcode'
 #_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\bench_5-4-2016.gcode'
 #_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\Figure_of_man.gcode'
 
@@ -21,10 +28,17 @@ radius = 0.4
 
 _z_level_change = False
 
-layer_start = raw_input('Please define start layer: ')
-layer_end = raw_input('Please define end layer: ')
+layer_start = 1
+layer_end = -1
 
-_from_to_layer = [int(layer_start), int(layer_end)]
+# layer_start = raw_input('Please define start layer: ')
+# if len(layer_start) == 0:
+#     layer_start = 1
+# layer_end = raw_input('Please define end layer: ')
+# if len(layer_end) == 0:
+#     layer_end = -1
+
+_from_to_layer = [layer_start, layer_end]
 
 _layer = 0
 LayerPoints = []
@@ -60,24 +74,42 @@ with open(_FILE) as fid:
 
         break
 
-    rs.AddLayer(name='MW 3D Printer Slices')
+    rs.AddLayer(name='MW 3D Printer PointCloud')
 
     for line in fid:
 
         if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
 
-            pos_X = line.find('X')
-            if pos_X != -1:
-                pos_ws = line[pos_X:].find(' ')
-                X2 = float(line[pos_X+1:pos_ws+pos_X+1])
+            if line[0:3] == 'G1 ':
 
-            pos_Y = line.find('Y')
-            if pos_Y != -1:
-                pos_ws = line[pos_Y:].find(' ')
-                if pos_ws == -1:
-                    Y2 = float(line[pos_Y + 1:])
-                else:
-                    Y2 = float(line[pos_Y + 1:pos_ws + pos_Y+1])
+                pos_X = line.find('X')
+                if pos_X != -1:
+                    pos_ws = line[pos_X:].find(' ')
+                    X2 = float(line[pos_X+1:pos_ws+pos_X+1])
+
+                pos_Y = line.find('Y')
+                if pos_Y != -1:
+                    pos_ws = line[pos_Y:].find(' ')
+                    if pos_ws == -1:
+                        Y2 = float(line[pos_Y + 1:])
+                    else:
+                        Y2 = float(line[pos_Y + 1:pos_ws + pos_Y+1])
+
+            else:
+
+                pos_X = line.find('X')
+                if pos_X != -1:
+                    pos_ws = line[pos_X:].find(' ')
+                    X_G0 = float(line[pos_X + 1:pos_ws + pos_X + 1])
+
+                pos_Y = line.find('Y')
+                if pos_Y != -1:
+                    pos_ws = line[pos_Y:].find(' ')
+                    if pos_ws == -1:
+                        Y_G0 = float(line[pos_Y + 1:])
+                    else:
+                        Y_G0 = float(line[pos_Y + 1:pos_ws + pos_Y + 1])
+
 
             pos_Z = line.find('Z')
             if pos_Z != -1:
@@ -91,6 +123,9 @@ with open(_FILE) as fid:
             if _layer >= _from_to_layer[0]:
                 LayerPoints.append((X2, Y2, Z2))
 
+        # if _z_level_change:
+        #     _layer += 1
+
         if _z_level_change:
             try:
                 # rs.AddPoint(X,Y,Z)
@@ -99,14 +134,21 @@ with open(_FILE) as fid:
                     if len(LayerPoints) > 1:
                         #rs.AddPolyline(LayerPoints)
                         obj = rs.AddPointCloud(LayerPoints)
-                        #obj2 = rs.AddPointCloud(LayerPoints)
+                        rs.ObjectColor(obj, (getRGBfromI(100000 + _layer * 100)))
+                        rs.ObjectLayer(obj, layer='MW 3D Printer PointCloud')
 
-                    if _layer == 1:
-                        rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
-                    else:
-                        rs.AddLayer(name=str(_layer), visible=False, parent='MW 3D Printer Slices')
+                    # if _layer == 1:
+                    #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
+                    # else:
+                    #     rs.AddLayer(name=str(_layer), visible=True, parent='MW 3D Printer Slices')
+                    #
+                    # rs.ObjectLayer(obj, layer=str(_layer))
 
-                    rs.ObjectLayer(obj, layer=str(_layer))
+                    #if _layer == 1:
+                    #    rs.AddLayer(name=str(_layer), parent='MW 3D Printer PointCloud')
+
+                    # rs.ObjectLayer(obj, layer=str(_layer))
+
                 LayerPoints = []
                 _z_level_change = False
                 _layer += 1
@@ -115,11 +157,39 @@ with open(_FILE) as fid:
                 raise
                 pass
 
-        X1 = copy.deepcopy(X2)
-        Y1 = copy.deepcopy(Y2)
-        Z1 = copy.deepcopy(Z2)
+        #X1 = copy.deepcopy(X2)
+        #Y1 = copy.deepcopy(Y2)
+        #Z1 = copy.deepcopy(Z2)
 
         if _from_to_layer[1] != -1:
             if _layer == _from_to_layer[1]:
                 break
 
+# if _z_level_change:
+#     try:
+#         # rs.AddPoint(X,Y,Z)
+#         # rs.AddCylinder((X1, Y1, Z1), (X2, Y2 ,Z2), radius)
+#         if _layer >= _from_to_layer[0]:
+#             if len(LayerPoints) > 1:
+#                 # rs.AddPolyline(LayerPoints)
+#                 obj = rs.AddPointCloud(LayerPoints)
+#
+#                 # if _layer == 1:
+#                 #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
+#                 # else:
+#                 #     rs.AddLayer(name=str(_layer), visible=True, parent='MW 3D Printer Slices')
+#                 #
+#                 # rs.ObjectLayer(obj, layer=str(_layer))
+#
+#                 # if _layer == 1:
+#                 #    rs.AddLayer(name=str(_layer), parent='MW 3D Printer PointCloud')
+#
+#                 # rs.ObjectLayer(obj, layer=str(_layer))
+#
+#         LayerPoints = []
+#         _z_level_change = False
+#         _layer += 1
+#         # print _layer
+#     except:
+#         raise
+#         pass

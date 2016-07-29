@@ -1,4 +1,4 @@
-import copy, os
+import copy, os, subprocess
 
 try:
     import scriptcontext
@@ -164,18 +164,72 @@ def run_saver(objId):
 
 try:
     rs.UnselectAllObjects()
-    objId = rs.GetObject(message='Please select an Object: ', select=True)
-    objType = rs.ObjectType(objId)
+    objIds = rs.GetObjects(message='Please select an Object: ', select=True)
 
-    if objType == 32:
+    # color objects
+    correctplacement = True
+    for obj in objIds:
+        BB = rs.BoundingBox(obj)
+        rs.MoveObject(obj, [0, 0, -BB[0][2]])
+        BB = rs.BoundingBox(obj)
+
+        for point in BB:
+            if point[0] < 0 or point[0] > 220:
+                rs.ObjectColor(obj, (255, 0, 0))
+                correctplacement = False
+                break
+            else:
+                rs.ObjectColor(obj, (0, 255, 0))
+
+            if point[1] < 0 or point[1] > 220:
+                rs.ObjectColor(obj, (255, 0, 0))
+                correctplacement = False
+                break
+            else:
+                rs.ObjectColor(obj, (0, 255, 0))
+
+            if point[2] < 0 or point[2] > 220:
+                rs.ObjectColor(obj, (255, 0, 0))
+                correctplacement = False
+                break
+            else:
+                rs.ObjectColor(obj, (0, 255, 0))
+
+    if correctplacement:
         print 'SAVING STL'
-        run_saver(objId)
-    else:
-        print 'This is no mesh.'
-        run_saver(objId)
+        run_saver(objIds)
 
-    os.system(r"D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\mwAdditive3DPrinter.exe D:\StoreDaily\Mesh.stl")
+        # os.system(r"D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\mwAdditive3DPrinter.exe D:\StoreDaily\Mesh.stl")
+
+        ####
+
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
+
+        abscommand = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\mwAdditive3DPrinter.exe'
+
+        absargs = r'D:\StoreDaily\Mesh.stl'
+        command_string = abscommand + ' ' + absargs
+
+        print 'Starting slicer ...'
+
+        output = subprocess.Popen(command_string, startupinfo=startupinfo, stdout=subprocess.PIPE,
+                                  stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
+
+        print output
+
+        rs.Command(r'-_RunPythonScript D:\Development\GitRep\gcode2cutsim_V2\RhinoInterface\addPoints.py', True)
+
+        #if output.find('exception') == -1:
+        #    rs.Command(r'-_RunPythonScript D:\Development\GitRep\gcode2cutsim_V2\RhinoInterface\addPoints.py', True)
+        #else:
+        #    print 'Slicing failed.'
+
+    else:
+        print 'Please place the parts correct in build space'
+        rs.UnselectAllObjects()
+
 
 except:
     raise
-    pass
+

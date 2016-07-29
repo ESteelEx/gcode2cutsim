@@ -25,8 +25,9 @@ from CLUtilities import NCFileReader
 
 def startVerification(CLFile, NCiniFile):
     """starting Verification"""
-    command = '/bin/Verifier/VerifierApplicationSample.exe'
-    abscommand = os.getcwd() + command
+    command = r'D:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
+    # abscommand = os.getcwd() + command
+    abscommand = command
     params = NCiniFile
     print 'Opening ' + abscommand + ' with ' + NCiniFile
 
@@ -60,7 +61,7 @@ def main():
         NCFileR = NCFileReader.NCFileReader()
 
         # define constant vars
-        SIMPRECISION = 0.15 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.25 # precision of simulation be careful here / memory consumption
         # TODO define number of layer by a layer interval -> slider
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
@@ -260,7 +261,7 @@ def main():
 
         for line in fileinput.input(outputf, inplace = 1):
             stockDimStr = JobS.getStockDimensionStr()
-            print line.replace("STOCK", partDimStr),
+            print line.replace("STOCK", stockDimStr),
 
         print 'Done. CL file written - > ' + outputf
 

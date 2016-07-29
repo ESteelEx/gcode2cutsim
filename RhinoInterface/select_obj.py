@@ -160,18 +160,12 @@ def run_saver(objId):
 
     print "//export run ended/////////////"
 
-
 try:
     rs.UnselectAllObjects()
-    objId = rs.GetObject(message='Please select an Object: ', select=True)
-    objType = rs.ObjectType(objId)
+    objId = rs.GetObjects(message='Please select an Object: ', select=True)
 
-    if objType == 32:
-        print 'SAVING STL'
-        run_saver(objId)
-    else:
-        print 'This is no mesh.'
-        run_saver(objId)
+    print 'SAVING STL'
+    run_saver(objId)
 
 except:
     raise
