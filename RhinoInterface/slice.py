@@ -153,7 +153,7 @@ def run_saver(objId):
     }
 
     fileName = r'Mesh'
-    filePath = r'C:\StoreDaily\\'
+    filePath = r'D:\StoreDaily\\'
     MS = mesh_saver(fileName, filePath, settingsList)
 
     # MS.initExportByLayer("stl", True, False)
@@ -208,8 +208,6 @@ try:
 
 
 
-
-
         if correctplacement:
             print 'SAVING STL'
             run_saver(objIds)
@@ -217,9 +215,9 @@ try:
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
 
-            abscommand = r'C:\StoreDaily\mwAdditive3DPrinter.exe'
+            abscommand = r'D:\StoreDaily\mwAdditive3DPrinter.exe'
 
-            absargs = r'C:\StoreDaily\Mesh.stl'
+            absargs = r'D:\StoreDaily\Mesh.stl'
             command_string = abscommand + ' ' + absargs
 
             print 'Starting slicer ...'
@@ -228,6 +226,9 @@ try:
                                       stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
 
             output_list = str(output)
+            output_list_splitted = output_list.split('\\r\\n')
+            for message in output_list_splitted:
+                print message
 
             slice = True
             if output_list.find('exception') != -1:
@@ -235,7 +236,7 @@ try:
                 slice = False
 
             if slice:
-                rs.Command(r'-_RunPythonScript C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\RhinoInterface\addPoints.py', True)
+                rs.Command(r'-_RunPythonScript D:\Development\GitRep\gcode2cutsim_V2\RhinoInterface\addPoints.py', True)
 
         else:
             print 'Please place the parts correct in build space'

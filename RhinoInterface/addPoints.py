@@ -12,7 +12,7 @@ def getRGBfromI(RGBint):
 
 #_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\Bottle_Opener.gcode'
 #_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\bench_5-4-2016.gcode'
-_FILE = r'C:\StoreDaily\Mesh.gcode'
+_FILE = r'D:\StoreDaily\Mesh.gcode'
 #_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\bench_5-4-2016.gcode'
 #_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\Figure_of_man.gcode'
 
@@ -41,12 +41,14 @@ layer_end = -1
 _from_to_layer = [layer_start, layer_end]
 
 _layer = 0
-LayerPoints = []
-LayerPoints[0].append('fgf')
+LayerPoints = {}
+line_in_file = 0
 
 with open(_FILE) as fid:
 
     for line in fid:
+
+        line_in_file += 1
 
         if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
 
@@ -71,15 +73,17 @@ with open(_FILE) as fid:
                 else:
                     Z1 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
 
-            LayerPoints[0].append((X1, Y1, Z1))
+            LayerPoints[0] = [[X1, Y1, Z1]]
 
         break
 
     rs.AddLayer(name='MW 3D Printer PointCloud')
     rs.AddLayer(name='MW 3D Printer Perimeter')
-    g_zero_move = 0
+    g_zero_move = int(0)
 
     for line in fid:
+
+        line_in_file += 1
 
         if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
 
@@ -124,14 +128,18 @@ with open(_FILE) as fid:
                 _z_level_change = True
 
 
-            if _layer >= _from_to_layer[0]:
+            if _layer >= _from_to_layer[0] and not _z_level_change:
                 if line[0:3] == 'G0 ':
-                    LayerPoints.append([])
-                    # g_zero_move += 1
-                    LayerPoints[-1].append((X2, Y2, Z2))
+                    #if g_zero_move >= 1:
+                    #    LayerPoints[g_zero_move].append(LayerPoints[g_zero_move][0])
+                    g_zero_move += 1
+                    LayerPoints[g_zero_move] = [[X_G0, Y_G0, Z2]] # first point of next segment
                 else:
-                    print len(LayerPoints)
-                    LayerPoints[-1].append((X2, Y2, Z2))
+                    if len(LayerPoints) == 0:
+                        LayerPoints[g_zero_move] = [[X2, Y2, Z2]]
+                    else:
+                        LayerPoints[g_zero_move].append([X2, Y2, Z2])
+
 
         # if _z_level_change:
         #     _layer += 1
@@ -140,36 +148,44 @@ with open(_FILE) as fid:
             try:
                 # rs.AddPoint(X,Y,Z)
                 # rs.AddCylinder((X1, Y1, Z1), (X2, Y2 ,Z2), radius)
+                obj = []
+                obj_poly = []
                 if _layer >= _from_to_layer[0]:
                     if len(LayerPoints) > 1:
-                        #rs.AddPolyline(LayerPoints)
-                        obj = rs.AddPointCloud(LayerPoints)
-                        rs.ObjectColor(obj, (getRGBfromI(100000 + _layer * 100)))
-                        rs.ObjectLayer(obj, layer='MW 3D Printer PointCloud')
 
-                        obj_poly = rs.AddPolyline(LayerPoints)
-                        #rs.ObjectColor(obj_poly, (getRGBfromI(100000 + _layer * 100)))
-                        rs.ObjectLayer(obj_poly, layer='MW 3D Printer Perimeter')
+                        for segment, points in LayerPoints.iteritems():
+                            if len(points) > 1:
+                                obj.append(rs.AddPointCloud(points))
+                                rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
+                                rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
+                                rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
 
-                        # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=False)
+                                obj_poly.append(rs.AddPolyline(points))
+                                # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
+                                rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
+                                rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
 
 
-                    # if _layer == 1:
-                    #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
-                    # else:
-                    #     rs.AddLayer(name=str(_layer), visible=True, parent='MW 3D Printer Slices')
-                    #
-                    # rs.ObjectLayer(obj, layer=str(_layer))
+                                # fill up with volume
+                                # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
 
-                    #if _layer == 1:
-                    #    rs.AddLayer(name=str(_layer), parent='MW 3D Printer PointCloud')
+                        # if _layer == 1:
+                        #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
+                        # else:
+                        #     rs.AddLayer(name=str(_layer), visible=True, parent='MW 3D Printer Slices')
+                        #
+                        # rs.ObjectLayer(obj, layer=str(_layer))
 
-                    # rs.ObjectLayer(obj, layer=str(_layer))
+                        #if _layer == 1:
+                        #    rs.AddLayer(name=str(_layer), parent='MW 3D Printer PointCloud')
 
-                LayerPoints = []
+                        # rs.ObjectLayer(obj, layer=str(_layer))
+
+                LayerPoints = {}
                 g_zero_move = 0
                 _z_level_change = False
                 _layer += 1
+
                 # print _layer
             except:
                 raise
