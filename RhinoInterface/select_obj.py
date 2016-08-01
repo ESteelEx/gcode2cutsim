@@ -1,5 +1,5 @@
 import copy
-import saveSTL, scriptcontext
+import scriptcontext
 try:
     import rhinoscriptsyntax as rs
 except:
@@ -152,7 +152,7 @@ def run_saver(objId):
     }
 
     fileName = r'Mesh'
-    filePath = r'D:\StoreDaily\\'
+    filePath = r'C:\StoreDaily\\'
     MS = mesh_saver(fileName, filePath, settingsList)
 
     # MS.initExportByLayer("stl", True, False)

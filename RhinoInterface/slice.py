@@ -153,7 +153,7 @@ def run_saver(objId):
     }
 
     fileName = r'Mesh'
-    filePath = r'D:\StoreDaily\\'
+    filePath = r'C:\StoreDaily\\'
     MS = mesh_saver(fileName, filePath, settingsList)
 
     # MS.initExportByLayer("stl", True, False)
@@ -166,68 +166,80 @@ try:
     rs.UnselectAllObjects()
     objIds = rs.GetObjects(message='Please select an Object: ', select=True)
 
-    # color objects
-    correctplacement = True
-    for obj in objIds:
-        BB = rs.BoundingBox(obj)
-        rs.MoveObject(obj, [0, 0, -BB[0][2]])
-        BB = rs.BoundingBox(obj)
+    if objIds is not None:
+        # color objects
+        correctplacement = True
+        for obj in objIds:
+            BB = rs.BoundingBox(obj)
+            rs.MoveObject(obj, [0, 0, -BB[0][2]])
+            BB = rs.BoundingBox(obj)
 
-        for point in BB:
-            if point[0] < 0 or point[0] > 220:
-                rs.ObjectColor(obj, (255, 0, 0))
-                correctplacement = False
-                break
-            else:
-                rs.ObjectColor(obj, (0, 255, 0))
+            for point in BB:
+                if point[0] < 0 or point[0] > 241:
+                    rs.ObjectColor(obj, (255, 0, 0))
+                    correctplacement = False
+                    break
+                else:
+                    rs.ObjectColor(obj, (0, 255, 0))
 
-            if point[1] < 0 or point[1] > 220:
-                rs.ObjectColor(obj, (255, 0, 0))
-                correctplacement = False
-                break
-            else:
-                rs.ObjectColor(obj, (0, 255, 0))
+                if point[1] < 0 or point[1] > 209:
+                    rs.ObjectColor(obj, (255, 0, 0))
+                    correctplacement = False
+                    break
+                else:
+                    rs.ObjectColor(obj, (0, 255, 0))
 
-            if point[2] < 0 or point[2] > 220:
-                rs.ObjectColor(obj, (255, 0, 0))
-                correctplacement = False
-                break
-            else:
-                rs.ObjectColor(obj, (0, 255, 0))
+                if point[2] < 0 or point[2] > 205:
+                    rs.ObjectColor(obj, (255, 0, 0))
+                    correctplacement = False
+                    break
+                else:
+                    rs.ObjectColor(obj, (0, 255, 0))
 
-    if correctplacement:
-        print 'SAVING STL'
-        run_saver(objIds)
+        if len(objIds) > 1:
+            # proof if objects have intersections
+            for obj, i in zip(objIds, range(len(objIds))):
+                BB = rs.BoundingBox(obj)
 
-        # os.system(r"D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\mwAdditive3DPrinter.exe D:\StoreDaily\Mesh.stl")
+                for point in BB:
+                    print point[0]
+                    print point[1]
+                    print point[2]
 
-        ####
 
-        startupinfo = subprocess.STARTUPINFO()
-        startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
 
-        abscommand = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\mwAdditive3DPrinter.exe'
 
-        absargs = r'D:\StoreDaily\Mesh.stl'
-        command_string = abscommand + ' ' + absargs
 
-        print 'Starting slicer ...'
+        if correctplacement:
+            print 'SAVING STL'
+            run_saver(objIds)
 
-        output = subprocess.Popen(command_string, startupinfo=startupinfo, stdout=subprocess.PIPE,
-                                  stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
 
-        print output
+            abscommand = r'C:\StoreDaily\mwAdditive3DPrinter.exe'
 
-        rs.Command(r'-_RunPythonScript D:\Development\GitRep\gcode2cutsim_V2\RhinoInterface\addPoints.py', True)
+            absargs = r'C:\StoreDaily\Mesh.stl'
+            command_string = abscommand + ' ' + absargs
 
-        #if output.find('exception') == -1:
-        #    rs.Command(r'-_RunPythonScript D:\Development\GitRep\gcode2cutsim_V2\RhinoInterface\addPoints.py', True)
-        #else:
-        #    print 'Slicing failed.'
+            print 'Starting slicer ...'
 
-    else:
-        print 'Please place the parts correct in build space'
-        rs.UnselectAllObjects()
+            output = subprocess.Popen(command_string, startupinfo=startupinfo, stdout=subprocess.PIPE,
+                                      stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
+
+            output_list = str(output)
+
+            slice = True
+            if output_list.find('exception') != -1:
+                print 'SLICING FAILED. CONTROL SETTINGS.'
+                slice = False
+
+            if slice:
+                rs.Command(r'-_RunPythonScript C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\RhinoInterface\addPoints.py', True)
+
+        else:
+            print 'Please place the parts correct in build space'
+            rs.UnselectAllObjects()
 
 
 except:

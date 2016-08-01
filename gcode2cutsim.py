@@ -25,7 +25,7 @@ from CLUtilities import NCFileReader
 
 def startVerification(CLFile, NCiniFile):
     """starting Verification"""
-    command = r'D:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
+    command = r'C:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
     # abscommand = os.getcwd() + command
     abscommand = command
     params = NCiniFile
