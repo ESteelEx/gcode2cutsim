@@ -26,6 +26,7 @@ from CLUtilities import NCFileReader
 def startVerification(CLFile, NCiniFile):
     """starting Verification"""
     command = r'C:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
+    rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
     # abscommand = os.getcwd() + command
     abscommand = command
     params = NCiniFile
@@ -34,7 +35,10 @@ def startVerification(CLFile, NCiniFile):
     try:
         shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
     except:
-        raise
+        try:
+            shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=rel_command, lpParameters=params)
+        except:
+            pass
 
     try:
         shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)

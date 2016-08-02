@@ -169,6 +169,7 @@ try:
     if objIds is not None:
         # color objects
         correctplacement = True
+        print 'Checking positioning'
         for obj in objIds:
             BB = rs.BoundingBox(obj)
             rs.MoveObject(obj, [0, 0, -BB[0][2]])
@@ -197,15 +198,18 @@ try:
                     rs.ObjectColor(obj, (0, 255, 0))
 
         if len(objIds) > 1:
+            print 'Checking intersections'
             # proof if objects have intersections
             for obj, i in zip(objIds, range(len(objIds))):
-                BB = rs.BoundingBox(obj)
-
-                for point in BB:
-                    print point[0]
-                    print point[1]
-                    print point[2]
-
+                rs.ObjectColor(obj, (0, 255, 0))
+                objIds_tmp = copy.deepcopy(objIds)
+                objIds_tmp.remove(obj)
+                for objCompare in objIds_tmp:
+                    intersect = rs.MeshMeshIntersection(obj, objCompare)
+                    if intersect is not None:
+                        rs.ObjectColor(obj, (255, 0, 0))
+                        rs.ObjectColor(objCompare, (255, 0, 0))
+                        correctplacement = False
 
 
         if correctplacement:

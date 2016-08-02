@@ -5,16 +5,12 @@ except:
     pass
 
 def getRGBfromI(RGBint):
-    blue =  RGBint & 255
+    blue = RGBint & 255
     green = (RGBint >> 8) & 255
-    red =   (RGBint >> 16) & 255
+    red = (RGBint >> 16) & 255
     return red, green, blue
 
-#_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\Bottle_Opener.gcode'
-#_FILE = r'D:\Development\GitRep\gcode2cutsim_V2\bin\3DPrintModule\bench_5-4-2016.gcode'
 _FILE = r'D:\StoreDaily\Mesh.gcode'
-#_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\bench_5-4-2016.gcode'
-#_FILE = r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim\bin\3DPrintModule\Figure_of_man.gcode'
 
 X1 = 0
 Y1 = 0
@@ -28,16 +24,10 @@ radius = 0.4
 
 _z_level_change = False
 
+# it is possible to define a layer range that is displayed in CAD
+# default is layer 1 to end -> [1, -1]
 layer_start = 1
 layer_end = -1
-
-# layer_start = raw_input('Please define start layer: ')
-# if len(layer_start) == 0:
-#     layer_start = 1
-# layer_end = raw_input('Please define end layer: ')
-# if len(layer_end) == 0:
-#     layer_end = -1
-
 _from_to_layer = [layer_start, layer_end]
 
 _layer = 0
@@ -82,28 +72,23 @@ with open(_FILE) as fid:
     g_zero_move = int(0)
 
     for line in fid:
-
         line_in_file += 1
-
         if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
-
             if line[0:3] == 'G1 ':
-
                 pos_X = line.find('X')
                 if pos_X != -1:
                     pos_ws = line[pos_X:].find(' ')
                     X2 = float(line[pos_X+1:pos_ws+pos_X+1])
 
                 pos_Y = line.find('Y')
+
                 if pos_Y != -1:
                     pos_ws = line[pos_Y:].find(' ')
                     if pos_ws == -1:
                         Y2 = float(line[pos_Y + 1:])
                     else:
                         Y2 = float(line[pos_Y + 1:pos_ws + pos_Y+1])
-
             else:
-
                 pos_X = line.find('X')
                 if pos_X != -1:
                     pos_ws = line[pos_X:].find(' ')
@@ -117,7 +102,6 @@ with open(_FILE) as fid:
                     else:
                         Y_G0 = float(line[pos_Y + 1:pos_ws + pos_Y + 1])
 
-
             pos_Z = line.find('Z')
             if pos_Z != -1:
                 pos_ws = line[pos_Z:].find(' ')
@@ -126,7 +110,6 @@ with open(_FILE) as fid:
                 else:
                     Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
                 _z_level_change = True
-
 
             if _layer >= _from_to_layer[0] and not _z_level_change:
                 if line[0:3] == 'G0 ':
@@ -140,19 +123,12 @@ with open(_FILE) as fid:
                     else:
                         LayerPoints[g_zero_move].append([X2, Y2, Z2])
 
-
-        # if _z_level_change:
-        #     _layer += 1
-
         if _z_level_change:
             try:
-                # rs.AddPoint(X,Y,Z)
-                # rs.AddCylinder((X1, Y1, Z1), (X2, Y2 ,Z2), radius)
                 obj = []
                 obj_poly = []
                 if _layer >= _from_to_layer[0]:
                     if len(LayerPoints) > 1:
-
                         for segment, points in LayerPoints.iteritems():
                             if len(points) > 1:
                                 obj.append(rs.AddPointCloud(points))
@@ -164,7 +140,6 @@ with open(_FILE) as fid:
                                 # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
                                 rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
                                 rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
-
 
                                 # fill up with volume
                                 # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
@@ -186,7 +161,6 @@ with open(_FILE) as fid:
                 _z_level_change = False
                 _layer += 1
 
-                # print _layer
             except:
                 raise
                 pass
