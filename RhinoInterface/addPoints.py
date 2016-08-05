@@ -67,8 +67,27 @@ with open(_FILE) as fid:
 
         break
 
-    rs.AddLayer(name='MW 3D Printer PointCloud')
-    rs.AddLayer(name='MW 3D Printer Perimeter')
+    # check if a previous calculation exists
+    if rs.IsLayer('MW 3D Printer PointCloud'):
+        if rs.IsLayer('MW 3D Printer PointCloud_OLD'):
+            rs.DeleteLayer('MW 3D Printer PointCloud_OLD')
+            rs.RenameLayer('MW 3D Printer PointCloud', 'MW 3D Printer PointCloud_OLD')
+        else:
+            rs.RenameLayer('MW 3D Printer PointCloud', 'MW 3D Printer PointCloud_OLD')
+        rs.AddLayer(name='MW 3D Printer PointCloud')
+    else:
+        rs.AddLayer(name='MW 3D Printer PointCloud')
+
+    if rs.IsLayer('MW 3D Printer Perimeter'):
+        if rs.IsLayer('MW 3D Printer Perimeter_OLD'):
+            rs.DeleteLayer('MW 3D Printer Perimeter_OLD')
+            rs.RenameLayer('MW 3D Printer Perimeter', 'MW 3D Printer Perimeter_OLD')
+        else:
+            rs.RenameLayer('MW 3D Printer Perimeter', 'MW 3D Printer Perimeter_OLD')
+        rs.AddLayer(name='MW 3D Printer Perimeter')
+    else:
+        rs.AddLayer(name='MW 3D Printer Perimeter')
+
     g_zero_move = int(0)
 
     for line in fid:

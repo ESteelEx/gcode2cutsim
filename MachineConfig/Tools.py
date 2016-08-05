@@ -25,9 +25,9 @@ class Tools:
         # ELOverlap = 0
         #
         # Renishaw
-        #LayerThickness = 0.1
-        #LayerWidth = 0.20
-        #ELOverlap = 0.15
+        # LayerThickness = 0.1
+        # LayerWidth = 0.20
+        # ELOverlap = 0.15
 
         getcontext().prec = 4 # set precision for decimal class
 
@@ -37,9 +37,14 @@ class Tools:
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
         if xWithOverlap >= 0:
+            # geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
+            #               str(Decimal(RWithOverlap)) + \
+            #               ' astart 270 asweep 180'
+
             geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
                           str(Decimal(RWithOverlap)) + \
                           ' astart 270 asweep 180'
+
         else:
             geometryStr = None
 

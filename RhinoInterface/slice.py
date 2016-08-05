@@ -207,6 +207,9 @@ try:
                 for objCompare in objIds_tmp:
                     intersect = rs.MeshMeshIntersection(obj, objCompare)
                     if intersect is not None:
+
+                        obj_bool = rs.MeshBooleanIntersection(obj, objCompare, delete_input=False)
+
                         rs.ObjectColor(obj, (255, 0, 0))
                         rs.ObjectColor(objCompare, (255, 0, 0))
                         correctplacement = False
