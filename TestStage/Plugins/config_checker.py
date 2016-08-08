@@ -103,7 +103,7 @@ class config_checker():
         # proof parameters of sections
         section_differ = []
         for key in intersection_list:
-            print bcolors.BOLD + 'TESTING: ' + key + bcolors.END
+            print bcolors.BOLD + 'CHECKING: ' + key + bcolors.END
             # from MASTER side
             differ_params_orig = list(set(self.section_param_orig[key]).
                                  difference(self.section_param_test[key]))
@@ -146,14 +146,15 @@ class config_checker():
             self.section_comments_test[section] = ini_worker.get_comments_by_section(self.config_test, section)
 
         for key_section, comments_dict in self.section_comments_test.iteritems():
-            print 'TESTING: ' + key_section
+            print 'CHECKING: ' + key_section
             if len(comments_dict) == 0:
                 print bcolors.RED + 'SECTION ' + key_section + ': COMMENT -> MISSING ' + bcolors.END
             else:
-                for param_orig in self.section_param_orig[section]:
-                    print param_orig
-                    if param_orig in comments_dict:
-                        print 'i am in'
+                pass
+               # for param_orig in self.section_param_orig[section]:
+               #     print param_orig
+               #     if param_orig in comments_dict:
+               #         print 'i am in'
 
 
 

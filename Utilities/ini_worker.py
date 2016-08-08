@@ -84,3 +84,37 @@ def get_comments_by_section(fileName, section):
                         break
 
     return comment_dict
+
+# ------------------------------------------------------------------------------------------------------------------
+def write_to_section(fileName, section, param, param_value):
+    """
+
+    :param fileName:
+    :param section:
+    :return:
+    """
+    with open(fileName) as fh:
+        ini_content = fh.readlines()
+        for i, j in zip(ini_content, range(len(ini_content))):
+            if i.strip().find('[') == 0:
+                if i[1:-2] == section:
+                    section_end = False
+                    for ii, jj in zip(ini_content[j+1:], range(len(ini_content[j+1]))):
+                        if ii.strip().find('[') == 0:
+                            section_end = True
+                            break
+                        if len(ii.strip()) != 0:
+                            for iii, jjj in zip(ini_content[jj+j+1:], range(len(ini_content[jj+j+1:])) ):
+                                if iii.strip().find('=') > 1:
+                                    key = iii.split('=')[0]
+                                    if key == param:
+                                        ini_content[jj+j+jjj+1] = key + '=' + str(param_value) + '\n'
+
+                    if section_end:
+                        break
+
+    fh = open(fileName, 'w')
+    for line in ini_content:
+        fh.write(line)
+
+    fh.close()

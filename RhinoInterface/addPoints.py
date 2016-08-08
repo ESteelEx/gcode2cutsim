@@ -10,7 +10,7 @@ def getRGBfromI(RGBint):
     red = (RGBint >> 16) & 255
     return red, green, blue
 
-_FILE = r'D:\StoreDaily\Mesh.gcode'
+_FILE = r'C:\StoreDaily\Mesh.gcode'
 
 X1 = 0
 Y1 = 0
@@ -70,21 +70,26 @@ with open(_FILE) as fid:
     # check if a previous calculation exists
     if rs.IsLayer('MW 3D Printer PointCloud'):
         if rs.IsLayer('MW 3D Printer PointCloud_OLD'):
-            rs.DeleteLayer('MW 3D Printer PointCloud_OLD')
+            rs.PurgeLayer('MW 3D Printer PointCloud_OLD')
             rs.RenameLayer('MW 3D Printer PointCloud', 'MW 3D Printer PointCloud_OLD')
+            rs.LayerVisible('MW 3D Printer PointCloud_OLD', visible=False)
         else:
             rs.RenameLayer('MW 3D Printer PointCloud', 'MW 3D Printer PointCloud_OLD')
-        rs.AddLayer(name='MW 3D Printer PointCloud')
+            rs.LayerVisible('MW 3D Printer PointCloud_OLD', visible=False)
+        rs.AddLayer(name='MW 3D Printer PointCloud', visible=False)
     else:
-        rs.AddLayer(name='MW 3D Printer PointCloud')
+        rs.AddLayer(name='MW 3D Printer PointCloud', visible=False)
 
     if rs.IsLayer('MW 3D Printer Perimeter'):
         if rs.IsLayer('MW 3D Printer Perimeter_OLD'):
-            rs.DeleteLayer('MW 3D Printer Perimeter_OLD')
+            rs.PurgeLayer('MW 3D Printer Perimeter_OLD')
             rs.RenameLayer('MW 3D Printer Perimeter', 'MW 3D Printer Perimeter_OLD')
+            rs.LayerVisible('MW 3D Printer Perimeter_OLD', visible=False)
         else:
             rs.RenameLayer('MW 3D Printer Perimeter', 'MW 3D Printer Perimeter_OLD')
+            rs.LayerVisible('MW 3D Printer Perimeter_OLD', visible=False)
         rs.AddLayer(name='MW 3D Printer Perimeter')
+        rs.LayerVisible('MW 3D Printer Perimeter', visible=True)
     else:
         rs.AddLayer(name='MW 3D Printer Perimeter')
 
@@ -157,6 +162,7 @@ with open(_FILE) as fid:
 
                                 obj_poly.append(rs.AddPolyline(points))
                                 # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
+                                rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
                                 rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
                                 rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
 
@@ -187,3 +193,4 @@ with open(_FILE) as fid:
         if _from_to_layer[1] != -1:
             if _layer == _from_to_layer[1]:
                 break
+
