@@ -118,7 +118,15 @@ class control1stLayer:
         from Utilities import ini_worker
         reload(ini_worker)
 
-        try:
-            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'cross', 1)
-        except:
-            raise
+        if pattern == 'parallel':
+            print 'Infill pattern set to parallel'
+            try:
+                ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'cross', 0)
+            except:
+                raise
+        elif pattern == 'cross':
+            print 'Infill pattern set to cross'
+            try:
+                ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'cross', 1)
+            except:
+                raise
