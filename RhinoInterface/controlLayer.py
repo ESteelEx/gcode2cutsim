@@ -34,7 +34,7 @@ import sys
 import rhinoscriptsyntax as rs
 
 
-class control1stLayer:
+class controlLayer:
     def __init__(self, feature, pluginPath, corePath):
         self.feature = feature  # string defines what to control on 1st Layer. Use as specified in INI file
         self.pluginPath = pluginPath
@@ -73,6 +73,24 @@ class control1stLayer:
 
         try:
             ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'perimeterCount', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_path_width(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define path width: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'pathWidth', num)
         except:
             raise
 
@@ -130,3 +148,39 @@ class control1stLayer:
                 ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'cross', 1)
             except:
                 raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_slicer_height(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define layer height [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'layerHeight', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_first_layer_slicer_height(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define first layer height [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'firstLayerHeight', num)
+        except:
+            raise

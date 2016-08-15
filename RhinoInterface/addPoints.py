@@ -88,10 +88,9 @@ with open(_FILE) as fid:
         else:
             rs.RenameLayer('MW 3D Printer Perimeter', 'MW 3D Printer Perimeter_OLD')
             rs.LayerVisible('MW 3D Printer Perimeter_OLD', visible=False)
-        rs.AddLayer(name='MW 3D Printer Perimeter')
-        rs.LayerVisible('MW 3D Printer Perimeter', visible=True)
+        rs.AddLayer(name='MW 3D Printer Perimeter', visible=True)
     else:
-        rs.AddLayer(name='MW 3D Printer Perimeter')
+        rs.AddLayer(name='MW 3D Printer Perimeter', visible=True)
 
     g_zero_move = int(0)
 
