@@ -10,25 +10,16 @@ __version__= 1.0
 class JobSetup:
     # ------------------------------------------------------------------------------------------------------------------
     def __init__(self):
-        # TODO py for machine configuration read out (XML)
         self.MACHINENAME = 'ULTIMAKER2'
         self.FILAMENTDIAMETER = 0.285 # [mm] diameter
         self.HOMEPOSITION = [0, 0, 0]
-        self.BEDDEFINITION = [50, 50, 100] # Dimensions of Ultimaker 2 print area [mm^3]
-        self.STOCKDEFINITION = [0.1, 0.1, 0.1, 0.2, 0.2, 0.2] # size of stock. Is needed for cutsim set up.
-
-    # ------------------------------------------------------------------------------------------------------------------
-    def getStockDimensionStr(self):
-
-        stockdimstr = 'STOCK '
-        for i in self.STOCKDEFINITION:
-            stockdimstr += str(i) + ' '
-
-        return stockdimstr
+        self.BEDDEFINITION = [220, 220, 200] # Dimensions of Ultimaker 2 print area [mm^3]
+        self.ADDITIVEBOX = [0, 0, 0, 10, 10, 10]
+        self.STOCKDEFINITION = [5, 5, 5, 5.1, 5.1, 5.1] # size of stock. Is needed for cutsim set up. placeit middle of additive box
+        self.STOCKDICEDIM = 0.2
 
     # ------------------------------------------------------------------------------------------------------------------
     def getBedDimensionStr(self):
-
         beddimstr = 'ADDITIVEBOX -50 -50 0 '
         for i in self.BEDDEFINITION:
             beddimstr += str(i) + ' '
@@ -43,11 +34,28 @@ class JobSetup:
 
         return homeposstr
 
-    def getPartDimensionStr(self, PARTDEFINITION=[0, 0, 0, 200, 200, 200]):
+    # ------------------------------------------------------------------------------------------------------------------
+    def getABDimensionStr(self):
         partdimstr = 'ADDITIVEBOX '
-        for i in PARTDEFINITION:
+        for i in self.ADDITIVEBOX:
             partdimstr += str(i) + ' '
 
         partdimstr += ' ;'
 
         return partdimstr
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def getStockDimensionStr(self):
+        stockdimstr = 'STOCK '
+        for i in self.STOCKDEFINITION:
+            stockdimstr += str(i) + ' '
+
+        return stockdimstr
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_stock_position(self):
+        X_MID = ((self.ADDITIVEBOX[3] - self.ADDITIVEBOX[0]) / float(2)) + self.ADDITIVEBOX[0]
+        Y_MID = ((self.ADDITIVEBOX[4] - self.ADDITIVEBOX[1]) / float(2)) + self.ADDITIVEBOX[1]
+        Z_MID = ((self.ADDITIVEBOX[5] - self.ADDITIVEBOX[2]) / float(2)) + self.ADDITIVEBOX[2]
+
+        self.STOCKDEFINITION = [X_MID, Y_MID, 0, X_MID + self.STOCKDICEDIM, Y_MID + self.STOCKDICEDIM, self.STOCKDICEDIM]

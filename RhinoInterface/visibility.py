@@ -16,7 +16,7 @@ import sys
 import rhinoscriptsyntax as rs
 
 class visibility:
-    def __init__(self, pluginPath, corePath):
+    def __init__(self, corePath, pluginPath):
         self.pluginPath = pluginPath
         self.corePath = corePath
 
@@ -30,3 +30,31 @@ class visibility:
         else:
             rs.LayerVisible('MW 3D Printer PointCloud', visible=False)
             rs.LayerVisible('MW 3D Printer Perimeter', visible=True)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_mesh_objects(self):
+        sys.path.append(self.pluginPath)
+
+        object_ids = rs.ObjectsByType(32 | 16, True)
+        objects_visible = True
+        view = rs.CurrentView()
+
+        for obj in object_ids:
+            if not rs.IsVisibleInView(obj, view):
+                objects_visible = False
+                break
+
+        # if objects_visible:
+        #     rs.HideObjects(object_ids)
+        # else:
+        #
+        # if len(object_ids) != 0:
+        #     rs.HideObjects(object_ids)
+        # else:
+        #     object_ids = rs.ObjectsByType(32 | 16, True, state=4)
+        #     rs.ShowObjects(object_ids)
+
+
+
+
+

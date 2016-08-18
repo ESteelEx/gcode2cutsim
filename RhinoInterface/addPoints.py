@@ -10,7 +10,7 @@ def getRGBfromI(RGBint):
     red = (RGBint >> 16) & 255
     return red, green, blue
 
-_FILE = r'C:\StoreDaily\Mesh.gcode'
+_FILE = r'D:\StoreDaily\Mesh.gcode'
 
 X1 = 0
 Y1 = 0

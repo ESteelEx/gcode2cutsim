@@ -20,6 +20,8 @@ from CLUtilities import ExtrusionUtil
 from CLUtilities import StrManipulator
 from CLUtilities import evaluateGCode
 from CLUtilities import NCFileReader
+from CLUtilities import configData
+from Utilities import ini_worker
 
 # warnings.filterwarnings("ignore")
 
@@ -40,10 +42,10 @@ def startVerification(CLFile, NCiniFile):
         except:
             pass
 
-    try:
-        shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
-    except:
-        raise
+    # try:
+    #     shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
+    # except:
+    #     raise
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -63,9 +65,10 @@ def main():
         JobS = JobSetup.JobSetup()
         evalGcode = evaluateGCode.evaluateGcode()
         NCFileR = NCFileReader.NCFileReader()
+        CD = configData()
 
         # define constant vars
-        SIMPRECISION = 0.25 # precision of simulation be careful here / memory consumption
+        SIMPRECISION = 0.2 # default precision of simulation. precision is increased when layer thickness is smaller
         # TODO define number of layer by a layer interval -> slider
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
@@ -88,13 +91,20 @@ def main():
             inputf = path + '\\' + str(filename)[3:-2]
             inputParams += [inputf]
             inputParams += ['-sim']
-        else:
+        elif len(inputParams) >= 2:
             if not os.path.isfile(inputParams[1]):
                 print 'no such file -> ' + str(inputParams[1])
                 return
             else:
                 inputf = str(inputParams[1])
                 inputParams += ['-sim']
+
+            if len(inputParams) == 3:
+                if not os.path.isfile(inputParams[2]):
+                    print 'no config file -> ' + str(inputParams[1])
+                    return
+                else:
+                    ini_worker.get_sections_list_from_ini(inputParams[1])
 
         pointpos = inputf.rfind('.')
         if pointpos != -1:
@@ -112,7 +122,7 @@ def main():
         zValMachine = 0
         LayerThickness = 0
         # EXTRUSIONLINEOVERLAP = 0 # [mm]
-        ExtrusionLineOverlap = 0.2 # percent
+        ExtrusionLineOverlap = 0 # percent
         # EXTENDADDITIVEBOX = 1 # [mm]
         extendAdditiveBox = 1 # [mm]
         lineLloop = None
@@ -198,6 +208,9 @@ def main():
                                                                          ELOverlap=ExtrusionLineOverlap)
                         CLWriter.writeToolChange(geometryStr)
                         LayerThickness = LayerThicknessForerun
+                        print LayerThickness
+                        if LayerThickness < SIMPRECISION:
+                            SIMPRECISION = LayerThickness
                     zValMachine = zValForerun
 
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
@@ -233,7 +246,6 @@ def main():
                     if currentMachinePos is not None:
                         currentMachinePos = (currentMachinePos[1], currentMachinePos[2]) # X,Y
 
-
                 # write g-code to cutsim format
                 if startParsing == True:
                     line = line.rstrip('\n') # remove next line chars
@@ -243,12 +255,12 @@ def main():
                     line = StrManipulate.insertWS(line, 'X')
                     line = StrManipulate.insertWS(line, 'Y')
                     line = StrManipulate.insertWS(line, 'Z')
-                    if lineC[0:2] == 'G1':
+                    if lineC[0:3] == 'G1 ':
                         CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                         evalGcode.saveAxValLimits('X', lineC)
                         evalGcode.saveAxValLimits('Y', lineC)
 
-                    elif lineC[0:2] == 'G0': # rapid move
+                    elif lineC[0:3] == 'G0 ': # rapid move
                         CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                         evalGcode.saveAxValLimits('Z', lineC)
 
@@ -256,14 +268,22 @@ def main():
 
         AdditiveBoxDim = evalGcode.getSavedAxLimits()
 
-        partDimStr = JobS.getPartDimensionStr(PARTDEFINITION=[AdditiveBoxDim[0]['X'] - extendAdditiveBox, AdditiveBoxDim[0]['Y'] - extendAdditiveBox,
-                                                              AdditiveBoxDim[0]['Z'] - extendAdditiveBox, AdditiveBoxDim[1]['X'] + extendAdditiveBox,
-                                                              AdditiveBoxDim[1]['Y'] + extendAdditiveBox, AdditiveBoxDim[1]['Z'] + extendAdditiveBox])
+        ADDITIVEBOX = [AdditiveBoxDim[0]['X'] - extendAdditiveBox, AdditiveBoxDim[0]['Y'] - extendAdditiveBox,
+                          AdditiveBoxDim[0]['Z'] - extendAdditiveBox, AdditiveBoxDim[1]['X'] + extendAdditiveBox,
+                          AdditiveBoxDim[1]['Y'] + extendAdditiveBox, AdditiveBoxDim[1]['Z'] + extendAdditiveBox]
 
-        for line in fileinput.input(outputf, inplace = 1):
+        JobS.ADDITIVEBOX = ADDITIVEBOX
+
+        partDimStr = JobS.getABDimensionStr()
+
+        for line in fileinput.input(outputf, inplace=1):
             print line.replace("ADDITIVEBOX", partDimStr),
 
-        for line in fileinput.input(outputf, inplace = 1):
+        # find position of stock model
+        JobS.set_stock_position()
+
+        for line in fileinput.input(outputf, inplace=1):
+
             stockDimStr = JobS.getStockDimensionStr()
             print line.replace("STOCK", stockDimStr),
 
@@ -308,5 +328,5 @@ if __name__ == '__main__':
     G2CLOG.closeLogging()
 
     # open log file
-    params = 'MWG2C.log'
-    shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=params)
+    # params = 'MWG2C.log'
+    # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=params)

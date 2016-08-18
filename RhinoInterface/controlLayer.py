@@ -184,3 +184,21 @@ class controlLayer:
             ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'firstLayerHeight', num)
         except:
             raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_rotation_angle(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define rotation angle of pattern [deg]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'angle', num)
+        except:
+            raise

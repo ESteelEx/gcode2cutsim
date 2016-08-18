@@ -115,9 +115,6 @@ def write_to_section(fileName, section, param, param_value):
                                     if key == param:
                                         ini_content[jj+j+jjj+1] = key + '=' + str(param_value) + '\n'
 
-
-
-
     fh = open(fileName, 'w')
     for line in ini_content:
         fh.write(line)

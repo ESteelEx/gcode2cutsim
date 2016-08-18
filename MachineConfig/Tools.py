@@ -19,7 +19,7 @@ class Tools:
         geometrieStr: complete NC string to be used for CL file
         """
 
-        # # SLM
+        # SLM
         # LayerThickness = 0.03
         # LayerWidth = 0.04
         # ELOverlap = 0
@@ -36,14 +36,39 @@ class Tools:
         xWithOverlap = Decimal(x) + (Decimal(x) * Decimal(ELOverlap))
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
-        if xWithOverlap >= 0:
-            # geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
-            #               str(Decimal(RWithOverlap)) + \
-            #               ' astart 270 asweep 180'
+        revolve_shape = 'real_extrusion'
 
-            geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
-                          str(Decimal(RWithOverlap)) + \
-                          ' astart 270 asweep 180'
+        if xWithOverlap >= 0:
+
+            if revolve_shape == 'real_extrusion':
+                # rectangle with rounded faces as spheres.
+                geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
+                              str(Decimal(RWithOverlap)) + \
+                              ' astart 270 asweep 180'
+
+            elif revolve_shape == 'rhomb':
+                # rhombus - two lines that mark an arrow
+                geometryStr = 'line ps ' + \
+                              str(Decimal(xWithOverlap)) + \
+                              ' 0 ' + \
+                              ' pe ' + \
+                              str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + ' ' + \
+                              str(Decimal(RWithOverlap)) + '\n' + \
+                              ' line ps ' + \
+                              str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + ' ' + \
+                              str(Decimal(RWithOverlap)) + \
+                              ' pe ' + \
+                              str(Decimal(xWithOverlap)) + ' ' + \
+                              str(2 * Decimal(RWithOverlap))
+
+            elif revolve_shape == 'rectangle':
+                # rectangle - line in vertical and then revolve
+                geometryStr = 'line ps ' + \
+                              str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + \
+                              ' 0 ' + \
+                              ' pe ' + \
+                              str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + ' ' + \
+                              str(2 * Decimal(RWithOverlap))
 
         else:
             geometryStr = None
