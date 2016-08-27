@@ -152,7 +152,7 @@ def run_saver(objId):
     }
 
     fileName = r'Mesh'
-    filePath = r'C:\StoreDaily\\'
+    filePath = r'D:\StoreDaily\\'
     MS = mesh_saver(fileName, filePath, settingsList)
 
     # MS.initExportByLayer("stl", True, False)

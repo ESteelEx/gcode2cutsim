@@ -1,3 +1,3 @@
 import os
 
-os.system(r"notepad.exe C:\StoreDaily\Mesh.ini")
+os.system(r"notepad.exe D:\StoreDaily\Mesh.ini")
