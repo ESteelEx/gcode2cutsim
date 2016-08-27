@@ -36,7 +36,7 @@ class Tools:
         xWithOverlap = Decimal(x) + (Decimal(x) * Decimal(ELOverlap))
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
-        revolve_shape = 'real_extrusion'
+        revolve_shape = 'rectangle'
 
         if xWithOverlap >= 0:
 

@@ -7,7 +7,7 @@ from Utilities import ini_worker
 
 reload(ini_worker)
 
-INI_CONFIG = r'C:\StoreDaily\Mesh.ini'
+INI_CONFIG = r'D:\StoreDaily\Mesh.ini'
 
 section_params = ini_worker.get_section_from_ini(INI_CONFIG, 'INFILL')
 

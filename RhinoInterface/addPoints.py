@@ -159,14 +159,20 @@ with open(_FILE) as fid:
                                 rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
                                 rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
 
-                                obj_poly.append(rs.AddPolyline(points))
-                                # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
-                                rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
-                                rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
-                                rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
+                                try:
+                                    obj_poly.append(rs.AddPolyline(points))
 
-                                # fill up with volume
-                                # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
+                                    # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
+                                    rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
+                                    rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
+                                    rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
+
+                                    # fill up with volume
+                                    # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
+
+                                except:
+                                    print 'Point ignored. No polyline possible'
+
 
                         # if _layer == 1:
                         #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')

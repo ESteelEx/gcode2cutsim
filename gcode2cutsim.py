@@ -65,7 +65,7 @@ def main():
         JobS = JobSetup.JobSetup()
         evalGcode = evaluateGCode.evaluateGcode()
         NCFileR = NCFileReader.NCFileReader()
-        CD = configData()
+        # CD = configData.configData()
 
         # define constant vars
         SIMPRECISION = 0.2 # default precision of simulation. precision is increased when layer thickness is smaller
@@ -105,6 +105,7 @@ def main():
                     return
                 else:
                     ini_worker.get_sections_list_from_ini(inputParams[1])
+                    inputParams += ['-sim']
 
         pointpos = inputf.rfind('.')
         if pointpos != -1:
@@ -289,8 +290,8 @@ def main():
 
         print 'Done. CL file written - > ' + outputf
 
-        if len(inputParams) == 3:
-            if inputParams[2] == '-sim':
+        if len(inputParams) >= 3:
+            if inputParams[-1] == '-sim':
                 print 'Starting verification'
                 # writing configuration (start options) file for verifier
                 # TODO create own def to write ini file
