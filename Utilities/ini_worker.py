@@ -93,6 +93,7 @@ def write_to_section(fileName, section, param, param_value):
     :param section:
     :return:
     """
+
     with open(fileName) as fh:
         ini_content = fh.readlines()
         section_end = False
@@ -110,7 +111,7 @@ def write_to_section(fileName, section, param, param_value):
                                 if iii.strip().find('[') == 0:
                                     section_end = True
                                     break
-                                if iii.strip().find('=') > 1:
+                                if iii.strip().replace(' ', '').find('=') > 1:
                                     key = iii.split('=')[0]
                                     if key == param:
                                         ini_content[jj+j+jjj+1] = key + '=' + str(param_value) + '\n'

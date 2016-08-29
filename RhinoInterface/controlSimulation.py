@@ -1,11 +1,5 @@
-import sys
-
-sys.path.append(r'C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim')
-
+import os, sys
 import rhinoscriptsyntax as rs
-from Utilities import ini_worker
-
-reload(ini_worker)
 
 class controlSimulation():
     def __init__(self, feature, pluginPath, corePath):
@@ -16,6 +10,11 @@ class controlSimulation():
 
     # ------------------------------------------------------------------------------------------------------------------
     def set_sweep_shape(self, sweepShape='rectangle'):
+        sys.path.append(self.pluginPath)
+        print self.pluginPath
+        print os.getcwd()
+        from Utilities import ini_worker
+        reload(ini_worker)
 
         section_params = ini_worker.get_section_from_ini(self.INI_CONFIG, 'SIMULATION')
 

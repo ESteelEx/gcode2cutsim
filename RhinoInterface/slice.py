@@ -3,6 +3,7 @@ import copy, os, subprocess
 try:
     import scriptcontext
     import rhinoscriptsyntax as rs
+    import addPoints
 except:
     pass
 
@@ -252,7 +253,8 @@ def slicer(pluginPath, corePath, scriptPath):
 
                 if slice:
                     print scriptPath
-                    rs.Command(r'-_RunPythonScript ' + scriptPath + r'\addPoints.py', True)
+                    AP = addPoints.addPoints(pluginPath, corePath)
+                    AP.flush_data()
 
             else:
                 print 'Please place the parts correct in build space'

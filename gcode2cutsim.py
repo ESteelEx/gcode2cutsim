@@ -25,10 +25,15 @@ from Utilities import ini_worker
 
 # warnings.filterwarnings("ignore")
 
-def startVerification(CLFile, NCiniFile):
+def startVerification(CLFile, NCiniFile, WD):
     """starting Verification"""
-    command = r'C:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
-    rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+    if WD == '':
+        command = r'C:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
+        rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+    else:
+        command = WD + r'\bin\Verifier\VerifierApplicationSample.exe'
+        rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+
     # abscommand = os.getcwd() + command
     abscommand = command
     params = NCiniFile
@@ -59,6 +64,7 @@ def main():
 
     try:
         # initialize classes
+        WD = ''
         Tool = Tools.Tools() # initialize Tools
         ExUtil = ExtrusionUtil.ExtrusionUtil()
         StrManipulate = StrManipulator.StrManipulator()
@@ -104,6 +110,12 @@ def main():
                     return
                 else:
                     CD = configData.configData(inputParams[2])
+
+                    # get working directory when Mesh.ini was passed via command line
+                    splittedStr = inputParams[2].split('\\')[:-1]
+                    for item in splittedStr:
+                        WD = WD + item + '\\'
+
                     Tool = Tools.Tools(configData=CD)  # initialize Tools
                     inputParams += ['-sim']
 
@@ -312,11 +324,12 @@ def main():
                 fh.write('model=3\n')
                 fh.close()
 
-                startVerification(outputf, NCiniFile)
+                startVerification(outputf, NCiniFile, WD)
 
         G2CLOG.wlog('INFO', 'All jobs done ...')
 
     except Exception as e:
+        raise
         message = traceback.format_exc().splitlines() # get last error and prepare to write it in logger
         for i in message:
             G2CLOG.wlog('ERROR', str(i))

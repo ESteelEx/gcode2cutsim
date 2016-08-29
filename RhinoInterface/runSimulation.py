@@ -7,6 +7,7 @@ class runSimulation():
 
     # ------------------------------------------------------------------------------------------------------------------
     def execute(self):
+        sys.path.append(self.pluginPath)
         os.system(self.corePath + r"\gcode2cutsimFDM.exe " +
                   self.corePath + r"\Mesh.gcode " +
                   self.corePath + r"\Mesh.ini")
