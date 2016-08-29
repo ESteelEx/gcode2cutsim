@@ -27,7 +27,7 @@ from Utilities import ini_worker
 
 def startVerification(CLFile, NCiniFile):
     """starting Verification"""
-    command = r'D:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
+    command = r'C:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
     rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
     # abscommand = os.getcwd() + command
     abscommand = command
@@ -65,7 +65,7 @@ def main():
         JobS = JobSetup.JobSetup()
         evalGcode = evaluateGCode.evaluateGcode()
         NCFileR = NCFileReader.NCFileReader()
-        # CD = configData.configData()
+
 
         # define constant vars
         SIMPRECISION = 0.2 # default precision of simulation. precision is increased when layer thickness is smaller
@@ -97,14 +97,14 @@ def main():
                 return
             else:
                 inputf = str(inputParams[1])
-                inputParams += ['-sim']
 
             if len(inputParams) == 3:
                 if not os.path.isfile(inputParams[2]):
                     print 'no config file -> ' + str(inputParams[1])
                     return
                 else:
-                    ini_worker.get_sections_list_from_ini(inputParams[1])
+                    CD = configData.configData(inputParams[2])
+                    Tool = Tools.Tools(configData=CD)  # initialize Tools
                     inputParams += ['-sim']
 
         pointpos = inputf.rfind('.')

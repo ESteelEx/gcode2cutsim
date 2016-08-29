@@ -8,8 +8,8 @@ from decimal import *
 
 # ----------------------------------------------------------------------------------------------------------------------
 class Tools:
-    def __init__(self):
-        pass
+    def __init__(self, configData=None):
+        self.CD = configData
 
     def getGeometry(self, LayerThickness=0.2, LayerWidth=0.48, ELOverlap=0.15):
         """calculation of tool parameters
@@ -36,12 +36,14 @@ class Tools:
         xWithOverlap = Decimal(x) + (Decimal(x) * Decimal(ELOverlap))
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
-        revolve_shape = 'rectangle'
+        sim_data = self.CD.get_simulation_data()
+
+        revolve_shape = sim_data['sweepShape']
 
         if xWithOverlap >= 0:
 
             if revolve_shape == 'real_extrusion':
-                # rectangle with rounded faces as spheres.
+                # rectangle with rounded faces.
                 geometryStr = 'arc pc ' + str(Decimal(xWithOverlap)) + ' ' + str(Decimal(RWithOverlap)) + ' ra ' + \
                               str(Decimal(RWithOverlap)) + \
                               ' astart 270 asweep 180'
@@ -54,7 +56,7 @@ class Tools:
                               ' pe ' + \
                               str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + ' ' + \
                               str(Decimal(RWithOverlap)) + '\n' + \
-                              ' line ps ' + \
+                              'line ps ' + \
                               str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + ' ' + \
                               str(Decimal(RWithOverlap)) + \
                               ' pe ' + \
@@ -62,7 +64,7 @@ class Tools:
                               str(2 * Decimal(RWithOverlap))
 
             elif revolve_shape == 'rectangle':
-                # rectangle - line in vertical and then revolve
+                # rectangle - vertical line
                 geometryStr = 'line ps ' + \
                               str(Decimal(xWithOverlap) + Decimal(RWithOverlap)) + \
                               ' 0 ' + \

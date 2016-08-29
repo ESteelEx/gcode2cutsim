@@ -1,10 +1,11 @@
-
+from Utilities import ini_worker
 
 class configData():
     def __init__(self, configFile):
-        pass
-
+        self.configFile = configFile
 
     # ------------------------------------------------------------------------------------------------------------------
     def get_simulation_data(self):
-        pass
+        sim_params = ini_worker.get_section_from_ini(self.configFile, 'SIMULATION')
+
+        return sim_params
