@@ -113,7 +113,7 @@ class controlLayer:
             raise
 
     # ------------------------------------------------------------------------------------------------------------------
-    def set_support_angle(self):
+    def set_support_overhang_angle(self):
         sys.path.append(self.pluginPath)
         from Utilities import ini_worker
         reload(ini_worker)
@@ -200,5 +200,41 @@ class controlLayer:
 
         try:
             ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'angle', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_support_head_height(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define head height of support tower [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'headHeight', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_support_foot_height(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define foot height of support tower [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'footHeight', num)
         except:
             raise
