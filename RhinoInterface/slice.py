@@ -206,9 +206,15 @@ def slicer(pluginPath, corePath, scriptPath):
                     else:
                         rs.ObjectColor(obj, (0, 255, 0))
 
+            auto_nesting = True
+
             if len(objIds) > 1:
                 print 'Checking intersections'
                 # proof if objects have intersections
+                bBoxCo = []
+                for obj, i in zip(objIds, range(len(objIds))):
+                    bBoxCo.append(rs.BoundingBox(obj))
+
                 for obj, i in zip(objIds, range(len(objIds))):
                     rs.ObjectColor(obj, (0, 255, 0))
                     objIds_tmp = copy.deepcopy(objIds)
@@ -216,12 +222,43 @@ def slicer(pluginPath, corePath, scriptPath):
                     for objCompare in objIds_tmp:
                         intersect = rs.MeshMeshIntersection(obj, objCompare)
                         if intersect is not None:
-
-                            obj_bool = rs.MeshBooleanIntersection(obj, objCompare, delete_input=False)
-
                             rs.ObjectColor(obj, (255, 0, 0))
                             rs.ObjectColor(objCompare, (255, 0, 0))
                             correctplacement = False
+
+                            if auto_nesting:
+                                BB = rs.BoundingBox(obj)
+                                BBComp = rs.BoundingBox(objCompare)
+
+                                xmin_BB = BB[0][0]
+                                xmax_BB = BB[1][0]
+                                ymin_BB = BB[0][1]
+                                ymax_BB = BB[3][1]
+
+                                xmin_BBComp = BBComp[0][0]
+                                xmax_BBComp = BBComp[1][0]
+                                ymin_BBComp = BBComp[0][1]
+                                ymax_BBComp = BBComp[3][1]
+
+                                if xmin_BBComp >= xmin_BB and xmin_BBComp <= xmax_BB:
+                                    print 'Correcting x value'
+                                    # x_delta_to_min = xmin_BBComp - xmin_BB
+                                    x_delta_to_max = xmin_BBComp - xmax_BB
+                                    rs.MoveObject(objCompare, [abs(x_delta_to_max), 0, 0])
+
+                                if xmax_BBComp >= xmin_BB and xmax_BBComp <= xmax_BB:
+                                    print 'Correcting xvalue 2'
+
+                                if ymin_BBComp >= ymin_BB and ymin_BBComp <= ymax_BB:
+                                    print 'Correcting y value'
+                                    # y_delta_to_min = ymin_BBComp - ymin_BB
+                                    y_delta_to_max = ymin_BBComp - ymax_BB
+                                    rs.MoveObject(objCompare, [0, abs(y_delta_to_max), 0])
+
+                                if ymax_BBComp >= ymin_BB and ymax_BBComp <= ymax_BB:
+                                    print 'Correcting y value 2'
+
+                return
 
 
             if correctplacement:
