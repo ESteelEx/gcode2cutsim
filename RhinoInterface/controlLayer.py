@@ -204,12 +204,13 @@ class controlLayer:
             raise
 
     # ------------------------------------------------------------------------------------------------------------------
-    def set_support_head_height(self):
+    def set_support_head_height(self, num=None):
         sys.path.append(self.pluginPath)
         from Utilities import ini_worker
         reload(ini_worker)
 
-        num = raw_input('Define head height of support tower [mm]: ')
+        if num is None:
+            num = raw_input('Define head height of support tower [mm]: ')
         try:
             num = float(num)
         except:
@@ -221,13 +222,16 @@ class controlLayer:
         except:
             raise
 
+        return num
+
     # ------------------------------------------------------------------------------------------------------------------
-    def set_support_foot_height(self):
+    def set_support_foot_height(self, num=None):
         sys.path.append(self.pluginPath)
         from Utilities import ini_worker
         reload(ini_worker)
 
-        num = raw_input('Define foot height of support tower [mm]: ')
+        if num is None:
+            num = raw_input('Define foot height of support tower [mm]: ')
         try:
             num = float(num)
         except:
@@ -238,3 +242,90 @@ class controlLayer:
             ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'footHeight', num)
         except:
             raise
+
+        return num
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_support_head_area(self, num=None):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        if num is None:
+            num = raw_input('Define head connection area of support tower (define one side here) [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'headWidth', num)
+        except:
+            raise
+
+        return num
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_support_foot_area(self, num=None):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        if num is None:
+            num = raw_input('Define foot connection area of support tower (define one side here) [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'footWidth', num)
+        except:
+            raise
+
+        return num
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_support_grid(self, num=None):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        if num is None:
+            num = raw_input('Define grid square area of support tower (define one side here) [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'baseWidth', num)
+        except:
+            raise
+
+        return num
+
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_feed_rate(self, num=None):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        if num is None:
+            num = raw_input('Define feed rate for : ' + self.feature)
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'feedrate', num)
+        except:
+            raise
+
+        return num
