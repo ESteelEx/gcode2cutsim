@@ -171,32 +171,33 @@ class addPoints(threading.Thread):
                                 else:
                                     LayerPoints[g_zero_move].append([X2, Y2, Z2])
 
-                    if _z_level_change:
+                    if _z_level_change and self.runstat:
                         try:
                             obj = []
                             obj_poly = []
                             if _layer >= _from_to_layer[0]:
                                 if len(LayerPoints) > 1:
                                     for segment, points in LayerPoints.iteritems():
-                                        if len(points) > 1:
-                                            obj.append(rs.AddPointCloud(points))
-                                            rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
-                                            rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
-                                            rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
+                                        if self.runstat:
+                                            if len(points) > 1:
+                                                #obj.append(rs.AddPointCloud(points))
+                                                #rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
+                                                #rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
+                                                #rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
 
-                                            try:
-                                                obj_poly.append(rs.AddPolyline(points))
+                                                try:
+                                                    obj_poly.append(rs.AddPolyline(points))
 
-                                                # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
-                                                rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
-                                                rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
-                                                rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
+                                                    # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
+                                                    rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
+                                                    rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
+                                                    rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
 
-                                                # fill up with volume
-                                                # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
+                                                    # fill up with volume
+                                                    # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
 
-                                            except:
-                                                print 'Point ignored. No polyline possible'
+                                                except:
+                                                    print 'Point ignored. No polyline possible'
 
 
                                     # if _layer == 1:
