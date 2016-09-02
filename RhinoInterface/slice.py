@@ -1,9 +1,18 @@
-import copy, os, subprocess
+import copy, os, subprocess, threading
+import addPoints
+
+# import win32ui
+# import win32uiole
+#
+# if hasattr(win32uiole, 'SetMessagePendingDelay'):
+#     win32uiole.AfxOleInit()
+#     win32uiole.SetMessagePendingDelay(aBigDelay)
+#     win32uiole.EnableNotRespondingDialog(False)
+#     win32uiole.EnableBusyDialog(False)
 
 try:
     import scriptcontext
     import rhinoscriptsyntax as rs
-    import addPoints
 except:
     pass
 
@@ -119,6 +128,7 @@ class mesh_saver:
     # ------------------------------------------------------------------------------------------------------------------
     def initExportBySelection(self, fileType="obj"):
 
+        print 'SAVE1'
         self.saveSelectionToFile(self.filePath + self.fileName, fileType)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -141,8 +151,8 @@ class mesh_saver:
 
         settings = self.settingsList["Get" + fileType.upper() + "Settings"]()
         command = '-_Export "{}{}{}" {}'.format(self.filePath, self.fileName, "." + fileType.lower(), settings)
-        rs.Command(command, True)
 
+        rs.Command(command, True)
 
 # ----------------------------------------------------------------------------------------------------------------------
 def run_saver(corePath):
@@ -161,9 +171,8 @@ def run_saver(corePath):
 
     print "//export run ended/////////////"
 
-
-def slicer(pluginPath, corePath, scriptPath):
-
+# ----------------------------------------------------------------------------------------------------------------------
+def get_objects(corePath):
     try:
         rs.UnselectAllObjects()
 
@@ -175,128 +184,167 @@ def slicer(pluginPath, corePath, scriptPath):
 
         objIds = rs.GetObjects(message='Please select Objects: ', select=True)
 
-        if objIds is not None:
-            # color objects
-            correctplacement = True
-            print 'Checking positioning'
-            for obj in objIds:
-                BB = rs.BoundingBox(obj)
-                rs.MoveObject(obj, [0, 0, -BB[0][2]])
-                BB = rs.BoundingBox(obj)
-
-                for point in BB:
-                    if point[0] < 0 or point[0] > 241:
-                        rs.ObjectColor(obj, (255, 0, 0))
-                        correctplacement = False
-                        break
-                    else:
-                        rs.ObjectColor(obj, (0, 255, 0))
-
-                    if point[1] < 0 or point[1] > 209:
-                        rs.ObjectColor(obj, (255, 0, 0))
-                        correctplacement = False
-                        break
-                    else:
-                        rs.ObjectColor(obj, (0, 255, 0))
-
-                    if point[2] < 0 or point[2] > 205:
-                        rs.ObjectColor(obj, (255, 0, 0))
-                        correctplacement = False
-                        break
-                    else:
-                        rs.ObjectColor(obj, (0, 255, 0))
-
-            auto_nesting = True
-
-            if len(objIds) > 1:
-                print 'Checking intersections'
-                # proof if objects have intersections
-                bBoxCo = []
-                for obj, i in zip(objIds, range(len(objIds))):
-                    bBoxCo.append(rs.BoundingBox(obj))
-
-                for obj, i in zip(objIds, range(len(objIds))):
-                    rs.ObjectColor(obj, (0, 255, 0))
-                    objIds_tmp = copy.deepcopy(objIds)
-                    objIds_tmp.remove(obj)
-                    for objCompare in objIds_tmp:
-                        intersect = rs.MeshMeshIntersection(obj, objCompare)
-                        if intersect is not None:
-                            rs.ObjectColor(obj, (255, 0, 0))
-                            rs.ObjectColor(objCompare, (255, 0, 0))
-                            correctplacement = False
-
-                            if auto_nesting:
-                                BB = rs.BoundingBox(obj)
-                                BBComp = rs.BoundingBox(objCompare)
-
-                                xmin_BB = BB[0][0]
-                                xmax_BB = BB[1][0]
-                                ymin_BB = BB[0][1]
-                                ymax_BB = BB[3][1]
-
-                                xmin_BBComp = BBComp[0][0]
-                                xmax_BBComp = BBComp[1][0]
-                                ymin_BBComp = BBComp[0][1]
-                                ymax_BBComp = BBComp[3][1]
-
-                                if xmin_BBComp >= xmin_BB and xmin_BBComp <= xmax_BB:
-                                    print 'Correcting x value'
-                                    # x_delta_to_min = xmin_BBComp - xmin_BB
-                                    x_delta_to_max = xmin_BBComp - xmax_BB
-                                    rs.MoveObject(objCompare, [abs(x_delta_to_max), 0, 0])
-
-                                if xmax_BBComp >= xmin_BB and xmax_BBComp <= xmax_BB:
-                                    print 'Correcting xvalue 2'
-
-                                if ymin_BBComp >= ymin_BB and ymin_BBComp <= ymax_BB:
-                                    print 'Correcting y value'
-                                    # y_delta_to_min = ymin_BBComp - ymin_BB
-                                    y_delta_to_max = ymin_BBComp - ymax_BB
-                                    rs.MoveObject(objCompare, [0, abs(y_delta_to_max), 0])
-
-                                if ymax_BBComp >= ymin_BB and ymax_BBComp <= ymax_BB:
-                                    print 'Correcting y value 2'
-
-                return
-
-
-            if correctplacement:
-                print 'SAVING STL'
-                run_saver(corePath)
-
-                startupinfo = subprocess.STARTUPINFO()
-                startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
-
-                abscommand = corePath + r'\mwAdditive3DPrinter.exe'
-
-                absargs = corePath + r'\Mesh.stl'
-                command_string = abscommand + ' ' + absargs
-
-                print 'Starting slicer ...'
-
-                output = subprocess.Popen(command_string, startupinfo=startupinfo, stdout=subprocess.PIPE,
-                                          stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
-
-                output_list = str(output)
-                output_list_splitted = output_list.split('\\r\\n')
-                for message in output_list_splitted:
-                    print message
-
-                slice = True
-                if output_list.find('exception') != -1:
-                    print 'SLICING FAILED. CONTROL SETTINGS.'
-                    slice = False
-
-                if slice:
-                    print scriptPath
-                    AP = addPoints.addPoints(pluginPath, corePath)
-                    AP.flush_data()
-
-            else:
-                print 'Please place the parts correct in build space'
-                rs.UnselectAllObjects()
+        run_saver(corePath) # save Object as STL
 
     except:
-        raise
+        print 'Could not select Objects'
+        objIds = None
 
+    return objIds
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+class slicer(threading.Thread):
+    def __init__(self, objIds, pluginPath, corePath):
+        self.objIds = objIds
+        self.pluginPath = pluginPath
+        self.corePath = corePath
+        self.correctplacement = True
+        threading.Thread.__init__(self)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def run(self):
+
+        if self.objIds is not None:
+            self.proof_placement()
+        else:
+            print 'No Objects selected'
+            return
+
+        if self.correctplacement:
+            self.nesting()
+
+        if self.correctplacement:
+            pass
+            # self.save_stl()
+        else:
+            print 'Please place the parts correct in build space'
+            rs.UnselectAllObjects()
+            return
+
+        slice_stat = self.slicing()
+        if slice_stat:
+            AP = addPoints.addPoints(self.pluginPath, self.corePath)
+            AP.start()
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def proof_placement(self):
+
+        # color objects
+        self.correctplacement = True
+        print 'Checking positioning'
+        for obj in self.objIds:
+            BB = rs.BoundingBox(obj)
+            rs.MoveObject(obj, [0, 0, -BB[0][2]])
+            BB = rs.BoundingBox(obj)
+
+            for point in BB:
+                if point[0] < 0 or point[0] > 241:
+                    rs.ObjectColor(obj, (255, 0, 0))
+                    self.correctplacement = False
+                    break
+                else:
+                    rs.ObjectColor(obj, (0, 255, 0))
+
+                if point[1] < 0 or point[1] > 209:
+                    rs.ObjectColor(obj, (255, 0, 0))
+                    self.correctplacement = False
+                    break
+                else:
+                    rs.ObjectColor(obj, (0, 255, 0))
+
+                if point[2] < 0 or point[2] > 205:
+                    rs.ObjectColor(obj, (255, 0, 0))
+                    self.correctplacement = False
+                    break
+                else:
+                    rs.ObjectColor(obj, (0, 255, 0))
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def nesting(self):
+
+        auto_nesting = True
+
+        if len(self.objIds) > 1:
+            print 'Checking intersections'
+            # proof if objects have intersections
+            bBoxCo = []
+            for obj, i in zip(self.objIds, range(len(self.objIds))):
+                bBoxCo.append(rs.BoundingBox(obj))
+
+            for obj, i in zip(self.objIds, range(len(self.objIds))):
+                rs.ObjectColor(obj, (0, 255, 0))
+                objIds_tmp = copy.deepcopy(self.objIds)
+                objIds_tmp.remove(obj)
+                for objCompare in objIds_tmp:
+                    intersect = rs.MeshMeshIntersection(obj, objCompare)
+                    if intersect is not None:
+                        rs.ObjectColor(obj, (255, 0, 0))
+                        rs.ObjectColor(objCompare, (255, 0, 0))
+                        self.correctplacement = False
+
+                        if auto_nesting:
+                            BB = rs.BoundingBox(obj)
+                            BBComp = rs.BoundingBox(objCompare)
+
+                            xmin_BB = BB[0][0]
+                            xmax_BB = BB[1][0]
+                            ymin_BB = BB[0][1]
+                            ymax_BB = BB[3][1]
+
+                            xmin_BBComp = BBComp[0][0]
+                            xmax_BBComp = BBComp[1][0]
+                            ymin_BBComp = BBComp[0][1]
+                            ymax_BBComp = BBComp[3][1]
+
+                            if xmin_BBComp >= xmin_BB and xmin_BBComp <= xmax_BB:
+                                print 'Correcting x value'
+                                # x_delta_to_min = xmin_BBComp - xmin_BB
+                                x_delta_to_max = xmin_BBComp - xmax_BB
+                                rs.MoveObject(objCompare, [abs(x_delta_to_max), 0, 0])
+
+                            if xmax_BBComp >= xmin_BB and xmax_BBComp <= xmax_BB:
+                                print 'Correcting xvalue 2'
+
+                            if ymin_BBComp >= ymin_BB and ymin_BBComp <= ymax_BB:
+                                print 'Correcting y value'
+                                # y_delta_to_min = ymin_BBComp - ymin_BB
+                                y_delta_to_max = ymin_BBComp - ymax_BB
+                                rs.MoveObject(objCompare, [0, abs(y_delta_to_max), 0])
+
+                            if ymax_BBComp >= ymin_BB and ymax_BBComp <= ymax_BB:
+                                print 'Correcting y value 2'
+
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def save_stl(self):
+        run_saver(self.corePath)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def slicing(self):
+
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
+
+        abscommand = self.corePath + r'\mwAdditive3DPrinter.exe'
+
+        absargs = self.corePath + r'\Mesh.stl'
+        command_string = abscommand + ' ' + absargs
+
+        print 'Starting slicer ...'
+
+        output = subprocess.Popen(command_string, startupinfo=startupinfo, stdout=subprocess.PIPE,
+                                  stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
+
+        output_list = str(output)
+        output_list_splitted = output_list.split('\\r\\n')
+        for message in output_list_splitted:
+            print message
+
+        slice = True
+        if output_list.find('exception') != -1:
+            print 'SLICING FAILED. CONTROL SETTINGS.'
+            slice = False
+
+        return slice

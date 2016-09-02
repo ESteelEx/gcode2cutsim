@@ -1,6 +1,8 @@
+import threading
+import copy
+
 try:
     import rhinoscriptsyntax as rs
-    import copy
 except:
     pass
 
@@ -12,11 +14,21 @@ def getRGBfromI(RGBint):
     return red, green, blue
 
 
-class addPoints():
+class addPoints(threading.Thread):
     def __init__(self, pluginPath, corePath):
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.INI_CONFIG = self.corePath + r'\Mesh.ini'
+        self.runstat = True
+        threading.Thread.__init__(self)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def run(self):
+        self.flush_data()
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def inject_runstat(self, status):
+        self.runstat = status
 
     # ------------------------------------------------------------------------------------------------------------------
     def flush_data(self):
@@ -105,107 +117,110 @@ class addPoints():
             g_zero_move = int(0)
 
             for line in fid:
-                line_in_file += 1
-                if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
-                    if line[0:3] == 'G1 ':
-                        pos_X = line.find('X')
-                        if pos_X != -1:
-                            pos_ws = line[pos_X:].find(' ')
-                            X2 = float(line[pos_X+1:pos_ws+pos_X+1])
 
-                        pos_Y = line.find('Y')
+                if self.runstat:
 
-                        if pos_Y != -1:
-                            pos_ws = line[pos_Y:].find(' ')
-                            if pos_ws == -1:
-                                Y2 = float(line[pos_Y + 1:])
-                            else:
-                                Y2 = float(line[pos_Y + 1:pos_ws + pos_Y+1])
-                    else:
-                        pos_X = line.find('X')
-                        if pos_X != -1:
-                            pos_ws = line[pos_X:].find(' ')
-                            X_G0 = float(line[pos_X + 1:pos_ws + pos_X + 1])
+                    line_in_file += 1
+                    if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
+                        if line[0:3] == 'G1 ':
+                            pos_X = line.find('X')
+                            if pos_X != -1:
+                                pos_ws = line[pos_X:].find(' ')
+                                X2 = float(line[pos_X+1:pos_ws+pos_X+1])
 
-                        pos_Y = line.find('Y')
-                        if pos_Y != -1:
-                            pos_ws = line[pos_Y:].find(' ')
-                            if pos_ws == -1:
-                                Y_G0 = float(line[pos_Y + 1:])
-                            else:
-                                Y_G0 = float(line[pos_Y + 1:pos_ws + pos_Y + 1])
+                            pos_Y = line.find('Y')
 
-                    pos_Z = line.find('Z')
-                    if pos_Z != -1:
-                        pos_ws = line[pos_Z:].find(' ')
-                        if pos_ws == -1:
-                            Z2 = float(line[pos_Z + 1:])
+                            if pos_Y != -1:
+                                pos_ws = line[pos_Y:].find(' ')
+                                if pos_ws == -1:
+                                    Y2 = float(line[pos_Y + 1:])
+                                else:
+                                    Y2 = float(line[pos_Y + 1:pos_ws + pos_Y+1])
                         else:
-                            Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
-                        _z_level_change = True
+                            pos_X = line.find('X')
+                            if pos_X != -1:
+                                pos_ws = line[pos_X:].find(' ')
+                                X_G0 = float(line[pos_X + 1:pos_ws + pos_X + 1])
 
-                    if _layer >= _from_to_layer[0] and not _z_level_change:
-                        if line[0:3] == 'G0 ':
-                            #if g_zero_move >= 1:
-                            #    LayerPoints[g_zero_move].append(LayerPoints[g_zero_move][0])
-                            g_zero_move += 1
-                            LayerPoints[g_zero_move] = [[X_G0, Y_G0, Z2]] # first point of next segment
-                        else:
-                            if len(LayerPoints) == 0:
-                                LayerPoints[g_zero_move] = [[X2, Y2, Z2]]
+                            pos_Y = line.find('Y')
+                            if pos_Y != -1:
+                                pos_ws = line[pos_Y:].find(' ')
+                                if pos_ws == -1:
+                                    Y_G0 = float(line[pos_Y + 1:])
+                                else:
+                                    Y_G0 = float(line[pos_Y + 1:pos_ws + pos_Y + 1])
+
+                        pos_Z = line.find('Z')
+                        if pos_Z != -1:
+                            pos_ws = line[pos_Z:].find(' ')
+                            if pos_ws == -1:
+                                Z2 = float(line[pos_Z + 1:])
                             else:
-                                LayerPoints[g_zero_move].append([X2, Y2, Z2])
+                                Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
+                            _z_level_change = True
 
-                if _z_level_change:
-                    try:
-                        obj = []
-                        obj_poly = []
-                        if _layer >= _from_to_layer[0]:
-                            if len(LayerPoints) > 1:
-                                for segment, points in LayerPoints.iteritems():
-                                    if len(points) > 1:
-                                        obj.append(rs.AddPointCloud(points))
-                                        rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
-                                        rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
-                                        rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
+                        if _layer >= _from_to_layer[0] and not _z_level_change:
+                            if line[0:3] == 'G0 ':
+                                #if g_zero_move >= 1:
+                                #    LayerPoints[g_zero_move].append(LayerPoints[g_zero_move][0])
+                                g_zero_move += 1
+                                LayerPoints[g_zero_move] = [[X_G0, Y_G0, Z2]] # first point of next segment
+                            else:
+                                if len(LayerPoints) == 0:
+                                    LayerPoints[g_zero_move] = [[X2, Y2, Z2]]
+                                else:
+                                    LayerPoints[g_zero_move].append([X2, Y2, Z2])
 
-                                        try:
-                                            obj_poly.append(rs.AddPolyline(points))
+                    if _z_level_change:
+                        try:
+                            obj = []
+                            obj_poly = []
+                            if _layer >= _from_to_layer[0]:
+                                if len(LayerPoints) > 1:
+                                    for segment, points in LayerPoints.iteritems():
+                                        if len(points) > 1:
+                                            obj.append(rs.AddPointCloud(points))
+                                            rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
+                                            rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
+                                            rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
 
-                                            # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
-                                            rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
-                                            rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
-                                            rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
+                                            try:
+                                                obj_poly.append(rs.AddPolyline(points))
 
-                                            # fill up with volume
-                                            # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
+                                                # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
+                                                rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
+                                                rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
+                                                rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
 
-                                        except:
-                                            print 'Point ignored. No polyline possible'
+                                                # fill up with volume
+                                                # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
+
+                                            except:
+                                                print 'Point ignored. No polyline possible'
 
 
-                                # if _layer == 1:
-                                #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
-                                # else:
-                                #     rs.AddLayer(name=str(_layer), visible=True, parent='MW 3D Printer Slices')
-                                #
-                                # rs.ObjectLayer(obj, layer=str(_layer))
+                                    # if _layer == 1:
+                                    #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
+                                    # else:
+                                    #     rs.AddLayer(name=str(_layer), visible=True, parent='MW 3D Printer Slices')
+                                    #
+                                    # rs.ObjectLayer(obj, layer=str(_layer))
 
-                                #if _layer == 1:
-                                #    rs.AddLayer(name=str(_layer), parent='MW 3D Printer PointCloud')
+                                    #if _layer == 1:
+                                    #    rs.AddLayer(name=str(_layer), parent='MW 3D Printer PointCloud')
 
-                                # rs.ObjectLayer(obj, layer=str(_layer))
+                                    # rs.ObjectLayer(obj, layer=str(_layer))
 
-                        LayerPoints = {}
-                        g_zero_move = 0
-                        _z_level_change = False
-                        _layer += 1
+                            LayerPoints = {}
+                            g_zero_move = 0
+                            _z_level_change = False
+                            _layer += 1
 
-                    except:
-                        raise
-                        pass
+                        except:
+                            raise
+                            pass
 
-                if _from_to_layer[1] != -1:
-                    if _layer == _from_to_layer[1]:
-                        break
+                    if _from_to_layer[1] != -1:
+                        if _layer == _from_to_layer[1]:
+                            break
 
