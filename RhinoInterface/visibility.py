@@ -12,6 +12,7 @@ VI = visibility.visibility(MWP._ABS_FOLDER_PLUGIN, MWP._ABS_FOLDER_CORE)
 VI.set_extrusion_lines()
 )
 """
+
 import sys
 import rhinoscriptsyntax as rs
 

@@ -38,9 +38,19 @@ class ExtrusionUtil():
             valX1 = float(NCline[posX+1:])
 
         if NCline[posY:].find(' ') != -1:
-            valY1 = float(NCline[posY+1:NCline[posY:].find(' ') + posY])
+            if NCline[posY + 1:].find('G') == -1:
+                valY1 = float(NCline[posY+1:NCline[posY:].find(' ') + posY])
+            else:
+                posG = NCline[posY + 1:].find('G')
+                print NCline[posY + 1: posY + posG - 1]
+                valY1 = float(NCline[posY + 1:posY + posG])
         else:
-            valY1 = float(NCline[posY+1:])
+            if NCline[posY+1:].find('G') == -1:
+                valY1 = float(NCline[posY+1:])
+            else:
+                posG = NCline[posY+1:].find('G')
+                valY1 = float(NCline[posY + 1:posG])
+
 
         if posZ != -1:
             if NCline[posZ:].find(' ') != -1:
