@@ -189,7 +189,7 @@ class addPoints(threading.Thread):
                                                     obj_poly.append(rs.AddPolyline(points))
 
                                                     # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
-                                                    rs.ObjectColor(obj_poly[segment], (180, 190, 200) )
+                                                    rs.ObjectColor(obj_poly[segment], (180, 190, 200))
                                                     rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
                                                     rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
 

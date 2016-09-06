@@ -1,9 +1,14 @@
-import sys, os
+import sys, os, threading
 
-class runSimulation():
+class runSimulation(threading.Thread):
     def __init__(self, corePath, pluginPath):
         self.pluginPath = pluginPath
         self.corePath = corePath
+        threading.Thread.__init__(self)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def run(self):
+        self.execute()
 
     # ------------------------------------------------------------------------------------------------------------------
     def execute(self):
