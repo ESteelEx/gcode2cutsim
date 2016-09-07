@@ -269,9 +269,10 @@ def main():
                     line = StrManipulate.insertWS(line, 'Y')
                     line = StrManipulate.insertWS(line, 'Z')
                     if lineC[0:3] == 'G1 ':
-                        CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                        evalGcode.saveAxValLimits('X', lineC)
-                        evalGcode.saveAxValLimits('Y', lineC)
+                        if line.find('G') == -1:
+                            CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                            evalGcode.saveAxValLimits('X', lineC)
+                            evalGcode.saveAxValLimits('Y', lineC)
 
                     elif lineC[0:3] == 'G0 ': # rapid move
                         CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
