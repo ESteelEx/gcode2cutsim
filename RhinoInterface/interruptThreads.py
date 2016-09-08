@@ -5,9 +5,10 @@ class interruptThreads:
 
     def kill(self):
         print self.threads
-        try:
-            for thread in self.threads:
+        for thread in self.threads:
+            try:
                 print 'Trying to interrupt Thread: ' + str(thread)
                 thread.inject_runstat(False)
-        except:
-            pass
+                print 'Killed ' + str(thread)
+            except:
+                print 'Cannot kill ' + str(thread)

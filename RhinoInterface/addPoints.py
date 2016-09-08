@@ -2,7 +2,11 @@ import threading
 import copy
 
 try:
+    import Rhino
     import rhinoscriptsyntax as rs
+    import scriptcontext
+    import math
+    import System.Guid, System.Array, System.Enum
 except:
     pass
 
@@ -13,6 +17,38 @@ def getRGBfromI(RGBint):
     red = (RGBint >> 16) & 255
     return red, green, blue
 
+
+def AddPolyline(points, layer, replace_id=None):
+    """Adds a polyline curve to the current model
+    Parameters:
+      points = list of 3D points. Duplicate, consecutive points found in
+               the array will be removed. The array must contain at least
+               two points. If the array contains less than four points,
+               then the first point and the last point must be different.
+      replace_id[opt] = If set to the id of an existing object, the object
+               will be replaced by this polyline
+    Returns:
+      id of the new curve object if successful
+    """
+
+    points = rs.coerce3dpointlist(points, True)
+    if replace_id:
+        replace_id = rs.coerceguid(replace_id, True)
+
+    rc = System.Guid.Empty
+    if replace_id:
+        pl = Rhino.Geometry.Polyline(points)
+        if scriptcontext.doc.Objects.Replace(replace_id, pl):
+            rc = replace_id
+    else:
+        rc = scriptcontext.doc.Objects.AddPolyline(points)
+
+    if rc == System.Guid.Empty:
+        raise Exception("Unable to add polyline to document")
+
+    rs.ObjectName(rc, 'Layer: ' + str(layer))
+
+    return rc
 
 class addPoints(threading.Thread):
     def __init__(self, pluginPath, corePath):
@@ -41,6 +77,8 @@ class addPoints(threading.Thread):
         X2 = 0
         Y2 = 0
         Z2 = 0
+
+        pl = [] # polyline list
 
         radius = 0.4
 
@@ -186,12 +224,16 @@ class addPoints(threading.Thread):
                                                 #rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
 
                                                 try:
-                                                    obj_poly.append(rs.AddPolyline(points))
+                                                    # .NET
+                                                    pl.append(AddPolyline(points, _layer))
 
-                                                    # rs.ObjectColor(obj_poly[segment], (getRGBfromI(100000 + _layer * 100)))
-                                                    rs.ObjectColor(obj_poly[segment], (180, 190, 200))
-                                                    rs.ObjectLayer(obj_poly[segment], layer='MW 3D Printer Perimeter')
-                                                    rs.ObjectName(obj_poly[segment], 'Layer: ' + str(_layer))
+                                                    # rhino python script - very slow
+                                                    #obj_poly.append(rs.AddPolyline(points))
+
+                                                    #rs.ObjectColor(pl, (getRGBfromI(100000 + _layer * 100)))
+                                                    #rs.ObjectColor(pl, (180, 190, 200))
+                                                    #rs.ObjectLayer(pl, layer='MW 3D Printer Perimeter')
+                                                    #rs.ObjectName(pl, 'Layer: ' + str(_layer))
 
                                                     # fill up with volume
                                                     # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
@@ -225,3 +267,5 @@ class addPoints(threading.Thread):
                         if _layer == _from_to_layer[1]:
                             break
 
+        scriptcontext.doc.Views.Redraw()
+        rs.ObjectLayer(pl, layer='MW 3D Printer Perimeter')

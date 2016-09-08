@@ -102,7 +102,6 @@ def write_to_section(fileName, section, param, param_value):
                 break
             if i.strip().find('[') == 0:
                 if i[1:-2] == section:
-
                     for ii, jj in zip(ini_content[j+1:], range(len(ini_content[j+1]))):
                         if section_end:
                             break
@@ -112,7 +111,7 @@ def write_to_section(fileName, section, param, param_value):
                                     section_end = True
                                     break
                                 if iii.strip().replace(' ', '').find('=') > 1:
-                                    key = iii.split('=')[0]
+                                    key = iii.split('=')[0].strip()
                                     if key == param:
                                         ini_content[jj+j+jjj+1] = key + '=' + str(param_value) + '\n'
 
