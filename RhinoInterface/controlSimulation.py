@@ -22,3 +22,23 @@ class controlSimulation():
             if key == 'sweepShape':
                 print 'SIMULATION SWEEP SHAPE SWITCHED TO ' + sweepShape
                 ini_worker.write_to_section(self.INI_CONFIG, 'SIMULATION', 'sweepShape', sweepShape)
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_simulation_precision(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define simulation precision [mm]. Press ESC for automated calculation: ')
+        try:
+            num = float(num)
+        except:
+            print 'Simulation set to automatic solution'
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'precision', 'auto')
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'precision', num)
+        except:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'precision', 'auto')
+

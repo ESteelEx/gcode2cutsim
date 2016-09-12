@@ -28,7 +28,7 @@ from Utilities import ini_worker
 def startVerification(CLFile, NCiniFile, WD):
     """starting Verification"""
     if WD == '':
-        command = r'C:\StoreDaily\bin\Verifier\VerifierApplicationSample.exe'
+        command = r'C:\Additive_ENV\bin\Verifier\VerifierApplicationSample.exe'
         rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
     else:
         command = WD + r'\bin\Verifier\VerifierApplicationSample.exe'
@@ -52,6 +52,11 @@ def startVerification(CLFile, NCiniFile, WD):
     # except:
     #     raise
 
+def getSimulationPrecision(fileName):
+
+    sim_params = ini_worker.get_section_from_ini(fileName, 'SIMULATION')
+
+    return sim_params['precision']
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
@@ -74,6 +79,8 @@ def main():
 
 
         # define constant vars
+
+
         SIMPRECISION = 0.2 # default precision of simulation. precision is increased when layer thickness is smaller
         # TODO define number of layer by a layer interval -> slider
         SLIDERPOSITION_START = 25  # percentage
@@ -117,6 +124,9 @@ def main():
                         WD = WD + item + '\\'
 
                     Tool = Tools.Tools(configData=CD)  # initialize Tools
+                    # read simulation precision
+                    SIMPRECISION = getSimulationPrecision(inputParams[2])
+
                     inputParams += ['-sim']
 
         pointpos = inputf.rfind('.')

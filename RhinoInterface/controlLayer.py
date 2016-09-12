@@ -95,6 +95,24 @@ class controlLayer:
             raise
 
     # ------------------------------------------------------------------------------------------------------------------
+    def set_path_distance(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define path distance [mm]: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'pathDistance', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
     def set_distance(self):
         sys.path.append(self.pluginPath)
         from Utilities import ini_worker
@@ -200,6 +218,24 @@ class controlLayer:
 
         try:
             ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'angle', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_connection_angle(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define connection angle of pattern [deg]. Set to zero to disable connections: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'maxConnectionAngle', num)
         except:
             raise
 
@@ -316,7 +352,7 @@ class controlLayer:
         reload(ini_worker)
 
         if num is None:
-            num = raw_input('Define feed rate for : ' + self.feature)
+            num = raw_input('Define feed rate [mm\min] > ' + self.feature)
         try:
             num = float(num)
         except:
@@ -329,3 +365,95 @@ class controlLayer:
             raise
 
         return num
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_roof_layers(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define number of solid roof layer: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'solidRoofLayers', num)
+        except:
+            raise
+
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_floor_layers(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define number of solid floor layer: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'solidFloorLayers', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_outer_path_width(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define outer path width: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'outerPathWidth', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_inner_path_width(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define inner path width: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'pathWidth', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_global_path_width(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define global path width: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'pathWidth', num)
+        except:
+            raise
