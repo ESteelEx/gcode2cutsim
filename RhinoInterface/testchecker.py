@@ -23,7 +23,7 @@ def GetPointDynamicDrawFunc( sender, args ):
     # args.Display.DrawLine(pt1, args.CurrentPoint, System.Drawing.Color.Red, 2)
     # args.Display.DrawLine(pt2, args.CurrentPoint, System.Drawing.Color.Blue, 2)
     rs.UnselectAllObjects()
-    z_level = int(args.CurrentPoint[2] / 0.2)
+    z_level = int(args.CurrentPoint[2] / 0.1)
     # objs = FindObjectsByName('Layer: ' + str(z_level))
     rs.ObjectsByName('Layer: ' + str(z_level), True)
 
