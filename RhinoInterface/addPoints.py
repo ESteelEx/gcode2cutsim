@@ -79,6 +79,7 @@ class addPoints(threading.Thread):
         Z2 = 0
 
         pl = [] # polyline list
+        poly_fail= 0
 
         radius = 0.4
 
@@ -239,7 +240,8 @@ class addPoints(threading.Thread):
                                                     # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
 
                                                 except:
-                                                    print 'Point ignored. No polyline possible'
+                                                    poly_fail += 1
+
 
 
                                     # if _layer == 1:
@@ -269,3 +271,6 @@ class addPoints(threading.Thread):
 
         scriptcontext.doc.Views.Redraw()
         rs.ObjectLayer(pl, layer='MW 3D Printer Perimeter')
+
+        print 'Flushing path data finished.'
+        print 'Polylines ignored: ' + str(poly_fail)
