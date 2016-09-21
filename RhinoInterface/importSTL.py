@@ -3,7 +3,7 @@ try:
 except:
     pass
 
-_BEDCENTER = [125,110,0]
+_BEDCENTER = [125, 110, 0]
 
 rs.UnselectAllObjects()
 objects = rs.OpenFileNames(title='Enter or select STL', filter='STL|*.stl', extension='stl')
