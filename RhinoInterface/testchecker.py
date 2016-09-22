@@ -23,12 +23,34 @@ def GetPointDynamicDrawFunc( sender, args ):
     # args.Display.DrawLine(pt1, args.CurrentPoint, System.Drawing.Color.Red, 2)
     # args.Display.DrawLine(pt2, args.CurrentPoint, System.Drawing.Color.Blue, 2)
     rs.UnselectAllObjects()
-    z_level = int(args.CurrentPoint[2] / 0.1)
-    # objs = FindObjectsByName('Layer: ' + str(z_level))
-    rs.ObjectsByName('Layer: ' + str(z_level), True)
+
+    obj_Layer1 = 'Layer: 1'
+    obj_Layer2 = 'Layer: 2'
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+
+    settings.NameFilter = obj_Layer1
+    ids_L1 = [rhobj.Id for rhobj in scriptcontext.doc.Objects.GetObjectList(settings)]
+
+    settings.NameFilter = obj_Layer2
+    ids_L2 = [rhobj.Id for rhobj in scriptcontext.doc.Objects.GetObjectList(settings)]
+
+    z_L1 = rs.BoundingBox(ids_L1[0])[0][2]
+    z_L2 = rs.BoundingBox(ids_L2[0])[0][2]
+
+    z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
+
+    obj_LayerZ = 'Layer: ' + str(z_level)
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+
+    settings.NameFilter = obj_LayerZ
+    ids_LZ = [rhobj.Id for rhobj in scriptcontext.doc.Objects.GetObjectList(settings)]
 
     args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level))
+
     Rhino.Display.RhinoView.Redraw
+
+    rs.SelectObjects(ids_LZ)
+
     # scriptcontext.doc.Views.Redraw()
 
 class testchecker():
