@@ -1,4 +1,4 @@
-import copy, os, subprocess, threading
+import copy, os, subprocess, threading, time
 import addPoints
 
 # import win32ui
@@ -223,7 +223,11 @@ class slicer(threading.Thread):
             rs.UnselectAllObjects()
             return
 
+        start = time.time()
         slice_stat = self.slicing()
+        end = time.time()
+        print 'Calculation time: ' + str(end - start) + ' [sec]'
+
         if slice_stat:
             AP = addPoints.addPoints(self.pluginPath, self.corePath)
             AP.start()

@@ -4,6 +4,8 @@ except:
     pass
 
 import sys, os, threading, zipfile, shutil
+import adjustINI
+reload(adjustINI)
 
 # ------------------------------------------------------------------------------------------------------------------
 def package_flist():
@@ -20,10 +22,18 @@ def package_flist():
 
 
 class MWPackager(threading.Thread):
-    def __init__(self, corePath, pluginPath):
+    def __init__(self, pluginPath, corePath, command='save'):
         self.pluginPath = pluginPath
         self.corePath = corePath
+        self.cachePath = 'Cache'
+        self.command = command
         threading.Thread.__init__(self)
+
+    def run(self):
+        if self.command == 'save':
+            self.copy_core()
+        else:
+            self.load_package()
 
     # ------------------------------------------------------------------------------------------------------------------
     def copy_core(self):
@@ -41,13 +51,13 @@ class MWPackager(threading.Thread):
             if os.path.isfile(package['build_space']):
                 os.remove(package['build_space'])
 
-            rs.Command('_-SaveAs ' + package['build_space'])
+            rs.Command('_-SaveAs ' + self.corePath + '\\' + package['build_space'])
 
             zf = zipfile.ZipFile(fileName, mode='w')
             for key, file in package.iteritems():
                 try:
                     print 'Adding ' + key + ' - ' + file
-                    zf.write(self.corePath + r'\\' + file)
+                    zf.write(self.corePath + r'\\' + file, arcname=file, compress_type=zipfile.ZIP_DEFLATED)
                 except:
                     print 'Something went wrong'
                     zf.close()
@@ -63,11 +73,10 @@ class MWPackager(threading.Thread):
 
     # ------------------------------------------------------------------------------------------------------------------
     def load_package(self):
-
+        sys.path.append(self.pluginPath)
         fileName = rs.OpenFileName(title='Enter or select MW 3D package', filter='MW3D|*.mw3D', extension='mw3D')
 
         if fileName is not None:
-
             packageFileNames = []
 
             try:
@@ -76,26 +85,40 @@ class MWPackager(threading.Thread):
                 for name in z.namelist():
                     packageFileNames.append(name.split('/')[-1])
                     outputPath = name.split('/')[:-1]
+                    if len(outputPath) == 0:
+                        outputPath = ['']
                     packageFolder = fileName.split('\\')[-1].split('.')[0]
-                    extractionPath = self.corePath + '\\' + packageFolder + '\\' + outputPath[0]
+                    extractionPath = self.corePath + '\\' + self.cachePath + '\\' + packageFolder + '\\' + outputPath[0]
 
-                    print 'Extracting to : ' + packageFolder + '\\' + name
+                    print 'Extracting : ' + packageFolder + '\\' + name
 
                     if not os.path.isdir(extractionPath):
                         os.mkdir(extractionPath)
 
-                    print packageFolder + '\\' + name
-
-                    outfile = open(self.corePath + '\\' + packageFolder + '\\' + name, 'wb')
-                    outfile.write(self.corePath + '\\' + packageFolder + '\\' + z.read(name))
+                    outfile = open(self.corePath + '\\' + self.cachePath + '\\' + packageFolder + '\\' + name, 'wb')
+                    outfile.write(z.read(name))
                     outfile.close()
+
                 fh.close()
 
+                # load buildspace with workpiece and tool path etc.
                 for file in packageFileNames:
                     if file.split('.')[-1] == '3dm':
                         rs.Command(r'_-Open ' + extractionPath + r'/' + file +
                                    r' N ' +
                                    extractionPath + r'/' + file + r' _Enter')
+
+                # copy settings to core
+                for file in packageFileNames:
+                    if file.split('.')[-1] == 'stl' or file.split('.')[-1] == 'ini' or  \
+                                    file.split('.')[-1] == 'cl' or file.split('.')[-1] == 'gcode':
+
+                        shutil.copy(extractionPath + '\\' + file,
+                                    self.corePath + '\\' + file)
+
+                print 'Adjusting INI File ...'
+                AI = adjustINI.adjustINI(self.pluginPath, self.corePath)
+                AI.adjust_abs_folder()
 
                 print 'FINISHED'
 
