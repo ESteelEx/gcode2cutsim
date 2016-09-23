@@ -14,14 +14,14 @@ class ParamEventHandler(FileSystemEventHandler):
 
         if etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.ini':
             print 'Config file was modified. Updating UI.'
-            self.PG_UI.editbox[0].SetValue('Hey')
+            self.PG_UI.refresh_UI()
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 class guard_of_changes(threading.Thread):
-    def __init__(self, pluginPath, corePath, PG_UI):
-        self.pluginPath = pluginPath
-        self.corePath = corePath
+    def __init__(self, PG_UI):
+        self.pluginPath = PG_UI.pluginPath
+        self.corePath = PG_UI.corePath
         self.runstat = True
         self.PG_UI = PG_UI
         threading.Thread.__init__(self)
@@ -35,15 +35,11 @@ class guard_of_changes(threading.Thread):
 
         while self.runstat:
             time.sleep(1)
-            try:
-                self.PG_UI.editbox[0]
-            except:
-                self.runstat = False
 
         observer.stop()
         observer.join()
 
-        print 'CHIAO'
+        print '--|X|-- GUARD unplugged'
 
     # ------------------------------------------------------------------------------------------------------------------
     def inject_runstat(self, runstat):
