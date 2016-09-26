@@ -1,4 +1,4 @@
-import wx, threading
+import wx, sys
 import guard
 import UI_settings as UI
 from Utilities import ini_worker
@@ -8,10 +8,14 @@ class parameterGuardUI(wx.Dialog):
     def __init__(self, pluginPath, corePath, configFile):
         self.pluginPath = pluginPath
         self.corePath = corePath
+        self.workingDir = sys.path[0]
         self.configFile = self.corePath + '\\' + configFile
+        self.PGconfigFile = self.workingDir + '\\' + 'PG_config.ini'
+        self.PGconfigFileCore = self.corePath + '\\' + 'PG_config.ini'
         self.current_y_pxpos_elem = 0
         self.param_dict = {}
         self.section_EC_stat = {}
+        self.black_list = ['collapse', 'create', 'hideSection', 'show', 'filterStrategy']
 
         self.GOC = guard.guard_of_changes(self)  # init observer thread
         self.GOC.start()  # start observer thread
@@ -19,6 +23,15 @@ class parameterGuardUI(wx.Dialog):
         wx.Dialog.__init__(self, None, title='MW Parameter guard', size=UI.WMAIN['size'],
                            style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX |
                                  wx.TAB_TRAVERSAL | wx.STAY_ON_TOP | wx.RESIZE_BORDER)
+
+        PG_XY = ini_worker.get_param_from_ini(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition')
+        PG_XY = PG_XY.strip()[1:-1].split(',')
+        self.MoveXY(int(PG_XY[0]), int(PG_XY[1]))
+        PG_SIZE = ini_worker.get_param_from_ini(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowSize')
+        PG_SIZE = PG_SIZE.strip()[1:-1].split(',')
+        self.SetSizeWH(int(PG_SIZE[0]), int(PG_SIZE[1]))
+
+        self.Bind(wx.EVT_SIZE, self.OnSize, self)
 
         atable = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_ESCAPE, wx.ID_EXIT)])
         self.SetAcceleratorTable(atable)
@@ -28,19 +41,20 @@ class parameterGuardUI(wx.Dialog):
                                            UI.WCOLOR['BG'][1],
                                            UI.WCOLOR['BG'][2]))
 
-        self.Centre()
         self.Show()
+
         fn = self.corePath + '\\bin\\images\\paramGuard.ico'
         self.icon = wx.Icon(fn, wx.BITMAP_TYPE_ICO)
         self.SetIcon(self.icon)
 
         self.section_list = ini_worker.get_sections_list_from_ini(self.configFile)  # list
 
-        param_indentation = 10 # whitespace
+        param_indentation = 10  # whitespace
 
         for section in self.section_list:
 
-            self.section_EC_stat.update({section: 1})
+            self.section_EC_stat.update(
+                {section: ini_worker.get_param_from_ini(self.configFile, section, 'collapse')})
 
             section_params = ini_worker.get_section_from_ini(self.configFile, section)
             for param, value in section_params.iteritems():
@@ -54,9 +68,9 @@ class parameterGuardUI(wx.Dialog):
                 font = wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 
                 headline = wx.StaticText(self,
-                                     label=section,
-                                     pos=(UI.THEADERSTART['pos'][0],
-                                          UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem))
+                                         label=section,
+                                         pos=(UI.THEADERSTART['pos'][0],
+                                              UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem))
 
                 headline.SetForegroundColour(UI.TCOLOR['FG'])  # set text color
                 headline.SetFont(font)
@@ -64,7 +78,7 @@ class parameterGuardUI(wx.Dialog):
                 button = wx.Button(self,
                                    name=section,
                                    label="",
-                                   pos=(2, self.current_y_pxpos_elem + 11),
+                                   pos=(UI.BEXPAND['pos'][0], self.current_y_pxpos_elem + 11),
                                    size=UI.BEXPAND['size'])
 
                 button.Bind(wx.EVT_BUTTON, self.expandCollapse)
@@ -76,46 +90,47 @@ class parameterGuardUI(wx.Dialog):
                 # params in sections (edit boxes)
                 font = wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL)
                 ui_elem_handler_dict = {}
+
                 for param, value in section_params.iteritems():
 
-                    text = wx.StaticText(self,
-                                         label=param,
-                                         pos=(UI.THEADERSTART['pos'][0] + param_indentation,
-                                              UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem))
+                    if param not in self.black_list:
 
-                    text.SetForegroundColour(UI.PARAMCOLOR['FG'])  # set text color
+                        text = wx.StaticText(self,
+                                             label=param,
+                                             pos=(UI.THEADERSTART['pos'][0] + param_indentation,
+                                                  UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem))
 
-                    editbox = (wx.TextCtrl(self,
-                                           name=section + ' - ' + param,
-                                           value=str(value),
-                                           pos=(UI.EBOX['pos'][0], UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem),
-                                           size=UI.EBOX['size'],
-                                           style=wx.TE_PROCESS_ENTER))
+                        text.SetForegroundColour(UI.PARAMCOLOR['FG'])  # set text color
 
-                    editbox.SetForegroundColour(UI.ECOLOR2['FG'])  # set color
-                    editbox.SetBackgroundColour(UI.ECOLOR2['BG'])  # set color
+                        editbox = (wx.TextCtrl(self,
+                                               name=section + ' - ' + param,
+                                               value=str(value),
+                                               pos=(UI.EBOX['pos'][0], UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem),
+                                               size=UI.EBOX['size'],
+                                               style=wx.TE_PROCESS_ENTER))
 
-                    editbox.Bind(wx.EVT_TEXT, self.EvtText)
+                        editbox.SetForegroundColour(UI.ECOLOR2['FG'])  # set color
+                        editbox.SetBackgroundColour(UI.ECOLOR2['BG'])  # set color
 
-                    elem_dict = {param: [{'ebox': [editbox, value]},
-                                         {'headline': headline},
-                                         {'text': text}]}
+                        editbox.Bind(wx.EVT_TEXT, self.EvtText)
 
-                    ui_elem_handler_dict.update(elem_dict)
+                        elem_dict = {param: [{'ebox': [editbox, value]},
+                                             {'headline': headline},
+                                             {'text': text},
+                                             {'button': button}]}
 
-                    self.current_y_pxpos_elem += 20
+                        ui_elem_handler_dict.update(elem_dict)
 
-                self.param_dict[section].update(ui_elem_handler_dict)
+                        self.current_y_pxpos_elem += 20
 
-        # self.scroll = wx.ScrolledWindow(self, 1)
-        # self.scroll.SetScrollbars(0, 1, 0, 1000)
+                    self.param_dict[section].update(ui_elem_handler_dict)
+
+        self.expandCollapse(None, refresh=True)
+        self.refresh_UI()
 
     # ------------------------------------------------------------------------------------------------------------------
     def refresh_UI(self):
-
-        # section_list = ini_worker.get_sections_list_from_ini(self.configFile)  # list
         for section in self.section_list:
-
             section_params = ini_worker.get_section_from_ini(self.configFile, section)
             for param, value in section_params.iteritems():
                 if param == 'hideSection':
@@ -123,30 +138,53 @@ class parameterGuardUI(wx.Dialog):
 
             if not hideSection:
                 for param, value in section_params.iteritems():
-                    if self.param_dict[section][param][1] != value:
-                        self.param_dict[section][param][0].SetForegroundColour(UI.ECOLOR2CHANGE['FG'])  # set color
-                        self.param_dict[section][param][0].SetBackgroundColour(UI.ECOLOR2CHANGE['BG'])
-                        self.param_dict[section][param][0].SetValue(str(value))
+                    if param == 'create':
+                        if int(value):
+                            keys = self.param_dict[section].keys()
+                            self.param_dict[section][keys[0]][1]['headline'].SetForegroundColour(UI.TOK['FG'])
+                            self.param_dict[section][keys[0]][1]['headline'].Hide()
+                            self.param_dict[section][keys[0]][1]['headline'].Show()
+                        else:
+                            keys = self.param_dict[section].keys()
+                            self.param_dict[section][keys[0]][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
+                            self.param_dict[section][keys[0]][1]['headline'].Hide()
+                            self.param_dict[section][keys[0]][1]['headline'].Show()
 
-                    self.param_dict[section][param][1] = value
+                    if param not in self.black_list:
+                        if self.param_dict[section][param][0]['ebox'][1] != value:
+                            self.param_dict[section][param][0]['ebox'][0].SetForegroundColour(UI.ECOLOR2CHANGE['FG'])  # set color
+                            self.param_dict[section][param][0]['ebox'][0].SetBackgroundColour(UI.ECOLOR2CHANGE['BG'])
+                            self.param_dict[section][param][0]['ebox'][0].SetValue(str(value))
+
+                            self.param_dict[section][param][0]['ebox'][1] = value
+                            if self.section_EC_stat[section]:
+                                self.param_dict[section][param][0]['ebox'][0].Hide()
+                                self.param_dict[section][param][0]['ebox'][0].Show()
 
     # ------------------------------------------------------------------------------------------------------------------
     def EvtText(self, event):
         value = event.GetString()
         editbox_name = event.EventObject.GetName()
 
-        ini_worker.write_to_section(self.configFile, editbox_name.split('-')[0].strip(), editbox_name.split('-')[1].strip(), value)
+        ini_worker.write_to_section(self.configFile,
+                                    editbox_name.split('-')[0].strip(),
+                                    editbox_name.split('-')[1].strip(),
+                                    value)
 
     # ------------------------------------------------------------------------------------------------------------------
-    def expandCollapse(self, event):
-        section_clicked = event.EventObject.GetName()
-        if self.section_EC_stat[section_clicked]:
-            self.section_EC_stat[section_clicked] = 0
-        else:
-            self.section_EC_stat[section_clicked] = 1
+    def expandCollapse(self, event, refresh=False):
+        if not refresh:
+            section_clicked = event.EventObject.GetName()
+            if self.section_EC_stat[section_clicked]:
+                self.section_EC_stat[section_clicked] = 0
+                ini_worker.write_to_section(self.configFile, section_clicked, 'collapse', 0)
+            else:
+                self.section_EC_stat[section_clicked] = 1
+                ini_worker.write_to_section(self.configFile, section_clicked, 'collapse', 1)
 
-        self.current_y_pxpos_elem = 20
+        self.current_y_pxpos_elem = 0
         param_indentation = 10
+        headline_placed = False
 
         # for section, params in self.param_dict.iteritems():
         for section in self.section_list:
@@ -155,39 +193,80 @@ class parameterGuardUI(wx.Dialog):
 
                     if self.section_EC_stat[section]:
                         # value[0].ShowWithEffect(10, timeout=30)
+                        if not headline_placed:
+                            value[1]['headline'].SetPosition([UI.THEADERSTART['pos'][0],
+                                                              UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+                            value[3]['button'].SetPosition([UI.BEXPAND['pos'][0],
+                                                            UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+                            headline_placed = True
+                            self.current_y_pxpos_elem += 20
+
                         value[0]['ebox'][0].Show()
                         value[1]['headline'].Show()
                         value[2]['text'].Show()
                         value[0]['ebox'][0].SetPosition([UI.EBOX['pos'][0],
-                                              UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
-
-                        value[1]['headline'].SetPosition([UI.THEADERSTART['pos'][0], UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
-                        value[2]['text'].SetPosition([UI.THEADERSTART['pos'][0] + param_indentation , UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+                                                         UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+                        value[2]['text'].SetPosition([UI.THEADERSTART['pos'][0] + param_indentation,
+                                                      UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
 
                         self.current_y_pxpos_elem += 20
+
                     else:
                         # value[0].HideWithEffect(10, timeout=30)
+                        if not headline_placed:
+
+                            value[1]['headline'].SetPosition([UI.THEADERSTART['pos'][0],
+                                                              UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+
+                            value[3]['button'].SetPosition([UI.BEXPAND['pos'][0],
+                                                            UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+
+                            headline_placed = True
+                            self.current_y_pxpos_elem += 20
+
                         value[0]['ebox'][0].Hide()
-                        value[1]['headline'].Hide()
                         value[2]['text'].Hide()
 
+                headline_placed = False
 
-                self.current_y_pxpos_elem += 20
+    # ------------------------------------------------------------------------------------------------------------------
+    def OnSize(self, selff):
+        PG_SIZE = self.GetSize()
+        if PG_SIZE[0] > 335:
+            self.SetSizeWH(335, PG_SIZE[1])
 
     # ------------------------------------------------------------------------------------------------------------------
     def OnExit(self, event):
         self.Destroy()
         self.GOC.inject_runstat(False)
+        PG_XY = self.GetScreenPosition()
+        ini_worker.write_to_section(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition', str(PG_XY))
+        PG_SIZE = self.GetSize()
+        ini_worker.write_to_section(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowSize', str(PG_SIZE))
 
-
+# ------------------------------------------------------------------------------------------------------------------
 def main():
-    app = wx.App(False)
-    pluginPath = 'C:\\MWAdditive'
-    corePath = 'C:\\MWAdditive'
-    configFile = 'Mesh.ini'
-    PG = parameterGuardUI(pluginPath, corePath, configFile)
-    app.MainLoop()
+    """
+    # pluginPath = 'D:\\MWAdditive'
+    # corePath = 'D:\\MWAdditive'
+    # configFile = 'Mesh.ini'
+    # PG = parameterGuardUI(pluginPath, corePath, configFile)
+    :return:
+    """
 
+    if len(sys.argv) >= 4:
+        app = wx.App(False)
+        PG = parameterGuardUI(sys.argv[1], sys.argv[2], sys.argv[3])  # pass absolute pathes here
+        app.MainLoop()
+    else:
+        print 'Please pass plugin, core path and config file location.'
+        print 'Trying to start with some default development params.'
+        pluginPath = 'D:\\MWAdditive'
+        corePath = 'D:\\MWAdditive'
+        configFile = 'Mesh.ini'
+        app = wx.App(False)
+        PG = parameterGuardUI(pluginPath, corePath, configFile)
+        app.MainLoop()
 
 if __name__== "__main__":
     main()

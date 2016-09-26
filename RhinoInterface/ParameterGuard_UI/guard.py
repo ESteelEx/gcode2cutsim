@@ -2,10 +2,14 @@ import time
 import threading
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+from RhinoInterface import slice
+from RhinoInterface.ParameterGuard_UI import UI_settings as UI
 
 # ----------------------------------------------------------------------------------------------------------------------
 class ParamEventHandler(FileSystemEventHandler):
     def __init__(self, pluginPath, corePath, PG_UI):
+        self.pluginPath = pluginPath
+        self.corePath = corePath
         self.PG_UI = PG_UI
 
     def on_modified(self, event):
@@ -13,9 +17,21 @@ class ParamEventHandler(FileSystemEventHandler):
         etype = event.event_type
 
         if etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.ini':
-            print 'Config file was modified. Updating UI.'
-            self.PG_UI.refresh_UI()
-
+            try:
+                self.PG_UI.refresh_UI()
+                SLICE = slice.slicer(None, self.pluginPath, self.corePath)
+                print 'started slicer'
+                self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
+                self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
+                self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
+                SLICE.slicing()
+                self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TCOLOR['FG'])
+                self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
+                self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
+                print 'finished slicing'
+            except:
+                raise
+                pass
 
 # ----------------------------------------------------------------------------------------------------------------------
 class guard_of_changes(threading.Thread):
