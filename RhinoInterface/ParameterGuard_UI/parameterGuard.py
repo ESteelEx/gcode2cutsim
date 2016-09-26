@@ -53,13 +53,13 @@ class parameterGuardUI(wx.Dialog):
 
                 font = wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.BOLD)
 
-                text = wx.StaticText(self,
+                headline = wx.StaticText(self,
                                      label=section,
                                      pos=(UI.THEADERSTART['pos'][0],
                                           UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem))
 
-                text.SetForegroundColour(UI.TCOLOR['FG'])  # set text color
-                text.SetFont(font)
+                headline.SetForegroundColour(UI.TCOLOR['FG'])  # set text color
+                headline.SetFont(font)
 
                 button = wx.Button(self,
                                    name=section,
@@ -96,9 +96,11 @@ class parameterGuardUI(wx.Dialog):
                     editbox.SetBackgroundColour(UI.ECOLOR2['BG'])  # set color
 
                     editbox.Bind(wx.EVT_TEXT, self.EvtText)
-                    # editbox.Bind(wx.EVT_TEXT_ENTER, self.OnSave)
 
-                    elem_dict = {param: [editbox, value]}
+                    elem_dict = {param: [{'ebox': [editbox, value]},
+                                         {'headline': headline},
+                                         {'text': text}]}
+
                     ui_elem_handler_dict.update(elem_dict)
 
                     self.current_y_pxpos_elem += 20
@@ -144,22 +146,33 @@ class parameterGuardUI(wx.Dialog):
             self.section_EC_stat[section_clicked] = 1
 
         self.current_y_pxpos_elem = 20
+        param_indentation = 10
 
         # for section, params in self.param_dict.iteritems():
         for section in self.section_list:
             if section in self.param_dict:
                 for param, value in self.param_dict[section].iteritems():
-                    if section == section_clicked and self.section_EC_stat[section_clicked]:
-                        # value[0].HideWithEffect(10, timeout=30)
-                        value[0].Hide()
-                    else:
+
+                    if self.section_EC_stat[section]:
                         # value[0].ShowWithEffect(10, timeout=30)
-                        value[0].Show()
-                        value[0].SetPosition([UI.EBOX['pos'][0], UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+                        value[0]['ebox'][0].Show()
+                        value[1]['headline'].Show()
+                        value[2]['text'].Show()
+                        value[0]['ebox'][0].SetPosition([UI.EBOX['pos'][0],
+                                              UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+
+                        value[1]['headline'].SetPosition([UI.THEADERSTART['pos'][0], UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+                        value[2]['text'].SetPosition([UI.THEADERSTART['pos'][0] + param_indentation , UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem])
+
                         self.current_y_pxpos_elem += 20
+                    else:
+                        # value[0].HideWithEffect(10, timeout=30)
+                        value[0]['ebox'][0].Hide()
+                        value[1]['headline'].Hide()
+                        value[2]['text'].Hide()
+
 
                 self.current_y_pxpos_elem += 20
-
 
     # ------------------------------------------------------------------------------------------------------------------
     def OnExit(self, event):
@@ -169,8 +182,8 @@ class parameterGuardUI(wx.Dialog):
 
 def main():
     app = wx.App(False)
-    pluginPath = 'D:\\MWAdditive'
-    corePath = 'D:\\MWAdditive'
+    pluginPath = 'C:\\MWAdditive'
+    corePath = 'C:\\MWAdditive'
     configFile = 'Mesh.ini'
     PG = parameterGuardUI(pluginPath, corePath, configFile)
     app.MainLoop()

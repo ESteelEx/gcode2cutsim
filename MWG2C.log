@@ -1,8 +1,8 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-09-11 18:13:03.830000
+INFO:MWG2C:** Logging started @ : 2016-09-24 10:37:32.247000
 INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting G2C conversion ... @ : 2016-09-11 18:13:03.831000
-ERROR:MWG2C:CLFileWriter.writeNCCode: Error while writing NC-code
-ERROR:MWG2C:CLFileWriter.writeNCCode: Error while writing NC-code
+INFO:MWG2C:G-Code Evaluation started @ : 2016-09-24 10:37:32.247000
+INFO:MWG2C:File selection canceled ... Nothing to process @ : 2016-09-24 10:37:34.516000
+INFO:MWG2C:** Logging stopped @ : 2016-09-24 10:37:34
