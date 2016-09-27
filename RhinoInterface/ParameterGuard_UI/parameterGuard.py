@@ -22,7 +22,7 @@ class parameterGuardUI(wx.Dialog):
 
         wx.Dialog.__init__(self, None, title='MW Parameter guard', size=UI.WMAIN['size'],
                            style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX |
-                                 wx.TAB_TRAVERSAL | wx.STAY_ON_TOP | wx.RESIZE_BORDER)
+                                 wx.TAB_TRAVERSAL | wx.STAY_ON_TOP | wx.RESIZE_BORDER) # | wx.TRANSPARENT_WINDOW)
 
         PG_XY = ini_worker.get_param_from_ini(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition')
         PG_XY = PG_XY.strip()[1:-1].split(',')
@@ -41,7 +41,9 @@ class parameterGuardUI(wx.Dialog):
                                            UI.WCOLOR['BG'][1],
                                            UI.WCOLOR['BG'][2]))
 
+        self.SetTransparent(220)
         self.Show()
+
 
         fn = self.corePath + '\\bin\\images\\paramGuard.ico'
         self.icon = wx.Icon(fn, wx.BITMAP_TYPE_ICO)
@@ -261,8 +263,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'D:\\MWAdditive'
-        corePath = 'D:\\MWAdditive'
+        pluginPath = 'C:\\MWAdditive'
+        corePath = 'C:\\MWAdditive'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

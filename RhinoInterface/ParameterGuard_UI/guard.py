@@ -30,8 +30,9 @@ class ParamEventHandler(FileSystemEventHandler):
                 self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
                 print 'finished slicing'
             except:
-                raise
                 pass
+        elif etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.gcode':
+            print 'gcode changed'
 
 # ----------------------------------------------------------------------------------------------------------------------
 class guard_of_changes(threading.Thread):
