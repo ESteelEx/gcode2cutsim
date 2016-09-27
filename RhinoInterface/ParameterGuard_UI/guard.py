@@ -4,6 +4,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from RhinoInterface import slice
 from RhinoInterface.ParameterGuard_UI import UI_settings as UI
+from RhinoInterface import addPoints
 
 # ----------------------------------------------------------------------------------------------------------------------
 class ParamEventHandler(FileSystemEventHandler):
@@ -33,6 +34,8 @@ class ParamEventHandler(FileSystemEventHandler):
                 pass
         elif etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.gcode':
             print 'gcode changed'
+            AP = addPoints.addPoints(self.pluginPath, self.corePath)
+            AP.start()
 
 # ----------------------------------------------------------------------------------------------------------------------
 class guard_of_changes(threading.Thread):
