@@ -21,7 +21,7 @@ class ParamEventHandler(FileSystemEventHandler):
             try:
                 self.PG_UI.refresh_UI()
                 SLICE = slice.slicer(None, self.pluginPath, self.corePath)
-                print 'started slicer'
+                print 'Started slicer'
                 self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
                 self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
                 self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()

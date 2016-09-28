@@ -228,9 +228,9 @@ class slicer(threading.Thread):
         end = time.time()
         print 'Calculation time: ' + str(end - start) + ' [sec]'
 
-        if slice_stat:
-            AP = addPoints.addPoints(self.pluginPath, self.corePath)
-            AP.start()
+        #if slice_stat:
+        #    AP = addPoints.addPoints(self.pluginPath, self.corePath)
+        #    AP.start()
 
     # ------------------------------------------------------------------------------------------------------------------
     def proof_placement(self):

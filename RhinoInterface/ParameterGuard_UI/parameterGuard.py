@@ -1,6 +1,7 @@
-import wx, sys
+import wx, sys, time
 import guard
 import UI_settings as UI
+import key_stroke_timer
 from Utilities import ini_worker
 
 
@@ -15,6 +16,7 @@ class parameterGuardUI(wx.Dialog):
         self.current_y_pxpos_elem = 0
         self.param_dict = {}
         self.section_EC_stat = {}
+        self.KST = key_stroke_timer.key_stroke_timer(self.configFile)
         self.black_list = ['collapse', 'create', 'hideSection', 'show', 'filterStrategy']
 
         self.GOC = guard.guard_of_changes(self)  # init observer thread
@@ -43,7 +45,6 @@ class parameterGuardUI(wx.Dialog):
 
         self.SetTransparent(220)
         self.Show()
-
 
         fn = self.corePath + '\\bin\\images\\paramGuard.ico'
         self.icon = wx.Icon(fn, wx.BITMAP_TYPE_ICO)
@@ -129,6 +130,7 @@ class parameterGuardUI(wx.Dialog):
 
         self.expandCollapse(None, refresh=True)
         self.refresh_UI()
+        self.KST.start()
 
     # ------------------------------------------------------------------------------------------------------------------
     def refresh_UI(self):
@@ -157,8 +159,8 @@ class parameterGuardUI(wx.Dialog):
                             self.param_dict[section][param][0]['ebox'][0].SetForegroundColour(UI.ECOLOR2CHANGE['FG'])  # set color
                             self.param_dict[section][param][0]['ebox'][0].SetBackgroundColour(UI.ECOLOR2CHANGE['BG'])
                             self.param_dict[section][param][0]['ebox'][0].SetValue(str(value))
-
                             self.param_dict[section][param][0]['ebox'][1] = value
+
                             if self.section_EC_stat[section]:
                                 self.param_dict[section][param][0]['ebox'][0].Hide()
                                 self.param_dict[section][param][0]['ebox'][0].Show()
@@ -168,10 +170,11 @@ class parameterGuardUI(wx.Dialog):
         value = event.GetString()
         editbox_name = event.EventObject.GetName()
 
-        ini_worker.write_to_section(self.configFile,
-                                    editbox_name.split('-')[0].strip(),
-                                    editbox_name.split('-')[1].strip(),
-                                    value)
+        section = editbox_name.split('-')[0].strip()
+        param = editbox_name.split('-')[1].strip()
+
+        self.KST.insert_last_key_stroke_time()
+        self.KST.insert_parameter(section, param, value)
 
     # ------------------------------------------------------------------------------------------------------------------
     def expandCollapse(self, event, refresh=False):
@@ -241,6 +244,7 @@ class parameterGuardUI(wx.Dialog):
     def OnExit(self, event):
         self.Destroy()
         self.GOC.inject_runstat(False)
+        self.KST.kill_sheduler()
         PG_XY = self.GetScreenPosition()
         ini_worker.write_to_section(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition', str(PG_XY))
         PG_SIZE = self.GetSize()
@@ -263,8 +267,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'C:\\MWAdditive'
-        corePath = 'C:\\MWAdditive'
+        pluginPath = 'D:\\MWAdditive'
+        corePath = 'D:\\MWAdditive'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

@@ -1,4 +1,4 @@
-import sys, threading, time
+import os, sys, threading, time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -17,9 +17,9 @@ class ParamEventHandler(FileSystemEventHandler):
         if etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.gcode':
             print 'gcode changed'
             AP = addPoints.addPoints(self.pluginPath, self.corePath)
-            AP.start()
+            AP.flush_data()
 
-
+# ----------------------------------------------------------------------------------------------------------------------
 class gcodeGuard(threading.Thread):
     def __init__(self, pluginPath, corePath):
         self.pluginPath = pluginPath
@@ -37,11 +37,12 @@ class gcodeGuard(threading.Thread):
         observer.schedule(event_handler, self.corePath, recursive=True)
         observer.start()
 
-        while self.runstat:
-            time.sleep(1)
+        #while self.runstat:
+        #    pass
+            # time.sleep(5)
 
-        observer.stop()
-        observer.join()
+        #observer.stop()
+        #observer.join()
 
         print '--|X|-- GCODE GUARD unplugged'
 
