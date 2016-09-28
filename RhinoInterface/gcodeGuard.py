@@ -1,15 +1,16 @@
 import sys, threading, time
-
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 
 # ----------------------------------------------------------------------------------------------------------------------
 class ParamEventHandler(FileSystemEventHandler):
-    def __init__(self, pluginPath, corePath, PG_UI):
+    def __init__(self, pluginPath, corePath):
         self.pluginPath = pluginPath
         self.corePath = corePath
-        self.PG_UI = PG_UI
 
     # ------------------------------------------------------------------------------------------------------------------
     def on_modified(self, event):
+        import addPoints
         src_path = event.src_path
         etype = event.event_type
 
@@ -24,15 +25,14 @@ class gcodeGuard(threading.Thread):
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.runstat = True
+        self.FileSystemEventHandler = None
         threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
     def run(self):
         sys.path.append(self.pluginPath)
-        from watchdog.observers import Observer
-        from watchdog.events import FileSystemEventHandler
 
-        event_handler = ParamEventHandler(self.pluginPath, self.corePath, self.PG_UI) # start class that handles the event
+        event_handler = ParamEventHandler(self.pluginPath, self.corePath)  # start class that handles the event
         observer = Observer()
         observer.schedule(event_handler, self.corePath, recursive=True)
         observer.start()
@@ -48,3 +48,4 @@ class gcodeGuard(threading.Thread):
     # ------------------------------------------------------------------------------------------------------------------
     def inject_runstat(self, runstat):
         self.runstat = runstat
+

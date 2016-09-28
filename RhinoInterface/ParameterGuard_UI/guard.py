@@ -32,10 +32,6 @@ class ParamEventHandler(FileSystemEventHandler):
                 print 'finished slicing'
             except:
                 pass
-        elif etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.gcode':
-            print 'gcode changed'
-            AP = addPoints.addPoints(self.pluginPath, self.corePath)
-            AP.start()
 
 # ----------------------------------------------------------------------------------------------------------------------
 class guard_of_changes(threading.Thread):
