@@ -1,9 +1,10 @@
 import sys, os, threading
 
 class runSimulation(threading.Thread):
-    def __init__(self, corePath, pluginPath):
+    def __init__(self, corePath, pluginPath, silent=False):
         self.pluginPath = pluginPath
         self.corePath = corePath
+        self.silent = silent
         threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -13,6 +14,13 @@ class runSimulation(threading.Thread):
     # ------------------------------------------------------------------------------------------------------------------
     def execute(self):
         sys.path.append(self.pluginPath)
-        os.system(self.corePath + r"\gcode2cutsimFDM.exe " +
-                  self.corePath + r"\Mesh.gcode " +
-                  self.corePath + r"\Mesh.ini")
+
+        if self.silent:
+            os.system(self.corePath + r"\gcode2cutsimFDM.exe " +
+                      self.corePath + r"\Mesh.gcode " +
+                      self.corePath + r"\Mesh.ini " +
+                      "-silent")
+        else:
+            os.system(self.corePath + r"\gcode2cutsimFDM.exe " +
+                      self.corePath + r"\Mesh.gcode " +
+                      self.corePath + r"\Mesh.ini")

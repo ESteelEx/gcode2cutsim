@@ -36,9 +36,11 @@ class Tools:
         xWithOverlap = Decimal(x) + (Decimal(x) * Decimal(ELOverlap))
         RWithOverlap = Decimal(R) + Decimal(R) * Decimal(ELOverlap)
 
-        sim_data = self.CD.get_simulation_data()
-
-        revolve_shape = sim_data['sweepShape']
+        if self.CD == None:
+            revolve_shape = 'rectangle'
+        else:
+            sim_data = self.CD.get_simulation_data()
+            revolve_shape = sim_data['sweepShape']
 
         if xWithOverlap >= 0:
 

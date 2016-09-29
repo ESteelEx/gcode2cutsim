@@ -12,10 +12,11 @@ for proc in psutil.process_iter():
 
 # -*- mode: python -*-
 a = Analysis(['gcode2cutsim.py'],
-              pathex=['.'], 
-              hiddenimports=[], 
-              hookspath=None, 
-              runtime_hooks=None) 
+                pathex=['.'],
+                hiddenimports=['clr'],
+                hookspath=None,
+                runtime_hooks=None)
+
 # a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
 
 for d in a.datas:
@@ -25,20 +26,20 @@ for d in a.datas:
 
 pyz = PYZ(a.pure)
 exe = EXE( 
-    pyz, 
-    a.scripts, 
-    a.binaries, 
-    a.zipfiles, 
-    a.datas, 
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
     name=os.path.join('dist', 'gcode2cutsim.exe'),
-    debug=False, 
-    strip=None, 
-    upx=True, 
+    debug=False,
+    strip=None,
+    upx=True,
     console=False,
-    icon='bin\\images\\3dPrintVer.ico' )
+    icon='bin\\images\\3dPrintVer.ico')
 
 if os.path.isfile('gcode2cutsim.exe'):
     os.remove('gcode2cutsim.exe')
 
 shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsimFDM.exe')
-shutil.copy('gcode2cutsimFDM.exe', 'D:\\StoreDaily\\gcode2cutsimFDM.exe')
+shutil.copy('gcode2cutsimFDM.exe', 'D:\\MWAdditive\\gcode2cutsimFDM.exe')

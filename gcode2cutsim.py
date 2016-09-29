@@ -76,16 +76,12 @@ def main():
         JobS = JobSetup.JobSetup()
         evalGcode = evaluateGCode.evaluateGcode()
         NCFileR = NCFileReader.NCFileReader()
-
-
         # define constant vars
-
-
         SIMPRECISION = 0.2 # default precision of simulation. precision is increased when layer thickness is smaller
         # TODO define number of layer by a layer interval -> slider
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
-
+        silent_process = False
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -111,7 +107,7 @@ def main():
             else:
                 inputf = str(inputParams[1])
 
-            if len(inputParams) == 3:
+            if len(inputParams) >= 3:
                 if not os.path.isfile(inputParams[2]):
                     print 'no config file -> ' + str(inputParams[1])
                     return
@@ -127,6 +123,13 @@ def main():
                     # read simulation precision
                     SIMPRECISION = getSimulationPrecision(inputParams[2])
 
+                if len(inputParams) == 4:
+                    if inputParams[3][1:].strip() == 'silent':
+                        silent_process = True
+                        print 'Silent parsing'
+                    else:
+                        inputParams += ['-sim']
+                else:
                     inputParams += ['-sim']
 
         pointpos = inputf.rfind('.')
@@ -174,12 +177,14 @@ def main():
                                             # We use this line to find the right line to replace
         CLWriter.writeNCCode(homePosStr)
 
-        app = wx.App(False)
+        if not silent_process:
 
-        pulse_dlg = wx.ProgressDialog(title="G2C Converting ...",
-                                      message="Initializing ...",
-                                      maximum=int(101),
-                                      style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
+            app = wx.App(False)
+
+            pulse_dlg = wx.ProgressDialog(title="G2C Converting ...",
+                                          message="Initializing ...",
+                                          maximum=int(101),
+                                          style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
 
         num_lines = sum(1 for line in open(inputf))
 
@@ -200,14 +205,17 @@ def main():
                 perc = round((loopCounter / float(num_lines) * 100))
                 if  perc > next_update_block:
                     next_update_block += 0.1
-                    updmessage = 'Line ' + str(loopCounter) + ' of ' + str(num_lines) + ' - ' + str(perc) + '%'
 
-                    (keepGoin, skip) = pulse_dlg.Update(perc, updmessage)
-                    if not keepGoin:
-                        G2CLOG.wlog('INFO', 'User canceled at line: ' + str(loopCounter) + ' - ' + str(perc) + '%')
-                        existent = 2
-                        break
+                    if not silent_process:
+                        updmessage = 'Line ' + str(loopCounter) + ' of ' + str(num_lines) + ' - ' + str(perc) + '%'
 
+                        (keepGoin, skip) = pulse_dlg.Update(perc, updmessage)
+                        if not keepGoin:
+                            G2CLOG.wlog('INFO', 'User canceled at line: ' + str(loopCounter) + ' - ' + str(perc) + '%')
+                            existent = 2
+                            break
+                    #else:
+                    #    print str(perc) + ' [%]'
 
                 # check where g-code actually starts and give green light to parsing functions True/False
                 if line[0] == 'G':
@@ -231,7 +239,6 @@ def main():
                                                                          ELOverlap=ExtrusionLineOverlap)
                         CLWriter.writeToolChange(geometryStr)
                         LayerThickness = LayerThicknessForerun
-                        print LayerThickness
                         if LayerThickness < SIMPRECISION:
                             SIMPRECISION = LayerThickness
                     zValMachine = zValForerun

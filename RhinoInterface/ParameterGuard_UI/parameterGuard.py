@@ -23,8 +23,10 @@ class parameterGuardUI(wx.Dialog):
         self.GOC.start()  # start observer thread
 
         wx.Dialog.__init__(self, None, title='MW Parameter guard', size=UI.WMAIN['size'],
-                           style=wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX |
+                           style=wx.SYSTEM_MENU | wx.CAPTION | # wx.CLOSE_BOX |
                                  wx.TAB_TRAVERSAL | wx.STAY_ON_TOP | wx.RESIZE_BORDER) # | wx.TRANSPARENT_WINDOW)
+
+        self.SetMinSize((1, 200))
 
         PG_XY = ini_worker.get_param_from_ini(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition')
         PG_XY = PG_XY.strip()[1:-1].split(',')
@@ -34,6 +36,9 @@ class parameterGuardUI(wx.Dialog):
         self.SetSizeWH(int(PG_SIZE[0]), int(PG_SIZE[1]))
 
         self.Bind(wx.EVT_SIZE, self.OnSize, self)
+        #self.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
+        self.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
+        #self.Bind(wx.EVT_MOUSE_EVENTS, self.onMouseEvents)
 
         atable = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_ESCAPE, wx.ID_EXIT)])
         self.SetAcceleratorTable(atable)
@@ -77,6 +82,8 @@ class parameterGuardUI(wx.Dialog):
 
                 headline.SetForegroundColour(UI.TCOLOR['FG'])  # set text color
                 headline.SetFont(font)
+                headline.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
+                #headline.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
 
                 button = wx.Button(self,
                                    name=section,
@@ -87,6 +94,8 @@ class parameterGuardUI(wx.Dialog):
                 button.Bind(wx.EVT_BUTTON, self.expandCollapse)
                 button.SetBackgroundColour(UI.BCOLOR['BG'])  # set color
                 button.SetToolTipString('Click to expand/collapse section')
+                button.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
+                #button.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
 
                 self.current_y_pxpos_elem += 20
 
@@ -104,6 +113,8 @@ class parameterGuardUI(wx.Dialog):
                                                   UI.THEADERSTART['pos'][1] + self.current_y_pxpos_elem))
 
                         text.SetForegroundColour(UI.PARAMCOLOR['FG'])  # set text color
+                        text.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
+                        #text.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
 
                         editbox = (wx.TextCtrl(self,
                                                name=section + ' - ' + param,
@@ -116,6 +127,9 @@ class parameterGuardUI(wx.Dialog):
                         editbox.SetBackgroundColour(UI.ECOLOR2['BG'])  # set color
 
                         editbox.Bind(wx.EVT_TEXT, self.EvtText)
+                        editbox.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
+                        #editbox.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
+
 
                         elem_dict = {param: [{'ebox': [editbox, value]},
                                              {'headline': headline},
@@ -233,6 +247,45 @@ class parameterGuardUI(wx.Dialog):
                         value[2]['text'].Hide()
 
                 headline_placed = False
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def onMouseEvents(self, event):
+        pass
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def onMouseOver(self, event):
+        PG_SIZE = self.GetSize()
+        PG_POSITION = self.GetScreenPosition()
+        X_EXPAND = 335
+        X_DELTA = X_EXPAND - PG_SIZE[0]
+        self.SetSizeWH(X_EXPAND, PG_SIZE[1])
+        self.SetPosition((PG_POSITION[0]-X_DELTA, PG_POSITION[1]))
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def onMouseLeave(self, event):
+        time.sleep(0.2)
+        PG_SIZE = self.GetSize()
+        M_POSITION = wx.GetMousePosition()
+        PG_POSITION = self.GetScreenPosition()
+
+        X_COLLAPSED = 10
+        X_EXPAND = 335
+
+        if M_POSITION[0] < PG_POSITION[0] or M_POSITION[0] > PG_POSITION[0] + PG_SIZE[0]:
+            self.SetSizeWH(1, PG_SIZE[1])
+            NEW_PG_SIZE = self.GetSize()
+            NEW_PG_POSITION = self.GetScreenPosition()
+            X_DELTA = abs(335 - NEW_PG_SIZE[0])
+            self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
+            return
+
+        if M_POSITION[1] < PG_POSITION[1] or M_POSITION[1] > PG_POSITION[1] + PG_SIZE[1]:
+            self.SetSizeWH(1, PG_SIZE[1])
+            NEW_PG_SIZE = self.GetSize()
+            NEW_PG_POSITION = self.GetScreenPosition()
+            X_DELTA = abs(335 - NEW_PG_SIZE[0])
+            self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
+            return
 
     # ------------------------------------------------------------------------------------------------------------------
     def OnSize(self, selff):

@@ -1,5 +1,6 @@
 import time
 import threading
+from RhinoInterface import runSimulation
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from RhinoInterface import slice
@@ -30,6 +31,17 @@ class ParamEventHandler(FileSystemEventHandler):
                 self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
                 self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
                 print 'finished slicing'
+                # When slicing finished slicer created a new g-code file.
+                # We parse the cl file in background so we are able to start simulation
+                # without starting the parser in the beginning
+                self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
+                self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Hide()
+                self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Show()
+                RS = runSimulation.runSimulation(self.corePath, self.pluginPath, silent=True)
+                RS.execute()
+                self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].SetForegroundColour(UI.TCOLOR['FG'])
+                self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Hide()
+                self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Show()
             except:
                 pass
 
