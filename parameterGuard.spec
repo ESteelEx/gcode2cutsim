@@ -11,9 +11,10 @@ for proc in psutil.process_iter():
         pass
 
 # -*- mode: python -*-
+        # a = Analysis(['parameterGuard.py'],
 a = Analysis(['RhinoInterface\\ParameterGuard_UI\\parameterGuard.py'],
-              pathex=['.'], 
-              hiddenimports=[], 
+              pathex=['.', '/RhinoInterface/ParameterGuard_UI'],
+              hiddenimports=['guard'],
               hookspath=None, 
               runtime_hooks=None) 
 # a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
@@ -34,7 +35,7 @@ exe = EXE(
     debug=False, 
     strip=None, 
     upx=True, 
-    console=False,
+    console=True,
     icon='bin\\images\\paramGuard.ico')
 
 #if os.path.isfile('gcode2cutsim.exe'):

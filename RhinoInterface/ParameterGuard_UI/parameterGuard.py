@@ -13,6 +13,7 @@ class parameterGuardUI(wx.Dialog):
         self.configFile = self.corePath + '\\' + configFile
         self.PGconfigFile = self.workingDir + '\\' + 'PG_config.ini'
         self.PGconfigFileCore = self.corePath + '\\' + 'PG_config.ini'
+        self.PG_expanded = False
         self.current_y_pxpos_elem = 0
         self.param_dict = {}
         self.section_EC_stat = {}
@@ -187,6 +188,8 @@ class parameterGuardUI(wx.Dialog):
         section = editbox_name.split('-')[0].strip()
         param = editbox_name.split('-')[1].strip()
 
+        self.GOC.inject_param_changed(str(param))
+
         self.KST.insert_last_key_stroke_time()
         self.KST.insert_parameter(section, param, value)
 
@@ -200,6 +203,8 @@ class parameterGuardUI(wx.Dialog):
             else:
                 self.section_EC_stat[section_clicked] = 1
                 ini_worker.write_to_section(self.configFile, section_clicked, 'collapse', 1)
+
+        self.GOC.inject_param_changed('collapse')
 
         self.current_y_pxpos_elem = 0
         param_indentation = 10
@@ -258,6 +263,7 @@ class parameterGuardUI(wx.Dialog):
         PG_POSITION = self.GetScreenPosition()
         X_EXPAND = 335
         X_DELTA = X_EXPAND - PG_SIZE[0]
+        self.PG_expanded = True
         self.SetSizeWH(X_EXPAND, PG_SIZE[1])
         self.SetPosition((PG_POSITION[0]-X_DELTA, PG_POSITION[1]))
 
@@ -271,21 +277,25 @@ class parameterGuardUI(wx.Dialog):
         X_COLLAPSED = 10
         X_EXPAND = 335
 
-        if M_POSITION[0] < PG_POSITION[0] or M_POSITION[0] > PG_POSITION[0] + PG_SIZE[0]:
-            self.SetSizeWH(1, PG_SIZE[1])
-            NEW_PG_SIZE = self.GetSize()
-            NEW_PG_POSITION = self.GetScreenPosition()
-            X_DELTA = abs(335 - NEW_PG_SIZE[0])
-            self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
-            return
+        if self.PG_expanded:
+            self.PG_expanded = False
+            if M_POSITION[0] < PG_POSITION[0] or M_POSITION[0] > PG_POSITION[0] + PG_SIZE[0]:
+                self.SetSizeWH(1, PG_SIZE[1])
+                NEW_PG_SIZE = self.GetSize()
+                NEW_PG_POSITION = self.GetScreenPosition()
+                X_DELTA = abs(335 - NEW_PG_SIZE[0])
+                self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
+                return
 
-        if M_POSITION[1] < PG_POSITION[1] or M_POSITION[1] > PG_POSITION[1] + PG_SIZE[1]:
-            self.SetSizeWH(1, PG_SIZE[1])
-            NEW_PG_SIZE = self.GetSize()
-            NEW_PG_POSITION = self.GetScreenPosition()
-            X_DELTA = abs(335 - NEW_PG_SIZE[0])
-            self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
-            return
+            if M_POSITION[1] < PG_POSITION[1] or M_POSITION[1] > PG_POSITION[1] + PG_SIZE[1]:
+                self.SetSizeWH(1, PG_SIZE[1])
+                NEW_PG_SIZE = self.GetSize()
+                NEW_PG_POSITION = self.GetScreenPosition()
+                X_DELTA = abs(335 - NEW_PG_SIZE[0])
+                self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
+                return
+
+
 
     # ------------------------------------------------------------------------------------------------------------------
     def OnSize(self, selff):

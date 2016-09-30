@@ -11,7 +11,7 @@ class key_stroke_timer(Thread):
         self.section = None
         self.param = None
         self.value = None
-        self.time_interval = 2
+        self.time_interval = 3
         self.running = 1
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -46,7 +46,6 @@ class key_stroke_timer(Thread):
 
     # ------------------------------------------------------------------------------------------------------------------
     def insert_last_key_stroke_time(self):
-        print time.time()
         self.last_key_stroke = time.time()
 
     # ------------------------------------------------------------------------------------------------------------------
