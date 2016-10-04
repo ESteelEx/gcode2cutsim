@@ -1,9 +1,11 @@
 import wx, sys, time
+from matplotlib.axes._base import _AxesBase
+
 import guard
 import UI_settings as UI
 import key_stroke_timer
 from Utilities import ini_worker
-
+from screeninfo import get_monitors
 
 class parameterGuardUI(wx.Dialog):
     def __init__(self, pluginPath, corePath, configFile):
@@ -18,28 +20,42 @@ class parameterGuardUI(wx.Dialog):
         self.param_dict = {}
         self.section_EC_stat = {}
         self.KST = key_stroke_timer.key_stroke_timer(self.configFile)
+        self.MIN_SIZE_W = 20
         self.black_list = ['collapse', 'create', 'hideSection', 'show', 'filterStrategy']
 
         self.GOC = guard.guard_of_changes(self)  # init observer thread
         self.GOC.start()  # start observer thread
 
         wx.Dialog.__init__(self, None, title='MW Parameter guard', size=UI.WMAIN['size'],
-                           style=wx.SYSTEM_MENU | wx.CAPTION | # wx.CLOSE_BOX |
-                                 wx.TAB_TRAVERSAL | wx.STAY_ON_TOP | wx.RESIZE_BORDER) # | wx.TRANSPARENT_WINDOW)
+                           style=wx.SYSTEM_MENU | # wx.CAPTION |  # ~wx.CLOSE_BOX |
+                                 wx.TAB_TRAVERSAL | wx.STAY_ON_TOP | wx.RESIZE_BORDER)  # | wx.TRANSPARENT_WINDOW)
 
-        self.SetMinSize((1, 200))
+        self.SetMinSize((1, 1))
 
         PG_XY = ini_worker.get_param_from_ini(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition')
         PG_XY = PG_XY.strip()[1:-1].split(',')
-        self.MoveXY(int(PG_XY[0]), int(PG_XY[1]))
         PG_SIZE = ini_worker.get_param_from_ini(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowSize')
         PG_SIZE = PG_SIZE.strip()[1:-1].split(',')
-        self.SetSizeWH(int(PG_SIZE[0]), int(PG_SIZE[1]))
+
+
+        MAIN_DISPLAY_SIZE = get_monitors()
+        if len(MAIN_DISPLAY_SIZE) == 1:
+            DISPLAY_SIZE = MAIN_DISPLAY_SIZE[0]
+        else:
+            DISPLAY_SIZE = MAIN_DISPLAY_SIZE[1]
+
+        self.DISPLAY_SIZE = DISPLAY_SIZE
+
+        #self.MoveXY(int(PG_XY[0]), int(PG_XY[1]))
+        self.MoveXY(int(DISPLAY_SIZE.width)-10, 0)
+        #self.SetSizeWH(int(PG_SIZE[0]), int(PG_SIZE[1]))
+        self.SetSizeWH(int(PG_SIZE[0]), DISPLAY_SIZE.height)
 
         self.Bind(wx.EVT_SIZE, self.OnSize, self)
-        #self.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
-        self.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
-        #self.Bind(wx.EVT_MOUSE_EVENTS, self.onMouseEvents)
+        # self.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
+        # self.Bind(wx.EVT_LEAVE_WINDOW, self.onMouseLeave)
+        # self.Bind(wx.EVT_LEFT_DOWN, self.onLMouseDown)
+        self.Bind(wx.EVT_MOUSE_EVENTS, self.onMouseEvents)
 
         atable = wx.AcceleratorTable([(wx.ACCEL_NORMAL, wx.WXK_ESCAPE, wx.ID_EXIT)])
         self.SetAcceleratorTable(atable)
@@ -52,9 +68,9 @@ class parameterGuardUI(wx.Dialog):
         self.SetTransparent(220)
         self.Show()
 
-        fn = self.corePath + '\\bin\\images\\paramGuard.ico'
-        self.icon = wx.Icon(fn, wx.BITMAP_TYPE_ICO)
-        self.SetIcon(self.icon)
+        #fn = self.corePath + '\\bin\\images\\paramGuard.ico'
+        #self.icon = wx.Icon(fn, wx.BITMAP_TYPE_ICO)
+        #self.SetIcon(self.icon)
 
         self.section_list = ini_worker.get_sections_list_from_ini(self.configFile)  # list
 
@@ -255,21 +271,89 @@ class parameterGuardUI(wx.Dialog):
 
     # ------------------------------------------------------------------------------------------------------------------
     def onMouseEvents(self, event):
-        pass
+        if event.LeftDown():
+            M_POSITION = wx.GetMousePosition()
+            self.X_DELTA = self.DISPLAY_SIZE.width - M_POSITION[0]
+            # self.Y_DELTA = self.DISPLAY_SIZE.height - M_POSITION[1]
+
+            M_POSITION = wx.GetMousePosition()
+            PG_POSITION = self.GetScreenPosition()
+            self.P_DELTA = M_POSITION - PG_POSITION
+
+        if event.LeftIsDown():
+            M_POSITION = wx.GetMousePosition()
+            DS = self.GetSize()
+            SP = self.GetScreenPosition()
+
+            if M_POSITION[0] + self.P_DELTA[0] > self.DISPLAY_SIZE.width - 10:
+                self.SetSizeWH(DS[0], self.DISPLAY_SIZE.height + 10)
+                # self.SetPosition((self.DISPLAY_SIZE.width - DS[0] + 10, 0))
+                self.SetPosition((self.DISPLAY_SIZE.width - DS[0] + 10, 0))
+            else:
+                self.SetPosition((M_POSITION[0] - self.P_DELTA[0], M_POSITION[1] - self.P_DELTA[1]))
+
+        elif event.Leaving():
+            time.sleep(0.3)
+            PG_SIZE = self.GetSize()
+            M_POSITION = wx.GetMousePosition()
+            PG_POSITION = self.GetScreenPosition()
+
+            X_COLLAPSED = 10
+            X_EXPAND = 335
+
+            if self.PG_expanded:
+                self.PG_expanded = False
+                if M_POSITION[0] < PG_POSITION[0] or M_POSITION[0] > PG_POSITION[0] + PG_SIZE[0]:
+                    self.SetSizeWH(self.MIN_SIZE_W, PG_SIZE[1])
+                    NEW_PG_SIZE = self.GetSize()
+                    NEW_PG_POSITION = self.GetScreenPosition()
+                    X_DELTA = abs(335 - NEW_PG_SIZE[0])
+                    self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
+                    return
+
+                if M_POSITION[1] < PG_POSITION[1] or M_POSITION[1] > PG_POSITION[1] + PG_SIZE[1]:
+                    self.SetSizeWH(18, PG_SIZE[1])
+                    NEW_PG_SIZE = self.GetSize()
+                    NEW_PG_POSITION = self.GetScreenPosition()
+                    X_DELTA = abs(335 - NEW_PG_SIZE[0])
+                    self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
+                    return
+        else:
+            M_POSITION = wx.GetMousePosition()
+            PG_POSITION = self.GetScreenPosition()
+            self.P_DELTA = M_POSITION - PG_POSITION
+
+            PG_SIZE = self.GetSize()
+            X_EXPAND = 335
+            X_DELTA = X_EXPAND - PG_SIZE[0]
+            self.PG_expanded = True
+            self.SetSizeWH(X_EXPAND, PG_SIZE[1])
+            self.SetPosition((PG_POSITION[0]-X_DELTA, PG_POSITION[1]))
+
 
     # ------------------------------------------------------------------------------------------------------------------
     def onMouseOver(self, event):
-        PG_SIZE = self.GetSize()
-        PG_POSITION = self.GetScreenPosition()
-        X_EXPAND = 335
-        X_DELTA = X_EXPAND - PG_SIZE[0]
-        self.PG_expanded = True
-        self.SetSizeWH(X_EXPAND, PG_SIZE[1])
-        self.SetPosition((PG_POSITION[0]-X_DELTA, PG_POSITION[1]))
+
+        if event.LeftIsDown():
+            M_POSITION = wx.GetMousePosition()
+            self.SetPosition((M_POSITION[0] - self.P_DELTA[0], M_POSITION[1] - self.P_DELTA[1]))
+        else:
+            M_POSITION = wx.GetMousePosition()
+            PG_POSITION = self.GetScreenPosition()
+            self.P_DELTA = M_POSITION - PG_POSITION
+
+            PG_SIZE = self.GetSize()
+            X_EXPAND = 335
+            X_DELTA = X_EXPAND - PG_SIZE[0]
+            self.PG_expanded = True
+            # for x_plus in range(X_EXPAND):
+            # self.SetSizeWH(X_EXPAND, PG_SIZE[1])
+            self.SetSizeWH(X_EXPAND, PG_SIZE[1])
+            self.SetPosition((PG_POSITION[0]-X_DELTA, PG_POSITION[1]))
 
     # ------------------------------------------------------------------------------------------------------------------
     def onMouseLeave(self, event):
-        time.sleep(0.2)
+        time.sleep(0.3)
         PG_SIZE = self.GetSize()
         M_POSITION = wx.GetMousePosition()
         PG_POSITION = self.GetScreenPosition()
@@ -280,7 +364,7 @@ class parameterGuardUI(wx.Dialog):
         if self.PG_expanded:
             self.PG_expanded = False
             if M_POSITION[0] < PG_POSITION[0] or M_POSITION[0] > PG_POSITION[0] + PG_SIZE[0]:
-                self.SetSizeWH(1, PG_SIZE[1])
+                self.SetSizeWH(self.MIN_SIZE_W, PG_SIZE[1])
                 NEW_PG_SIZE = self.GetSize()
                 NEW_PG_POSITION = self.GetScreenPosition()
                 X_DELTA = abs(335 - NEW_PG_SIZE[0])
@@ -288,13 +372,15 @@ class parameterGuardUI(wx.Dialog):
                 return
 
             if M_POSITION[1] < PG_POSITION[1] or M_POSITION[1] > PG_POSITION[1] + PG_SIZE[1]:
-                self.SetSizeWH(1, PG_SIZE[1])
+                self.SetSizeWH(self.MIN_SIZE_W, PG_SIZE[1])
                 NEW_PG_SIZE = self.GetSize()
                 NEW_PG_POSITION = self.GetScreenPosition()
                 X_DELTA = abs(335 - NEW_PG_SIZE[0])
                 self.SetPosition((NEW_PG_POSITION[0] + X_DELTA, NEW_PG_POSITION[1]))
                 return
 
+            # self.Re
+            # self.SetIcon('')
 
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -311,6 +397,7 @@ class parameterGuardUI(wx.Dialog):
         PG_XY = self.GetScreenPosition()
         ini_worker.write_to_section(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowPosition', str(PG_XY))
         PG_SIZE = self.GetSize()
+        PG_SIZE[0] = self.MIN_SIZE_W
         ini_worker.write_to_section(self.PGconfigFileCore, 'UISETTINGS', 'lastWindowSize', str(PG_SIZE))
 
 # ------------------------------------------------------------------------------------------------------------------
@@ -330,8 +417,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'D:\\MWAdditive'
-        corePath = 'D:\\MWAdditive'
+        pluginPath = 'C:\\MWAdditive'
+        corePath = 'C:\\MWAdditive'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

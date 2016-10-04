@@ -19,38 +19,54 @@ class ParamEventHandler(FileSystemEventHandler):
         src_path = event.src_path
         etype = event.event_type
 
-        print 'Changed ' + str(self.PG_UI.GOC.param_changed) + ' ...'
+        try:
+            print 'Changed ' + str(self.PG_UI.GOC.param_changed) + ' ...'
 
-        if self.PG_UI.GOC.param_changed not in self.no_action_list:
-            if etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.ini':
-                try:
-                    self.PG_UI.GOC.inject_param_changed(None) # reset to no changes
-                    self.PG_UI.refresh_UI()
-                    SLICE = slice.slicer(None, self.pluginPath, self.corePath)
-                    print 'Started slicer'
-                    self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
-                    self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
-                    self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
-                    SLICE.slicing()
-                    self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TCOLOR['FG'])
-                    self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
-                    self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
-                    print 'Finished slicing'
-                    # When slicing finished slicer created a new g-code file.
-                    # We parse the cl file in background so we are able to start simulation
-                    # without starting the parser in the beginning
-                    print 'Precalculating simulation file'
-                    self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
-                    self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Hide()
-                    self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Show()
-                    RS = runSimulation.runSimulation(self.corePath, self.pluginPath, silent=True)
-                    RS.execute()
-                    self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].SetForegroundColour(UI.TCOLOR['FG'])
-                    self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Hide()
-                    self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Show()
-                    print 'DONE'
-                except:
-                    pass
+            if self.PG_UI.GOC.param_changed not in self.no_action_list:
+                if etype == 'modified' and src_path.split('\\')[-1] == 'Mesh.ini':
+                    try:
+                        self.PG_UI.GOC.inject_param_changed(None) # reset to no changes
+                        self.PG_UI.refresh_UI()
+                        SLICE = slice.slicer(None, self.pluginPath, self.corePath)
+                        print 'Started slicer'
+                        self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TWARNING['FG'])
+                        self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
+                        self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
+                        result = SLICE.slicing()
+                        if result:
+                            self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TOK['FG'])
+
+                            print 'Finished slicing'
+                            # When slicing finished slicer created a new g-code file.
+                            # We parse the cl file in background so we are able to start simulation
+                            # without starting the parser in the beginning
+                            print 'Precalculating simulation file'
+                            self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].SetForegroundColour(
+                                UI.TWARNING['FG'])
+                            self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Hide()
+                            self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Show()
+                            RS = runSimulation.runSimulation(self.corePath, self.pluginPath, silent=True)
+                            RS.execute()
+                            self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].SetForegroundColour(
+                                UI.TOK['FG'])
+                            self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Hide()
+                            self.PG_UI.param_dict['SIMULATION']['precision'][1]['headline'].Show()
+                            print 'DONE'
+
+                        else:
+                            self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].SetForegroundColour(UI.TERROR['FG'])
+
+                        self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Hide()
+                        self.PG_UI.param_dict['SLICER']['firstLayerHeight'][1]['headline'].Show()
+
+
+                    except:
+                        pass
+
+            self.PG_UI.GOC.inject_param_changed(None)
+        except:
+            pass
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 class guard_of_changes(threading.Thread):
@@ -75,7 +91,7 @@ class guard_of_changes(threading.Thread):
         observer.stop()
         observer.join()
 
-        print '--|X|-- GUARD unplugged'
+        print '--|X|-- MAIN GUARD unplugged'
 
     # ------------------------------------------------------------------------------------------------------------------
     def inject_runstat(self, runstat):

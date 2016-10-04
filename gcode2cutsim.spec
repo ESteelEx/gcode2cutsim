@@ -13,7 +13,7 @@ for proc in psutil.process_iter():
 # -*- mode: python -*-
 a = Analysis(['gcode2cutsim.py'],
                 pathex=['.'],
-                hiddenimports=['clr'],
+                hiddenimports=[],
                 hookspath=None,
                 runtime_hooks=None)
 
@@ -42,4 +42,4 @@ if os.path.isfile('gcode2cutsim.exe'):
     os.remove('gcode2cutsim.exe')
 
 shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsimFDM.exe')
-shutil.copy('gcode2cutsimFDM.exe', 'D:\\MWAdditive\\gcode2cutsimFDM.exe')
+shutil.copy('gcode2cutsimFDM.exe', 'C:\\MWAdditive\\gcode2cutsimFDM.exe')
