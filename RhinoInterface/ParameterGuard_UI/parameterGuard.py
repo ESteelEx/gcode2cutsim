@@ -38,18 +38,18 @@ class parameterGuardUI(wx.Dialog):
         PG_SIZE = PG_SIZE.strip()[1:-1].split(',')
 
 
-        MAIN_DISPLAY_SIZE = get_monitors()
-        if len(MAIN_DISPLAY_SIZE) == 1:
-            DISPLAY_SIZE = MAIN_DISPLAY_SIZE[0]
+        self.MAIN_DISPLAY_SIZE = get_monitors()
+        if len(self.MAIN_DISPLAY_SIZE) == 1:
+            self.DISPLAY_SIZE = self.MAIN_DISPLAY_SIZE[0]
         else:
-            DISPLAY_SIZE = MAIN_DISPLAY_SIZE[1]
+            self.DISPLAY_SIZE = self.MAIN_DISPLAY_SIZE[1]
 
-        self.DISPLAY_SIZE = DISPLAY_SIZE
+        self.DISPLAY_SIZE = self.MAIN_DISPLAY_SIZE[0]
 
         #self.MoveXY(int(PG_XY[0]), int(PG_XY[1]))
-        self.MoveXY(int(DISPLAY_SIZE.width)-10, 0)
+        self.MoveXY(int(self.DISPLAY_SIZE.width)-10, 0)
         #self.SetSizeWH(int(PG_SIZE[0]), int(PG_SIZE[1]))
-        self.SetSizeWH(int(PG_SIZE[0]), DISPLAY_SIZE.height)
+        self.SetSizeWH(int(PG_SIZE[0]), self.DISPLAY_SIZE.height)
 
         self.Bind(wx.EVT_SIZE, self.OnSize, self)
         # self.Bind(wx.EVT_ENTER_WINDOW, self.onMouseOver)
@@ -285,12 +285,13 @@ class parameterGuardUI(wx.Dialog):
             DS = self.GetSize()
             SP = self.GetScreenPosition()
 
-            if M_POSITION[0] + self.P_DELTA[0] > self.DISPLAY_SIZE.width - 10:
-                self.SetSizeWH(DS[0], self.DISPLAY_SIZE.height + 10)
-                # self.SetPosition((self.DISPLAY_SIZE.width - DS[0] + 10, 0))
-                self.SetPosition((self.DISPLAY_SIZE.width - DS[0] + 10, 0))
-            else:
-                self.SetPosition((M_POSITION[0] - self.P_DELTA[0], M_POSITION[1] - self.P_DELTA[1]))
+            # if M_POSITION[0] + self.P_DELTA[0] > self.DISPLAY_SIZE.width - 10:
+            #     self.SetSizeWH(DS[0], self.DISPLAY_SIZE.height + 10)
+            #     # self.SetPosition((self.DISPLAY_SIZE.width - DS[0] + 10, 0))
+            #     self.SetPosition((self.DISPLAY_SIZE.width - DS[0] + 10, 0))
+            # else:
+            #     self.SetPosition((M_POSITION[0] - self.P_DELTA[0], M_POSITION[1] - self.P_DELTA[1]))
+            self.SetPosition((M_POSITION[0] - self.P_DELTA[0], M_POSITION[1] - self.P_DELTA[1]))
 
         elif event.Leaving():
             time.sleep(0.3)
@@ -417,8 +418,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'C:\\MWAdditive'
-        corePath = 'C:\\MWAdditive'
+        pluginPath = 'D:\\MWAdditive'
+        corePath = 'D:\\MWAdditive'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

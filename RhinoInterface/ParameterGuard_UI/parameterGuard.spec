@@ -11,9 +11,9 @@ for proc in psutil.process_iter():
         pass
 
 # -*- mode: python -*-
-a = Analysis(['RhinoInterface\\ParameterGuard_UI\\parameterGuard.py'],
+a = Analysis(['parameterGuard.py'],
               pathex=['.'], 
-              hiddenimports=['guard'],
+              hiddenimports=[],
               hookspath=None, 
               runtime_hooks=None)
 
@@ -25,20 +25,20 @@ for d in a.datas:
         break
 
 pyz = PYZ(a.pure)
-exe = EXE( 
-    pyz, 
-    a.scripts, 
+exe = EXE(
+    pyz,
+    a.scripts,
     a.binaries, 
-    a.zipfiles, 
-    a.datas, 
+    a.zipfiles,
+    a.datas,
     name=os.path.join('dist', 'paramGuard.exe'),
-    debug=False, 
-    strip=None, 
+    debug=False,
+    strip=None,
     upx=True, 
     console=True,
-    icon='bin\\images\\paramGuard.ico')
+    icon='..\\..\\bin\\images\\paramGuard.ico')
 
 #if os.path.isfile('gcode2cutsim.exe'):
 #    os.remove('gcode2cutsim.exe')
 
-shutil.copy('dist\\paramGuard.exe', 'C:\\MWAdditive\\paramGuard.exe')
+shutil.copy('dist\\paramGuard.exe', 'D:\\MWAdditive\\paramGuard.exe')

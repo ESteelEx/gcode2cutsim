@@ -124,7 +124,6 @@ class MWPackager(threading.Thread):
 
             except:
                 print 'ERROR. Could not open MW3D package.'
-                raise
 
 
 
