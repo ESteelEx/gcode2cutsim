@@ -45,7 +45,7 @@ def GetPointDynamicDrawFunc( sender, args ):
     settings.NameFilter = obj_LayerZ
     ids_LZ = [rhobj.Id for rhobj in scriptcontext.doc.Objects.GetObjectList(settings)]
 
-    args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level))
+    args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level) + ' - Distance ' + str(z_L2 - z_L1) + ' mm')
 
     Rhino.Display.RhinoView.Redraw
 

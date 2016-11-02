@@ -21,7 +21,7 @@ class parameterGuardUI(wx.Dialog):
         self.section_EC_stat = {}
         self.KST = key_stroke_timer.key_stroke_timer(self.configFile)
         self.MIN_SIZE_W = 20
-        self.black_list = ['collapse', 'create', 'hideSection', 'show', 'filterStrategy']
+        self.black_list = ['collapse', 'create', 'hideSection', 'show', 'filterStrategy', 'offsetType']
 
         self.GOC = guard.guard_of_changes(self)  # init observer thread
         self.GOC.start()  # start observer thread
@@ -121,6 +121,12 @@ class parameterGuardUI(wx.Dialog):
                 ui_elem_handler_dict = {}
 
                 for param, value in section_params.iteritems():
+
+                    if type(value) == str:
+                        splitted_value = value.split(';')
+                        if len(splitted_value) > 1:
+                            if splitted_value[1].strip() == 'X':
+                                self.black_list.append(param)
 
                     if param not in self.black_list:
 
@@ -418,8 +424,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'D:\\MWAdditive'
-        corePath = 'D:\\MWAdditive'
+        pluginPath = 'C:\\MWAdditive'
+        corePath = 'C:\\MWAdditive'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

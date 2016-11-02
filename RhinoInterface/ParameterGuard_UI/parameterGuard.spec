@@ -1,4 +1,14 @@
+import os
+import sys
 import shutil, psutil
+from PyInstaller.building.api import PYZ, EXE, COLLECT
+from PyInstaller.building.build_main import Analysis
+from PyInstaller.building.datastruct import TOC
+from multiprocessing import Queue
+
+# append current directory
+sys.path.append(os.getcwd())
+# from config import options
 
 for proc in psutil.process_iter():
     try:
@@ -11,9 +21,10 @@ for proc in psutil.process_iter():
         pass
 
 # -*- mode: python -*-
+# , 'watchdog'
 a = Analysis(['parameterGuard.py'],
               pathex=['.'], 
-              hiddenimports=[],
+              hiddenimports=['guard', 'watchdog', 'multiprocessing'],
               hookspath=None, 
               runtime_hooks=None)
 
@@ -41,4 +52,4 @@ exe = EXE(
 #if os.path.isfile('gcode2cutsim.exe'):
 #    os.remove('gcode2cutsim.exe')
 
-shutil.copy('dist\\paramGuard.exe', 'D:\\MWAdditive\\paramGuard.exe')
+shutil.copy('dist\\paramGuard.exe', 'C:\\MWAdditive\\paramGuard.exe')
