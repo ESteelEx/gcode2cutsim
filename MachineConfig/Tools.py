@@ -79,5 +79,6 @@ class Tools:
 
         midPoint = Decimal(xWithOverlap), Decimal(R)
         radius = Decimal(R)
+        width = 2*(xWithOverlap + RWithOverlap)
 
-        return geometryStr, midPoint, radius
+        return geometryStr, midPoint, radius, width

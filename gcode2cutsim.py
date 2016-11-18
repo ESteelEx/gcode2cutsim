@@ -7,7 +7,7 @@ gcode2cutsim parser -> cutsim can read gcode data now.
 __author__ = 'mathiasr'
 __version__= 1.0
 
-import sys, os, win32con, numpy, warnings, wx
+import sys, os, win32con, numpy, warnings, wx, copy
 import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
 
@@ -135,12 +135,16 @@ def main():
         pointpos = inputf.rfind('.')
         if pointpos != -1:
             outputf = inputf[:pointpos+1] + 'cl'
+            outputfMS = inputf[:pointpos+1] + 'sim'
         else:
             outputf = inputf + 'cl'
+            outputfMS = inputf + 'sim'
 
         CLWriter = CLFileWriter.CLFileWriter(outputf) # start CL File writer
+        CLMSWriter = CLFileWriter.CLFileWriter(outputfMS)
         # open and create CL file
         CLWriter.openCLFile()
+        CLMSWriter.openCLFile()
 
         # initialize const
         # ------------------------------------------------------------------------------------------------------------
@@ -176,6 +180,10 @@ def main():
                                             # We know them after every line from G-Code is procecssed.
                                             # We use this line to find the right line to replace
         CLWriter.writeNCCode(homePosStr)
+
+
+        # write information in MachSim File
+        CLMSWriter.writeNCCode('MW_UNITS_METRIC 1\n')
 
         if not silent_process:
 
@@ -234,10 +242,14 @@ def main():
                     zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space in line string
                     LayerThicknessForerun = zValForerun - zValMachine
                     if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:  # check if in tolerance after subtraction
-                        geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
+                        geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                          LayerWidth=LayerWidthMachine,
                                                                          ELOverlap=ExtrusionLineOverlap)
+
                         CLWriter.writeToolChange(geometryStr)
+                        CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
+                        CLMSWriter.writeNCCode('MW_MACHMOVE Z=' + str(zValMachine))
+
                         LayerThickness = LayerThicknessForerun
                         if LayerThickness < SIMPRECISION:
                             SIMPRECISION = LayerThickness
@@ -258,11 +270,13 @@ def main():
                                                           forerunExtrusionVal, LayerThicknessForerun)
 
                         if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:  # check if in tolerance after subtraction
-                            geometryStr, midpoint, radius = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
+                            geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                              LayerWidth=LayerWidth,
                                                                              ELOverlap=ExtrusionLineOverlap)
                             if geometryStr is not None:
                                 CLWriter.writeToolChange(geometryStr)
+                                CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
+                                CLMSWriter.writeNCCode('MW_MACHMOVE X=' + str(currentMachinePos[0]) + ' Y=' + str(currentMachinePos[1]) + ' Z=' + str(zValMachine))
 
                         LayerWidthMachine = LayerWidth
                         lineLloop = line
@@ -282,20 +296,29 @@ def main():
                     line = StrManipulate.sepStr(line, 'F')
                     line = StrManipulate.sepStr(line, 'G')
                     line = StrManipulate.sepStr(line, 'E')
+                    lineMS = copy.deepcopy(line)
+                    lineMS = StrManipulate.insertChar(lineMS, 'X', '=')
+                    lineMS = StrManipulate.insertChar(lineMS, 'Y', '=')
+                    lineMS = StrManipulate.insertChar(lineMS, 'Z', '=')
                     line = StrManipulate.insertWS(line, 'X')
                     line = StrManipulate.insertWS(line, 'Y')
                     line = StrManipulate.insertWS(line, 'Z')
+
                     if lineC[0:3] == 'G1 ':
                         if line.find('G') == -1:
                             CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                            CLMSWriter.writeNCCode('MW_MACHMOVE ' + lineMS)
                             evalGcode.saveAxValLimits('X', lineC)
                             evalGcode.saveAxValLimits('Y', lineC)
 
                     elif lineC[0:3] == 'G0 ': # rapid move
                         CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                        CLMSWriter.writeNCCode('MW_MACHMOVE ' + lineMS)
                         evalGcode.saveAxValLimits('Z', lineC)
 
         CLWriter.closeNCFile() # close CL writer and close CL file
+        CLMSWriter.writeNCCode('MW_OP_END')
+        CLMSWriter.closeNCFile()
 
         AdditiveBoxDim = evalGcode.getSavedAxLimits()
 

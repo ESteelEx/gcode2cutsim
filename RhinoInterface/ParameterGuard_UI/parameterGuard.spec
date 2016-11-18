@@ -52,4 +52,4 @@ exe = EXE(
 #if os.path.isfile('gcode2cutsim.exe'):
 #    os.remove('gcode2cutsim.exe')
 
-shutil.copy('dist\\paramGuard.exe', 'C:\\MWAdditive\\paramGuard.exe')
+shutil.copy('dist\\paramGuard.exe', 'D:\\MWAdditive\\paramGuard.exe')

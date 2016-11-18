@@ -424,8 +424,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'C:\\MWAdditive'
-        corePath = 'C:\\MWAdditive'
+        pluginPath = 'D:\\MWAdditive'
+        corePath = 'D:\\MWAdditive'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

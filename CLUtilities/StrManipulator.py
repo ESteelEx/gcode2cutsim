@@ -31,3 +31,10 @@ class StrManipulator:
         posChar = line.find(char)
         line = line[:posChar+1] + ' ' + line[posChar+1:]
         return line
+
+    def insertChar(self, line, char, insertChar):
+        """inserts a user given character after user given character"""
+        posChar = line.find(char)
+        if posChar != -1:
+            line = line[:posChar+1] + insertChar + line[posChar+1:]
+        return line
