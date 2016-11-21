@@ -338,7 +338,7 @@ class controlLayer:
             return
 
         try:
-            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'baseWidth', num)
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'fieldWidth', num)
         except:
             raise
 

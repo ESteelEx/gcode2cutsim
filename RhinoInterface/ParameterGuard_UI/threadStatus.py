@@ -21,7 +21,7 @@ class threadStat(wx.Dialog):
         self.Show()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def slicer_working(self):
+    def slicer_working(self, working_stat):
         text = wx.StaticText(self,
                              style=wx.ALIGN_CENTRE,
                              label='S',
@@ -32,7 +32,10 @@ class threadStat(wx.Dialog):
         font = wx.Font(33, wx.DEFAULT, wx.NORMAL, wx.NORMAL)
         text.SetFont(font)
 
-        text.SetForegroundColour(UI.TCOLOR['FG'])
+        #if working_stat:
+        #    text.SetForegroundColour(UI.TCOLOR['FG'])
+        #else:
+        #    text.SetForegroundColour(UI.TCOLOR['BG'])
 
     # ------------------------------------------------------------------------------------------------------------------
     def simulation_working(self):
@@ -42,7 +45,7 @@ class threadStat(wx.Dialog):
     def close_TS(self):
         self.Destroy()
 
-app = wx.App(False)
-TS = threadStat('', '')
-TS.slicer_working()
-app.MainLoop()
+#app = wx.App(False)
+#TS = threadStat('', '')
+#TS.slicer_working()
+#app.MainLoop()

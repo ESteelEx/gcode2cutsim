@@ -39,9 +39,13 @@ def startVerification(CLFile, NCiniFile, WD):
     params = NCiniFile
     print 'Opening ' + abscommand + ' with ' + NCiniFile
 
-    try:
-        shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
-    except:
+    if os.path.isfile(command):
+        try:
+            shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+        except:
+            pass
+
+    elif os.path.isfile(rel_command):
         try:
             shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=rel_command, lpParameters=params)
         except:
@@ -183,7 +187,7 @@ def main():
 
 
         # write information in MachSim File
-        CLMSWriter.writeNCCode('MW_UNITS_METRIC 1\n')
+        CLMSWriter.writeNCCode('MW_UNITS_METRIC 1')
 
         if not silent_process:
 
@@ -248,7 +252,7 @@ def main():
 
                         CLWriter.writeToolChange(geometryStr)
                         CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                        CLMSWriter.writeNCCode('MW_MACHMOVE Z=' + str(zValMachine))
+                        CLMSWriter.writeNCCode('MW_MACHMOVE RAPID Z' + str(zValMachine))
 
                         LayerThickness = LayerThicknessForerun
                         if LayerThickness < SIMPRECISION:
@@ -276,7 +280,7 @@ def main():
                             if geometryStr is not None:
                                 CLWriter.writeToolChange(geometryStr)
                                 CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                                CLMSWriter.writeNCCode('MW_MACHMOVE X=' + str(currentMachinePos[0]) + ' Y=' + str(currentMachinePos[1]) + ' Z=' + str(zValMachine))
+                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine))
 
                         LayerWidthMachine = LayerWidth
                         lineLloop = line
@@ -293,13 +297,11 @@ def main():
                 # write g-code to cutsim format
                 if startParsing == True:
                     line = line.rstrip('\n') # remove next line chars
-                    line = StrManipulate.sepStr(line, 'F')
                     line = StrManipulate.sepStr(line, 'G')
                     line = StrManipulate.sepStr(line, 'E')
                     lineMS = copy.deepcopy(line)
-                    lineMS = StrManipulate.insertChar(lineMS, 'X', '=')
-                    lineMS = StrManipulate.insertChar(lineMS, 'Y', '=')
-                    lineMS = StrManipulate.insertChar(lineMS, 'Z', '=')
+                    lineMS = StrManipulate.vartype(line, 'F', 'int')
+                    line = StrManipulate.sepStr(line, 'F')
                     line = StrManipulate.insertWS(line, 'X')
                     line = StrManipulate.insertWS(line, 'Y')
                     line = StrManipulate.insertWS(line, 'Z')
@@ -307,13 +309,13 @@ def main():
                     if lineC[0:3] == 'G1 ':
                         if line.find('G') == -1:
                             CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                            CLMSWriter.writeNCCode('MW_MACHMOVE ' + lineMS)
+                            CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS)
                             evalGcode.saveAxValLimits('X', lineC)
                             evalGcode.saveAxValLimits('Y', lineC)
 
                     elif lineC[0:3] == 'G0 ': # rapid move
                         CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                        CLMSWriter.writeNCCode('MW_MACHMOVE ' + lineMS)
+                        CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS)
                         evalGcode.saveAxValLimits('Z', lineC)
 
         CLWriter.closeNCFile() # close CL writer and close CL file

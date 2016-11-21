@@ -61,11 +61,13 @@ class CLFileWriter:
             self.writeNCCode('NONCUTTING')
             self.writeNCCode('line ps 0.6 0 pe 3 3 ;')
         elif NC_Style == 'MachSim':
-            self.writeNCCode('MW_OP_END')
+            if self.operationNr > 1:
+                self.writeNCCode('MW_OP_END')
+
             self.writeNCCode('MW_OP_START')
             self.writeNCCode('MW_OP_NUMBER ' + str(self.operationNr))
             self.writeNCCode('MW_OP_COMMENT "Dummy op"')
-            self.writeNCCode('MW_TOOL_ID 0')
+            self.writeNCCode('MW_TOOL_ID 0')  # + str(self.operationNr))
             self.writeNCCode('MW_TOOL_NUMBER 100000')
             self.writeNCCode('MW_TOOL_COMMENT "Dummy tool"')
             self.writeNCCode('MW_TOOL_CUT_PART_DEF ' + geometryStr + ' 0 ' + geometryStr + ' 2')
@@ -88,7 +90,7 @@ class CLFileWriter:
         try:
             self.fn.close()
         except:
-            self.logger.wlog('ERROR','Error while closing CL-file' + self.File)
+            self.logger.wlog('ERROR', 'Error while closing CL-file' + self.File)
 
 
 
