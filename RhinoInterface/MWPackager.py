@@ -1,24 +1,27 @@
 try:
     import rhinoscriptsyntax as rs
 except:
-    pass
+    print 'You have to execute this script inside Rhino environment'
 
 import sys, os, threading, zipfile, shutil
 import adjustINI
 reload(adjustINI)
 
-# ------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 def package_flist():
     package = {}
-    package['calc_core'] = 'mwAdditive3DPrinter.exe'
-    package['simulation_core'] = 'gcode2cutsimFDM.exe'
+    #package['calc_core'] = 'mwAdditive3DPrinter.exe'
+    #package['simulation_core'] = 'gcode2cutsimFDM.exe'
     package['workpiece'] = 'Mesh.stl'
-    package['simulation_file'] = 'Mesh.cl'
+    package['simulation_file_AddSim'] = 'Mesh.cl'
+    package['simulation_file_MachSim'] = 'Mesh.sim'
     package['gcode'] = 'Mesh.gcode'
     package['build_space'] = 'buildspace.3dm'
     package['config_file'] = 'Mesh.ini'
 
     return package
+
 
 
 class MWPackager(threading.Thread):
@@ -29,6 +32,7 @@ class MWPackager(threading.Thread):
         self.command = command
         threading.Thread.__init__(self)
 
+    # ------------------------------------------------------------------------------------------------------------------
     def run(self):
         if self.command == 'save':
             self.copy_core()
@@ -55,14 +59,18 @@ class MWPackager(threading.Thread):
 
             zf = zipfile.ZipFile(fileName, mode='w')
             for key, file in package.iteritems():
-                try:
-                    print 'Adding ' + key + ' - ' + file
-                    zf.write(self.corePath + r'\\' + file, arcname=file, compress_type=zipfile.ZIP_DEFLATED)
-                except:
-                    print 'Something went wrong'
-                    zf.close()
+                file_abs = self.corePath + '\\' + file
+                if os.path.isfile(file_abs):
+                    try:
+                        print 'Adding ' + key + ' - ' + file
+                        zf.write(file_abs, arcname=file, compress_type=zipfile.ZIP_DEFLATED)
+                    except:
+                        print 'Something went wrong while zipping'
+                        zf.close()
+                else:
+                    print 'File not found: ' + str(file)
 
-            print 'closing file.'
+            print 'Closing package'
             zf.close()
             # if os.path.isfile(package['build_space']):
             #     print 'Removing TMP data ...'

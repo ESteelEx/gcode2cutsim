@@ -15,6 +15,9 @@ class CLFileWriter:
         self.operationNr = 1
         self.Number = 0
         self.INC = 1
+        self.Z_level = 0
+        self.layerNr = 1
+        self.path_area_index = 0
 
     def initializeCLFileWriter(self, filename):
         """Initialize CL File writer"""
@@ -64,12 +67,14 @@ class CLFileWriter:
             if self.operationNr > 1:
                 self.writeNCCode('MW_OP_END')
 
+            self.path_area_index += 1
+
             self.writeNCCode('MW_OP_START')
-            self.writeNCCode('MW_OP_NUMBER ' + str(self.operationNr))
-            self.writeNCCode('MW_OP_COMMENT "Dummy op"')
+            self.writeNCCode('MW_OP_NUMBER ' + str(self.path_area_index))
+            self.writeNCCode('MW_OP_COMMENT "Layer ' + str(self.layerNr) + ' - ' + str(self.Z_level) + 'mm"')
             self.writeNCCode('MW_TOOL_ID 0')  # + str(self.operationNr))
             self.writeNCCode('MW_TOOL_NUMBER 100000')
-            self.writeNCCode('MW_TOOL_COMMENT "Dummy tool"')
+            self.writeNCCode('MW_TOOL_COMMENT "Diameter ' + geometryStr + '"')
             self.writeNCCode('MW_TOOL_CUT_PART_DEF ' + geometryStr + ' 0 ' + geometryStr + ' 2')
             self.writeNCCode('MW_TOOL_NON_CUT_PART_DEF 0 0 0 0')
             self.writeNCCode('MW_TOOL_ARB_DEF 0 0 0 0')

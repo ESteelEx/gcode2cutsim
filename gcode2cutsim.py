@@ -25,37 +25,44 @@ from Utilities import ini_worker
 
 # warnings.filterwarnings("ignore")
 
+# ----------------------------------------------------------------------------------------------------------------------
 def startVerification(CLFile, NCiniFile, WD):
     """starting Verification"""
     if WD == '':
-        command = r'C:\Additive_ENV\bin\Verifier\VerifierApplicationSample.exe'
-        rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+        # command = r'C:\Additive_ENV\bin\Verifier\VerifierApplicationSample.exe'
+        # rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+        command = r'C:\MW3DPrinting\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe'
+        rel_command = r'bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe'
     else:
-        command = WD + r'\bin\Verifier\VerifierApplicationSample.exe'
-        rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+        # command = WD + r'\bin\Verifier\VerifierApplicationSample.exe'
+        # rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
+        rel_command = r'bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe'
+
 
     # abscommand = os.getcwd() + command
     abscommand = command
-    params = NCiniFile
-    print 'Opening ' + abscommand + ' with ' + NCiniFile
+    # params = NCiniFile
+    params = ''
+    # print 'Opening ' + abscommand + ' with ' + NCiniFile
 
     if os.path.isfile(command):
+        print 'abs found'
         try:
             shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
         except:
-            pass
+            print 'Could not execute abs'
 
     elif os.path.isfile(rel_command):
+        print 'rel found'
         try:
             shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=rel_command, lpParameters=params)
         except:
             pass
 
-    # try:
-    #     shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=CLFile)
-    # except:
-    #     raise
+    else:
+        print 'Nothing found'
 
+# ----------------------------------------------------------------------------------------------------------------------
 def getSimulationPrecision(fileName):
 
     sim_params = ini_worker.get_section_from_ini(fileName, 'SIMULATION')
@@ -258,6 +265,11 @@ def main():
                         if LayerThickness < SIMPRECISION:
                             SIMPRECISION = LayerThickness
                     zValMachine = zValForerun
+                    CLMSWriter.Z_level = zValMachine
+                    CLWriter.Z_level = zValMachine
+                    CLWriter.layerNr += 1
+                    CLMSWriter.layerNr += 1
+                    CLMSWriter.path_area_index = 0
 
                 # get geometry of extrusion lines and layers before proceeding with tool etc.
                 if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over and equal 10

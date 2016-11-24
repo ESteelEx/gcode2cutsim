@@ -1,4 +1,4 @@
-import shutil, psutil
+import shutil, psutil, os
 
 for proc in psutil.process_iter():
     try:
@@ -17,7 +17,8 @@ a = Analysis(['gcode2cutsim.py'],
                 hookspath=None,
                 runtime_hooks=None)
 
-a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
+if os.path.isfile('cacert.pem'):
+    a.datas.append(('cacert.pem', 'cacert.pem', 'DATA'))
 
 for d in a.datas:
     if 'pyconfig' in d[0]:
@@ -42,4 +43,4 @@ if os.path.isfile('gcode2cutsim.exe'):
     os.remove('gcode2cutsim.exe')
 
 shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsimFDM.exe')
-shutil.copy('gcode2cutsimFDM.exe', 'C:\\MWAdditive\\gcode2cutsimFDM.exe')
+shutil.copy('gcode2cutsimFDM.exe', 'C:\\MW3DPrinting\\gcode2cutsimFDM.exe')

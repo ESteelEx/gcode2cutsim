@@ -1,11 +1,12 @@
 import sys, os, threading
 
 class runSimulation(threading.Thread):
-    def __init__(self, corePath, pluginPath, silent=False, calc=True):
+    def __init__(self, corePath, pluginPath, silent=False, calc=True, simType='verifier'):
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.silent = silent
         self.calc = calc
+        self.simType = simType
         threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -27,5 +28,9 @@ class runSimulation(threading.Thread):
                           self.corePath + r"\Mesh.gcode " +
                           self.corePath + r"\Mesh.ini")
             else:
-                os.system(self.corePath + r"\bin\verifier\VerifierApplicationSample.exe " +
-                          self.corePath + r"\Mesh_SIMULATION.ini")
+                if self.simType == 'verifier':
+                    os.system(self.corePath + r"\bin\verifier\VerifierApplicationSample.exe " +
+                              self.corePath + r"\Mesh_SIMULATION.ini")
+                elif self.simType == 'machSim':
+                    os.system(self.corePath + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+
