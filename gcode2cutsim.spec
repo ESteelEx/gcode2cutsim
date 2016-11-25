@@ -33,10 +33,10 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     name=os.path.join('dist', 'gcode2cutsim.exe'),
-    debug=False,
+    debug=True,
     strip=None,
     upx=True,
-    console=False,
+    console=True,
     icon='bin\\images\\3dPrintVer.ico')
 
 if os.path.isfile('gcode2cutsim.exe'):

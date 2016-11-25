@@ -1,13 +1,15 @@
 import sys, os, threading
+from subprocess import Popen, PIPE
 
-class runSimulation(threading.Thread):
+
+class runSimulation():
     def __init__(self, corePath, pluginPath, silent=False, calc=True, simType='verifier'):
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.silent = silent
         self.calc = calc
         self.simType = simType
-        threading.Thread.__init__(self)
+        # threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
     def run(self):
@@ -32,5 +34,13 @@ class runSimulation(threading.Thread):
                     os.system(self.corePath + r"\bin\verifier\VerifierApplicationSample.exe " +
                               self.corePath + r"\Mesh_SIMULATION.ini")
                 elif self.simType == 'machSim':
-                    os.system(self.corePath + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+                    # os.system(self.corePath + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+                    #os.system(self.corePath + r"\gcode2cutsimFDM.exe " +
+                    #          self.corePath + r"\Mesh.gcode " +
+                    #          self.corePath + r"\Mesh.ini")
 
+                    rel_command = [self.corePath + r"\gcode2cutsimFDM.exe ",
+                                   self.corePath + r"\Mesh.gcode ",
+                                   self.corePath + r"\Mesh.ini"]
+
+                    process = Popen(rel_command, stdout=PIPE, stderr=PIPE)

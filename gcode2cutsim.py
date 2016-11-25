@@ -10,6 +10,7 @@ __version__= 1.0
 import sys, os, win32con, numpy, warnings, wx, copy
 import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
+from subprocess import Popen, PIPE
 
 # from decimal import *
 from CLUtilities import G2CLogging
@@ -47,16 +48,23 @@ def startVerification(CLFile, NCiniFile, WD):
     # print 'Opening ' + abscommand + ' with ' + NCiniFile
 
     if os.path.isfile(command):
-        print 'abs found'
+        # print 'abs found'
         try:
-            shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
+            # os.system(command)
+            process = Popen(command, stdout=PIPE, stderr=PIPE)
+            # stdout, stderr = process.communicate()
+            # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
         except:
-            print 'Could not execute abs'
+            pass
+            # print 'Could not execute abs'
 
     elif os.path.isfile(rel_command):
-        print 'rel found'
+        # print 'rel found'
         try:
-            shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=rel_command, lpParameters=params)
+            # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=rel_command, lpParameters=params)
+            # os.system(rel_command)
+            process = Popen(rel_command, stdout=PIPE, stderr=PIPE)
+            # stdout, stderr = process.communicate()
         except:
             pass
 
