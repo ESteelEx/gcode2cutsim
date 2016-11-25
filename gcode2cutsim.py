@@ -22,6 +22,7 @@ from CLUtilities import evaluateGCode
 from CLUtilities import NCFileReader
 from CLUtilities import configData
 from Utilities import ini_worker
+from Utilities import compare
 
 # warnings.filterwarnings("ignore")
 
@@ -151,211 +152,213 @@ def main():
             outputf = inputf + 'cl'
             outputfMS = inputf + 'sim'
 
-        CLWriter = CLFileWriter.CLFileWriter(outputf) # start CL File writer
-        CLMSWriter = CLFileWriter.CLFileWriter(outputfMS)
-        # open and create CL file
-        CLWriter.openCLFile()
-        CLMSWriter.openCLFile()
+        if compare.sim_files(inputf, outputf) or compare.sim_files(inputf, outputfMS):
 
-        # initialize const
-        # ------------------------------------------------------------------------------------------------------------
-        startParsing = False
-        zValMachine = 0
-        LayerThickness = 0
-        # EXTRUSIONLINEOVERLAP = 0 # [mm]
-        ExtrusionLineOverlap = 0 # percent
-        # EXTENDADDITIVEBOX = 1 # [mm]
-        extendAdditiveBox = 1 # [mm]
-        lineLloop = None
-        # ------------------------------------------------------------------------------------------------------------
+            CLWriter = CLFileWriter.CLFileWriter(outputf) # start CL File writer
+            CLMSWriter = CLFileWriter.CLFileWriter(outputfMS)
+            # open and create CL file
+            CLWriter.openCLFile()
+            CLMSWriter.openCLFile()
 
-        G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
+            # initialize const
+            # ------------------------------------------------------------------------------------------------------------
+            startParsing = False
+            zValMachine = 0
+            LayerThickness = 0
+            # EXTRUSIONLINEOVERLAP = 0 # [mm]
+            ExtrusionLineOverlap = 0 # percent
+            # EXTENDADDITIVEBOX = 1 # [mm]
+            extendAdditiveBox = 1 # [mm]
+            lineLloop = None
+            # ------------------------------------------------------------------------------------------------------------
 
-        # open NC file reader and get a block of code
-        flNC = open(inputf, 'r') # read only
-        NCBlock, flNC = NCFileR.getNCBlock(flNC, blocklength=15) # get NC block code
-        flNC.close()
+            G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
 
-        # get initial layer width. To calculate initial LW we need a few lines of code.
-        # At least 2 consecutive G1 moves with extrusion value.
-        LayerWidthMachine = ExUtil.getInitialLayerWidth(NCBlock)
-        currentExtrusionVal = ExUtil.getInitialExtrusionVal(NCBlock)
+            # open NC file reader and get a block of code
+            flNC = open(inputf, 'r') # read only
+            NCBlock, flNC = NCFileR.getNCBlock(flNC, blocklength=15) # get NC block code
+            flNC.close()
 
-        # write header
-        # stockDimStr = JobS.getStockDimensionStr()
-        homePosStr = JobS.getHomePosStr()
+            # get initial layer width. To calculate initial LW we need a few lines of code.
+            # At least 2 consecutive G1 moves with extrusion value.
+            LayerWidthMachine = ExUtil.getInitialLayerWidth(NCBlock)
+            currentExtrusionVal = ExUtil.getInitialExtrusionVal(NCBlock)
 
-        # CLWriter.writeNCCode(stockDimStr)
-        CLWriter.writeNCCode('STOCK')
-        CLWriter.writeNCCode('ADDITIVEBOX') # place holder. We replace this line with calculated part dimensions.
-                                            # We know them after every line from G-Code is procecssed.
-                                            # We use this line to find the right line to replace
-        CLWriter.writeNCCode(homePosStr)
+            # write header
+            # stockDimStr = JobS.getStockDimensionStr()
+            homePosStr = JobS.getHomePosStr()
+
+            # CLWriter.writeNCCode(stockDimStr)
+            CLWriter.writeNCCode('STOCK')
+            CLWriter.writeNCCode('ADDITIVEBOX') # place holder. We replace this line with calculated part dimensions.
+                                                # We know them after every line from G-Code is procecssed.
+                                                # We use this line to find the right line to replace
+            CLWriter.writeNCCode(homePosStr)
 
 
-        # write information in MachSim File
-        CLMSWriter.writeNCCode('MW_UNITS_METRIC 1')
+            # write information in MachSim File
+            CLMSWriter.writeNCCode('MW_UNITS_METRIC 1')
 
-        if not silent_process:
+            if not silent_process:
 
-            app = wx.App(False)
+                app = wx.App(False)
 
-            pulse_dlg = wx.ProgressDialog(title="G2C Converting ...",
-                                          message="Initializing ...",
-                                          maximum=int(101),
-                                          style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
+                pulse_dlg = wx.ProgressDialog(title="G2C Converting ...",
+                                              message="Initializing ...",
+                                              maximum=int(101),
+                                              style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
 
-        num_lines = sum(1 for line in open(inputf))
+            num_lines = sum(1 for line in open(inputf))
 
-        # line_start
+            # line_start
 
-        next_update_block = 0
-        keepGoin = 1
-        with open(inputf) as fidO:
+            next_update_block = 0
+            keepGoin = 1
+            with open(inputf) as fidO:
 
-            # start reading g-Code file
-            # -----
-            loopCounter = 0
-            for line in fidO:
-                loopCounter += 1
-                # save line to lineC -> keeps original
-                lineC = line
+                # start reading g-Code file
+                # -----
+                loopCounter = 0
+                for line in fidO:
+                    loopCounter += 1
+                    # save line to lineC -> keeps original
+                    lineC = line
 
-                perc = round((loopCounter / float(num_lines) * 100))
-                if  perc > next_update_block:
-                    next_update_block += 0.1
+                    perc = round((loopCounter / float(num_lines) * 100))
+                    if  perc > next_update_block:
+                        next_update_block += 0.1
 
-                    if not silent_process:
-                        updmessage = 'Line ' + str(loopCounter) + ' of ' + str(num_lines) + ' - ' + str(perc) + '%'
+                        if not silent_process:
+                            updmessage = 'Line ' + str(loopCounter) + ' of ' + str(num_lines) + ' - ' + str(perc) + '%'
 
-                        (keepGoin, skip) = pulse_dlg.Update(perc, updmessage)
-                        if not keepGoin:
-                            G2CLOG.wlog('INFO', 'User canceled at line: ' + str(loopCounter) + ' - ' + str(perc) + '%')
-                            existent = 2
-                            break
-                    #else:
-                    #    print str(perc) + ' [%]'
+                            (keepGoin, skip) = pulse_dlg.Update(perc, updmessage)
+                            if not keepGoin:
+                                G2CLOG.wlog('INFO', 'User canceled at line: ' + str(loopCounter) + ' - ' + str(perc) + '%')
+                                existent = 2
+                                break
+                        #else:
+                        #    print str(perc) + ' [%]'
 
-                # check where g-code actually starts and give green light to parsing functions True/False
-                if line[0] == 'G':
-                    startParsing = True
-                else:
-                    startParsing = False
-
-                if line[0] == ';': # cancel/go back to loop if line is commented
-                    continue
-
-                # zLevelChange = evalGcode.proofZlevelChange(line) # True or False
-
-                # check if layer thickness changed during z-level change
-                pos = line.find('Z')
-                if pos != -1:
-                    zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space in line string
-                    LayerThicknessForerun = zValForerun - zValMachine
-                    if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:  # check if in tolerance after subtraction
-                        geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
-                                                                         LayerWidth=LayerWidthMachine,
-                                                                         ELOverlap=ExtrusionLineOverlap)
-
-                        CLWriter.writeToolChange(geometryStr)
-                        CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                        CLMSWriter.writeNCCode('MW_MACHMOVE RAPID Z' + str(zValMachine))
-
-                        LayerThickness = LayerThicknessForerun
-                        if LayerThickness < SIMPRECISION:
-                            SIMPRECISION = LayerThickness
-                    zValMachine = zValForerun
-                    CLMSWriter.Z_level = zValMachine
-                    CLWriter.Z_level = zValMachine
-                    CLWriter.layerNr += 1
-                    CLMSWriter.layerNr += 1
-                    CLMSWriter.path_area_index = 0
-
-                # get geometry of extrusion lines and layers before proceeding with tool etc.
-                if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over and equal 10
-                    if lineLloop is not None and LayerThicknessForerun != 0:
-                        # x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
-
-                        # get current positions and extrusion values
-                        forerunMachinePos = ExUtil.getCoordinates(line)
-                        if forerunMachinePos is not None:
-                            forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
-
-                        forerunExtrusionVal = ExUtil.getExtrusionVal(line)
-                        LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal,
-                                                          forerunExtrusionVal, LayerThicknessForerun)
-
-                        if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:  # check if in tolerance after subtraction
-                            geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
-                                                                             LayerWidth=LayerWidth,
-                                                                             ELOverlap=ExtrusionLineOverlap)
-                            if geometryStr is not None:
-                                CLWriter.writeToolChange(geometryStr)
-                                CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine))
-
-                        LayerWidthMachine = LayerWidth
-                        lineLloop = line
-                        currentExtrusionVal = ExUtil.getExtrusionVal(line)
+                    # check where g-code actually starts and give green light to parsing functions True/False
+                    if line[0] == 'G':
+                        startParsing = True
                     else:
-                        lineLloop = line
+                        startParsing = False
 
-                if line[0:3] == "G1 " or line[0:3] == 'G0 ':
-                    # get current machine position from NC line
-                    currentMachinePos = ExUtil.getCoordinates(line)
-                    if currentMachinePos is not None:
-                        currentMachinePos = (currentMachinePos[1], currentMachinePos[2]) # X,Y
+                    if line[0] == ';': # cancel/go back to loop if line is commented
+                        continue
 
-                # write g-code to cutsim format
-                if startParsing == True:
-                    line = line.rstrip('\n') # remove next line chars
-                    line = StrManipulate.sepStr(line, 'G')
-                    line = StrManipulate.sepStr(line, 'E')
-                    lineMS = copy.deepcopy(line)
-                    lineMS = StrManipulate.vartype(line, 'F', 'int')
-                    line = StrManipulate.sepStr(line, 'F')
-                    line = StrManipulate.insertWS(line, 'X')
-                    line = StrManipulate.insertWS(line, 'Y')
-                    line = StrManipulate.insertWS(line, 'Z')
+                    # zLevelChange = evalGcode.proofZlevelChange(line) # True or False
 
-                    if lineC[0:3] == 'G1 ':
-                        if line.find('G') == -1:
-                            CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                            CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS)
-                            evalGcode.saveAxValLimits('X', lineC)
-                            evalGcode.saveAxValLimits('Y', lineC)
+                    # check if layer thickness changed during z-level change
+                    pos = line.find('Z')
+                    if pos != -1:
+                        zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space in line string
+                        LayerThicknessForerun = zValForerun - zValMachine
+                        if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:  # check if in tolerance after subtraction
+                            geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
+                                                                             LayerWidth=LayerWidthMachine,
+                                                                             ELOverlap=ExtrusionLineOverlap)
 
-                    elif lineC[0:3] == 'G0 ': # rapid move
-                        CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                        CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS)
-                        evalGcode.saveAxValLimits('Z', lineC)
+                            CLWriter.writeToolChange(geometryStr)
+                            CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID Z' + str(zValMachine))
 
-        CLWriter.closeNCFile() # close CL writer and close CL file
-        CLMSWriter.writeNCCode('MW_OP_END')
-        CLMSWriter.closeNCFile()
+                            LayerThickness = LayerThicknessForerun
+                            if LayerThickness < SIMPRECISION:
+                                SIMPRECISION = LayerThickness
+                        zValMachine = zValForerun
+                        CLMSWriter.Z_level = zValMachine
+                        CLWriter.Z_level = zValMachine
+                        CLWriter.layerNr += 1
+                        CLMSWriter.layerNr += 1
+                        CLMSWriter.path_area_index = 0
 
-        AdditiveBoxDim = evalGcode.getSavedAxLimits()
+                    # get geometry of extrusion lines and layers before proceeding with tool etc.
+                    if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over and equal 10
+                        if lineLloop is not None and LayerThicknessForerun != 0:
+                            # x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
 
-        ADDITIVEBOX = [AdditiveBoxDim[0]['X'] - extendAdditiveBox, AdditiveBoxDim[0]['Y'] - extendAdditiveBox,
-                          AdditiveBoxDim[0]['Z'] - extendAdditiveBox, AdditiveBoxDim[1]['X'] + extendAdditiveBox,
-                          AdditiveBoxDim[1]['Y'] + extendAdditiveBox, AdditiveBoxDim[1]['Z'] + extendAdditiveBox]
+                            # get current positions and extrusion values
+                            forerunMachinePos = ExUtil.getCoordinates(line)
+                            if forerunMachinePos is not None:
+                                forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
 
-        JobS.ADDITIVEBOX = ADDITIVEBOX
+                            forerunExtrusionVal = ExUtil.getExtrusionVal(line)
+                            LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal,
+                                                              forerunExtrusionVal, LayerThicknessForerun)
 
-        partDimStr = JobS.getABDimensionStr()
+                            if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:  # check if in tolerance after subtraction
+                                geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
+                                                                                 LayerWidth=LayerWidth,
+                                                                                 ELOverlap=ExtrusionLineOverlap)
+                                if geometryStr is not None:
+                                    CLWriter.writeToolChange(geometryStr)
+                                    CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
+                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine))
 
-        for line in fileinput.input(outputf, inplace=1):
-            print line.replace("ADDITIVEBOX", partDimStr),
+                            LayerWidthMachine = LayerWidth
+                            lineLloop = line
+                            currentExtrusionVal = ExUtil.getExtrusionVal(line)
+                        else:
+                            lineLloop = line
 
-        # find position of stock model
-        JobS.set_stock_position()
+                    if line[0:3] == "G1 " or line[0:3] == 'G0 ':
+                        # get current machine position from NC line
+                        currentMachinePos = ExUtil.getCoordinates(line)
+                        if currentMachinePos is not None:
+                            currentMachinePos = (currentMachinePos[1], currentMachinePos[2]) # X,Y
 
-        for line in fileinput.input(outputf, inplace=1):
+                    # write g-code to cutsim format
+                    if startParsing == True:
+                        line = line.rstrip('\n') # remove next line chars
+                        line = StrManipulate.sepStr(line, 'G')
+                        line = StrManipulate.sepStr(line, 'E')
+                        lineMS = copy.deepcopy(line)
+                        lineMS = StrManipulate.vartype(line, 'F', 'int')
+                        line = StrManipulate.sepStr(line, 'F')
+                        line = StrManipulate.insertWS(line, 'X')
+                        line = StrManipulate.insertWS(line, 'Y')
+                        line = StrManipulate.insertWS(line, 'Z')
 
-            stockDimStr = JobS.getStockDimensionStr()
-            print line.replace("STOCK", stockDimStr),
+                        if lineC[0:3] == 'G1 ':
+                            if line.find('G') == -1:
+                                CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS)
+                                evalGcode.saveAxValLimits('X', lineC)
+                                evalGcode.saveAxValLimits('Y', lineC)
 
-        print 'Done. CL file written - > ' + outputf
+                        elif lineC[0:3] == 'G0 ': # rapid move
+                            CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS)
+                            evalGcode.saveAxValLimits('Z', lineC)
+
+            CLWriter.closeNCFile() # close CL writer and close CL file
+            CLMSWriter.writeNCCode('MW_OP_END')
+            CLMSWriter.closeNCFile()
+
+            AdditiveBoxDim = evalGcode.getSavedAxLimits()
+
+            ADDITIVEBOX = [AdditiveBoxDim[0]['X'] - extendAdditiveBox, AdditiveBoxDim[0]['Y'] - extendAdditiveBox,
+                              AdditiveBoxDim[0]['Z'] - extendAdditiveBox, AdditiveBoxDim[1]['X'] + extendAdditiveBox,
+                              AdditiveBoxDim[1]['Y'] + extendAdditiveBox, AdditiveBoxDim[1]['Z'] + extendAdditiveBox]
+
+            JobS.ADDITIVEBOX = ADDITIVEBOX
+
+            partDimStr = JobS.getABDimensionStr()
+
+            for line in fileinput.input(outputf, inplace=1):
+                print line.replace("ADDITIVEBOX", partDimStr),
+
+            # find position of stock model
+            JobS.set_stock_position()
+
+            for line in fileinput.input(outputf, inplace=1):
+
+                stockDimStr = JobS.getStockDimensionStr()
+                print line.replace("STOCK", stockDimStr),
+
+            print 'Done. CL file written - > ' + outputf
 
         if len(inputParams) >= 3:
             if inputParams[-1] == '-sim':
