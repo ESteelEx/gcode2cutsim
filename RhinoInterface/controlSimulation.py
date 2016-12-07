@@ -7,21 +7,35 @@ class controlSimulation():
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.INI_CONFIG = self.corePath + r'\Mesh.ini'
+        self.INI_MachSim = self.corePath + r'\bin\MachSim\mwMachineSimulator_App\Initial_files\Part\mwMachineSimulator.ini'
 
     # ------------------------------------------------------------------------------------------------------------------
-    def set_sweep_shape(self, sweepShape='rectangle'):
+    def set_sweep_shape(self, sweepShape='rectangle', simType='verifier'):
         sys.path.append(self.pluginPath)
         print self.pluginPath
         print os.getcwd()
         from Utilities import ini_worker
         reload(ini_worker)
 
-        section_params = ini_worker.get_section_from_ini(self.INI_CONFIG, 'SIMULATION')
+        if simType == 'verifier':
 
-        for key, value in section_params.iteritems():
-            if key == 'sweepShape':
-                print 'SIMULATION SWEEP SHAPE SWITCHED TO ' + sweepShape
-                ini_worker.write_to_section(self.INI_CONFIG, 'SIMULATION', 'sweepShape', sweepShape)
+            section_params = ini_worker.get_section_from_ini(self.INI_CONFIG, 'SIMULATION')
+
+            for key, value in section_params.iteritems():
+                if key == 'sweepShape':
+                    print 'SIMULATION SWEEP SHAPE SWITCHED TO ' + sweepShape
+                    ini_worker.write_to_section(self.INI_CONFIG, 'SIMULATION', 'sweepShape', sweepShape)
+
+        elif simType == 'MachSim':
+
+            section_params = ini_worker.get_section_from_ini(self.INI_MachSim, 'startup')
+
+            print section_params
+
+            for key, value in section_params.iteritems():
+                if key == 'tpSweepShape':
+                    print 'SIMULATION SWEEP SHAPE SWITCHED TO ' + sweepShape
+                    ini_worker.write_to_section(self.INI_MachSim, 'startup', 'tpSweepShape', sweepShape)
 
     # ------------------------------------------------------------------------------------------------------------------
     def set_simulation_precision(self):

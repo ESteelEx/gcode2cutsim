@@ -195,7 +195,11 @@ class addPoints(threading.Thread):
                             if pos_ws == -1:
                                 Z2 = float(line[pos_Z + 1:])
                             else:
-                                Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
+                                try:
+                                    Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
+                                except:
+                                    print line[pos_Z + 1:pos_ws + pos_Z + 1]
+                                    Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
                             _z_level_change = True
 
                         if _layer >= _from_to_layer[0] and not _z_level_change:

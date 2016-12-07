@@ -29,7 +29,7 @@ class Tools:
         # LayerWidth = 0.20
         # ELOverlap = 0.15
 
-        getcontext().prec = 4 # set precision for decimal class
+        getcontext().prec = 6 # set precision for decimal class
 
         R = Decimal(LayerThickness) / 2
         x = (Decimal(LayerWidth) - 2 * Decimal(R)) / 2

@@ -270,5 +270,14 @@ class ExtrusionUtil():
         else:
             LayerWidth = 0
 
+        if LayerWidth >= 1:
+            print currentMachinePos
+            print forerunMachinePos
+            print currentExtrusionVal
+            print forerunExtrusionVal
+            print LayerThickness
+            print LayerWidth
+            print '\n'
+
         return LayerWidth
 

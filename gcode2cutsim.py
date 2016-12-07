@@ -1,11 +1,11 @@
 #!dev\python
 """
-gcode2cutsim parser -> cutsim can read gcode data now.
+G-Code parser -> Cutsim and MachSim can read gcode data now.
 
 """
 
 __author__ = 'mathiasr'
-__version__= 1.0
+__version__= 2.0
 
 import sys, os, win32con, numpy, warnings, wx, copy
 import traceback, subprocess, fileinput
@@ -28,48 +28,39 @@ from Utilities import compare
 # warnings.filterwarnings("ignore")
 
 # ----------------------------------------------------------------------------------------------------------------------
-def startVerification(CLFile, NCiniFile, WD):
+def startVerification(CLFile, NCiniFile, WD, simType='Verifier'):
     """starting Verification"""
-    if WD == '':
-        # command = r'C:\Additive_ENV\bin\Verifier\VerifierApplicationSample.exe'
-        # rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
-        command = r'C:\MW3DPrinting\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe'
-        rel_command = r'bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe'
-    else:
-        # command = WD + r'\bin\Verifier\VerifierApplicationSample.exe'
-        # rel_command = r'bin\Verifier\VerifierApplicationSample.exe'
-        rel_command = r'bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe'
 
-
-    # abscommand = os.getcwd() + command
-    abscommand = command
-    # params = NCiniFile
+    command = []
     params = ''
-    # print 'Opening ' + abscommand + ' with ' + NCiniFile
-
-    if os.path.isfile(command):
-        # print 'abs found'
-        try:
-            # os.system(command)
-            process = Popen(command, stdout=PIPE, stderr=PIPE)
-            # stdout, stderr = process.communicate()
-            # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=abscommand, lpParameters=params)
-        except:
-            pass
-            # print 'Could not execute abs'
-
-    elif os.path.isfile(rel_command):
-        # print 'rel found'
-        try:
-            # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile=rel_command, lpParameters=params)
-            # os.system(rel_command)
-            process = Popen(rel_command, stdout=PIPE, stderr=PIPE)
-            # stdout, stderr = process.communicate()
-        except:
-            pass
-
+    working_dir = os.getcwd()
+    print working_dir
+    if WD == '':
+        if simType == 'MachSim':
+            command.append(working_dir + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+            command.append(r'C:\MW3DPrinting\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+        else:
+            command.append(working_dir + r'\bin\Verifier\VerifierApplicationSample.exe')
+            command.append(r'C:\MW3DPrinting\bin\Verifier\VerifierApplicationSample.exe ')
+            params = copy.deepcopy(NCiniFile)
     else:
-        print 'Nothing found'
+        if simType == 'MachSim':
+            command.append(working_dir + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+        else:
+            command.append(working_dir + r'\bin\Verifier\VerifierApplicationSample.exe')
+            params = copy.deepcopy(NCiniFile)
+
+    # starting
+    for com in command:
+        if os.path.isfile(com):
+            try:
+                if simType == 'Verifier':
+                    process = Popen([com, params], stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
+                else:
+                    process = Popen(com, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
+                break
+            except:
+                pass
 
 # ----------------------------------------------------------------------------------------------------------------------
 def getSimulationPrecision(fileName):
@@ -261,7 +252,14 @@ def main():
                     # check if layer thickness changed during z-level change
                     pos = line.find('Z')
                     if pos != -1:
-                        zValForerun = float(line[pos+1:pos+8]) # get z value # TODO automatic detection of white space in line string
+                        posShifter = 8
+                        while 1:
+                            try:
+                                zValForerun = float(line[pos+1:pos+posShifter]) # get z value # TODO automatic detection of white space in line string
+                                break
+                            except:
+                                posShifter -= 1
+
                         LayerThicknessForerun = zValForerun - zValMachine
                         if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:  # check if in tolerance after subtraction
                             geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
@@ -301,6 +299,11 @@ def main():
                                                                                  LayerWidth=LayerWidth,
                                                                                  ELOverlap=ExtrusionLineOverlap)
                                 if geometryStr is not None:
+                                    if float(geometryStr.split(' ')[2]) >= 1:
+                                        # LayerThickness = 0.2, LayerWidth = 0.48, ELOverlap = 0.15
+                                        print '---'
+                                        print geometryStr
+
                                     CLWriter.writeToolChange(geometryStr)
                                     CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
                                     CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine))
@@ -368,6 +371,10 @@ def main():
 
             print 'Done. CL file written - > ' + outputf
 
+        # gcode2cutsimFDM D:\MW3DPrinting_MachSim\Mesh.gcode D:\MW3DPrinting_MachSim\Mesh.ini -MachSim
+
+        print inputParams
+
         if len(inputParams) >= 3:
             if inputParams[-1] == '-sim':
                 print 'Starting verification'
@@ -390,7 +397,10 @@ def main():
                 fh.write('model=3\n')
                 fh.close()
 
-                startVerification(outputf, NCiniFile, WD)
+                if inputParams[-2] == '-MachSim' or inputParams[-2] == '-Verifier':
+                    startVerification(outputf, NCiniFile, WD, simType=inputParams[-2][1:])
+                else:
+                    startVerification(outputf, NCiniFile, WD)
 
         G2CLOG.wlog('INFO', 'All jobs done ...')
 
