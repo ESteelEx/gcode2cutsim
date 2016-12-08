@@ -13,7 +13,7 @@ for proc in psutil.process_iter():
 # -*- mode: python -*-
 a = Analysis(['gcode2cutsim.py'],
                 pathex=['.'],
-                hiddenimports=[],
+                hiddenimports=['appdirs', 'six', 'packaging', 'packaging.version', 'packaging.specifiers', 'packaging.requirements'],
                 hookspath=None,
                 runtime_hooks=None)
 
@@ -39,8 +39,8 @@ exe = EXE(
     console=True,
     icon='bin\\images\\3dPrintVer.ico')
 
-if os.path.isfile('gcode2cutsim.exe'):
-    os.remove('gcode2cutsim.exe')
+if os.path.isfile('gcode2cutsimFDM.exe'):
+    os.remove('gcode2cutsimFDM.exe')
 
 shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsimFDM.exe')
-shutil.copy('gcode2cutsimFDM.exe', 'C:\\MW3DPrinting\\gcode2cutsimFDM.exe')
+shutil.copy('gcode2cutsimFDM.exe', 'C:\\MW3D_07\\gcode2cutsimFDM.exe')

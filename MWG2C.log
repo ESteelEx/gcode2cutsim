@@ -1,10 +1,10 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2016-11-20 19:53:16.744000
+INFO:MWG2C:** Logging started @ : 2016-12-07 20:52:16.967000
 INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting G2C conversion ... @ : 2016-11-20 19:53:16.746000
+INFO:MWG2C:Starting G2C conversion ... @ : 2016-12-07 20:52:16.969000
 ERROR:MWG2C:CLFileWriter.writeNCCode: Error while writing NC-code
-INFO:MWG2C:Additivebox calculated @ : 2016-11-20 19:53:18.770000
-INFO:MWG2C:All jobs done ... @ : 2016-11-20 19:53:18.926000
-INFO:MWG2C:** Logging stopped @ : 2016-11-20 19:53:18
+INFO:MWG2C:Additivebox calculated @ : 2016-12-07 20:52:21.303000
+INFO:MWG2C:All jobs done ... @ : 2016-12-07 20:52:21.719000
+INFO:MWG2C:** Logging stopped @ : 2016-12-07 20:52:21

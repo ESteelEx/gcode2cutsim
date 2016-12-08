@@ -57,7 +57,16 @@ def startVerification(CLFile, NCiniFile, WD, simType='Verifier'):
                 if simType == 'Verifier':
                     process = Popen([com, params], stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
                 else:
+
+                    #showCmd = win32con.SW_HIDE  # SW_SHOWNORMAL
+
+                    #shell.ShellExecuteEx(nShow=showCmd,
+                    #                     fMask=shellcon.SEE_MASK_NOCLOSEPROCESS,
+                    #                     lpFile=com
+                    #                     )
+
                     process = Popen(com, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
+
                 break
             except:
                 pass

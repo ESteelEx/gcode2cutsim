@@ -1,7 +1,6 @@
 import sys, os, threading
 from subprocess import Popen, PIPE
 
-
 class runSimulation(threading.Thread):
     def __init__(self, corePath, pluginPath, silent=False, calc=True, simType='verifier'):
         self.pluginPath = pluginPath
@@ -40,14 +39,15 @@ class runSimulation(threading.Thread):
                     process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
 
                 elif self.simType == 'machSim':
-                    command = [self.corePath + r'\gcode2cutsimFDM.exe',
-                               self.corePath + r'\Mesh.gcode',
-                               self.corePath + r'\Mesh.ini',
-                               r'-MachSim']
+                    command = self.corePath + r'\gcode2cutsimFDM.exe'
+                    params = self.corePath + r'\Mesh.gcode ' + self.corePath + r'\Mesh.ini ' + r'-MachSim'
 
                     print command
+                    print 'Starting MachineSimulation'
 
-                    process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+                    # process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+
+                    os.system(command + ' ' + params)
 
 
 """
@@ -68,5 +68,4 @@ procInfo = shell.ShellExecuteEx(nShow=showCmd,
 procHandle = procInfo['hProcess']
 obj = win32event.WaitForSingleObject(procHandle, win32event.INFINITE)
 rc = win32process.GetExitCodeProcess(procHandle)
-
 """
