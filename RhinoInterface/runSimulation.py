@@ -1,4 +1,4 @@
-import sys, os, threading
+import sys, os, threading, subprocess
 from subprocess import Popen, PIPE
 
 class runSimulation(threading.Thread):
@@ -42,10 +42,12 @@ class runSimulation(threading.Thread):
                     command = self.corePath + r'\gcode2cutsimFDM.exe'
                     params = self.corePath + r'\Mesh.gcode ' + self.corePath + r'\Mesh.ini ' + r'-MachSim'
 
-                    print command
-                    print 'Starting MachineSimulation'
+                    # startupinfo = subprocess.STARTUPINFO()
+                    # startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
-                    # process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+                    # process = Popen([command, params], startupinfo=startupinfo)
+
+                    # process = Popen([command, params], stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=False)
 
                     os.system(command + ' ' + params)
 

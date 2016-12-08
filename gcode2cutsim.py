@@ -33,21 +33,20 @@ def startVerification(CLFile, NCiniFile, WD, simType='Verifier'):
 
     command = []
     params = ''
-    working_dir = os.getcwd()
-    print working_dir
+    print 'Working directory: ' + WD
     if WD == '':
         if simType == 'MachSim':
-            command.append(working_dir + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+            command.append(r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
             command.append(r'C:\MW3DPrinting\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
         else:
-            command.append(working_dir + r'\bin\Verifier\VerifierApplicationSample.exe')
+            command.append(r'\bin\Verifier\VerifierApplicationSample.exe')
             command.append(r'C:\MW3DPrinting\bin\Verifier\VerifierApplicationSample.exe ')
             params = copy.deepcopy(NCiniFile)
     else:
         if simType == 'MachSim':
-            command.append(working_dir + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
+            command.append(WD + r'\bin\MachSim\mwMachineSimulator_App\mwMachineSimulator.exe')
         else:
-            command.append(working_dir + r'\bin\Verifier\VerifierApplicationSample.exe')
+            command.append(WD + r'\bin\Verifier\VerifierApplicationSample.exe')
             params = copy.deepcopy(NCiniFile)
 
     # starting
@@ -57,16 +56,7 @@ def startVerification(CLFile, NCiniFile, WD, simType='Verifier'):
                 if simType == 'Verifier':
                     process = Popen([com, params], stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
                 else:
-
-                    #showCmd = win32con.SW_HIDE  # SW_SHOWNORMAL
-
-                    #shell.ShellExecuteEx(nShow=showCmd,
-                    #                     fMask=shellcon.SEE_MASK_NOCLOSEPROCESS,
-                    #                     lpFile=com
-                    #                     )
-
                     process = Popen(com, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
-
                 break
             except:
                 pass
