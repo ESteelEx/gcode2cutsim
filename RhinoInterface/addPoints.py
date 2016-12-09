@@ -18,7 +18,7 @@ def getRGBfromI(RGBint):
     return red, green, blue
 
 
-def AddPolyline(points, layer, replace_id=None):
+def AddPolyline(points, layer, replace_id=None, objColor=(0, 0, 0)):
     """Adds a polyline curve to the current model
     Parameters:
       points = list of 3D points. Duplicate, consecutive points found in
@@ -38,10 +38,13 @@ def AddPolyline(points, layer, replace_id=None):
     rc = System.Guid.Empty
     if replace_id:
         pl = Rhino.Geometry.Polyline(points)
+        plColor = Rhino.Input.Custom.GetObject.Color
         if scriptcontext.doc.Objects.Replace(replace_id, pl):
             rc = replace_id
     else:
         rc = scriptcontext.doc.Objects.AddPolyline(points)
+        rs.ObjectColor(rc, objColor)
+
 
     if rc == System.Guid.Empty:
         raise Exception("Unable to add polyline to document")
@@ -56,6 +59,12 @@ class addPoints(threading.Thread):
         self.corePath = corePath
         self.INI_CONFIG = self.corePath + r'\Mesh.ini'
         self.runstat = True
+        self.segmentIdxDict = {}
+        self.colorDict = {'Wall': (255, 0, 0),
+                          'DenseInfill': (0, 255, 0),
+                          'SparseInfill': (0, 0, 255),
+                          'Support': (255,255,255)}
+
         threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -94,10 +103,20 @@ class addPoints(threading.Thread):
         _layer = 0
         LayerPoints = {}
         line_in_file = 0
+        segment_idx = 0
 
         with open(_FILE) as fid:
 
             for line in fid:
+
+                if line.strip()[0] == ';':
+                    if line.find('WARNING') == -1:  # if we do NOT find
+                        split_line = line.split(',')
+                        segment = split_line[0][1:].strip().rstrip()
+                        segment = segment[:-1] + str(segment_idx)
+                        segment_idx[segment] += 1
+
+                    print segment
 
                 line_in_file += 1
 
@@ -159,6 +178,15 @@ class addPoints(threading.Thread):
 
                 if self.runstat:
 
+                    if line.strip()[0] == ';':
+                        if line.find('WARNING') == -1:  # if we do NOT find
+                            split_line = line.split(',')
+                            segment = split_line[0][1:].strip().rstrip()
+                            segment = segment + str(segment_idx)
+                            segment_idx += 1
+
+                        print segment
+
                     line_in_file += 1
                     if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
                         if line[0:3] == 'G1 ':
@@ -168,7 +196,6 @@ class addPoints(threading.Thread):
                                 X2 = float(line[pos_X+1:pos_ws+pos_X+1])
 
                             pos_Y = line.find('Y')
-
                             if pos_Y != -1:
                                 pos_ws = line[pos_Y:].find(' ')
                                 if pos_ws == -1:
@@ -207,12 +234,15 @@ class addPoints(threading.Thread):
                                 #if g_zero_move >= 1:
                                 #    LayerPoints[g_zero_move].append(LayerPoints[g_zero_move][0])
                                 g_zero_move += 1
-                                LayerPoints[g_zero_move] = [[X_G0, Y_G0, Z2]] # first point of next segment
+                                # LayerPoints[g_zero_move] = [[X_G0, Y_G0, Z2]] # first point of next segment
+                                LayerPoints[segment] = [[X_G0, Y_G0, Z2]]  # first point of next segment
                             else:
                                 if len(LayerPoints) == 0:
-                                    LayerPoints[g_zero_move] = [[X2, Y2, Z2]]
+                                    # LayerPoints[g_zero_move] = [[X2, Y2, Z2]]
+                                    LayerPoints[segment] = [[X2, Y2, Z2]]
                                 else:
-                                    LayerPoints[g_zero_move].append([X2, Y2, Z2])
+                                    # LayerPoints[g_zero_move].append([X2, Y2, Z2])
+                                    LayerPoints[segment].append([X2, Y2, Z2])
 
                     if _z_level_change and self.runstat:
                         try:
@@ -230,6 +260,7 @@ class addPoints(threading.Thread):
 
                                                 try:
                                                     # .NET
+                                                    #pl.append(AddPolyline(points, _layer, objColor=self.colorDict[segment[:-1]]))
                                                     pl.append(AddPolyline(points, _layer))
 
                                                     # rhino python script - very slow
@@ -244,6 +275,7 @@ class addPoints(threading.Thread):
                                                     # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
 
                                                 except:
+                                                    raise
                                                     poly_fail += 1
 
 
@@ -262,6 +294,7 @@ class addPoints(threading.Thread):
 
                             LayerPoints = {}
                             g_zero_move = 0
+                            segment_idx = 0
                             _z_level_change = False
                             _layer += 1
 
