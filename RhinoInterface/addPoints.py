@@ -112,11 +112,8 @@ class addPoints(threading.Thread):
                 if line.strip()[0] == ';':
                     if line.find('WARNING') == -1:  # if we do NOT find
                         split_line = line.split(',')
-                        segment = split_line[0][1:].strip().rstrip()
-                        segment = segment[:-1] + str(segment_idx)
-                        segment_idx[segment] += 1
-
-                    print segment
+                        _segment = split_line[0][1:].strip().rstrip()
+                        segment_idx[_segment] += 1
 
                 line_in_file += 1
 
