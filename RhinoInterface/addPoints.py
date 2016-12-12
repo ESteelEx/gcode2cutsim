@@ -1,5 +1,5 @@
 import threading
-import copy
+import time
 
 try:
     import Rhino
@@ -45,11 +45,13 @@ def AddPolyline(points, layer, replace_id=None, objColor=(0, 0, 0)):
         rc = scriptcontext.doc.Objects.AddPolyline(points)
         rs.ObjectColor(rc, objColor)
 
-
     if rc == System.Guid.Empty:
         raise Exception("Unable to add polyline to document")
 
-    rs.ObjectName(rc, 'Layer: ' + str(layer))
+    zero_str = '000000'
+    objName = 'Layer: ' + zero_str[:-len(str(layer))] + str(layer)  # str(layer)
+
+    rs.ObjectName(rc, objName)
 
     return rc
 
@@ -60,10 +62,12 @@ class addPoints(threading.Thread):
         self.INI_CONFIG = self.corePath + r'\Mesh.ini'
         self.runstat = True
         self.segmentIdxDict = {}
-        self.colorDict = {'Wall': (255, 0, 0),
-                          'DenseInfill': (0, 255, 0),
-                          'SparseInfill': (0, 0, 255),
-                          'Support': (255,255,255)}
+        self.colorDict = {'Wall': (50, 50, 50),
+                          'DenseInfill': (255, 0, 255),
+                          'SparseInfill': (255, 255, 0),
+                          'Brim': (150, 100, 100),
+                          'Skirt': (250, 20, 200),
+                          'Support': (250, 250, 250)}
 
         threading.Thread.__init__(self)
 
@@ -103,7 +107,6 @@ class addPoints(threading.Thread):
         _layer = 0
         LayerPoints = {}
         line_in_file = 0
-        segment_idx = 0
 
         with open(_FILE) as fid:
 
@@ -113,7 +116,12 @@ class addPoints(threading.Thread):
                     if line.find('WARNING') == -1:  # if we do NOT find
                         split_line = line.split(',')
                         _segment = split_line[0][1:].strip().rstrip()
-                        segment_idx[_segment] += 1
+                        if _segment in self.segmentIdxDict:
+                            self.segmentIdxDict[_segment] += 1
+                        else:
+                            self.segmentIdxDict[_segment] = 0
+
+                        segment = _segment + str(self.segmentIdxDict[_segment])
 
                 line_in_file += 1
 
@@ -169,7 +177,7 @@ class addPoints(threading.Thread):
             else:
                 rs.AddLayer(name='MW 3D Printer Perimeter', visible=True)
 
-            g_zero_move = int(0)
+            first_move_in_layer = True
 
             for line in fid:
 
@@ -178,11 +186,15 @@ class addPoints(threading.Thread):
                     if line.strip()[0] == ';':
                         if line.find('WARNING') == -1:  # if we do NOT find
                             split_line = line.split(',')
-                            segment = split_line[0][1:].strip().rstrip()
-                            segment = segment + str(segment_idx)
-                            segment_idx += 1
+                            _segment = split_line[0][1:].strip().rstrip()
+                            if _segment in self.segmentIdxDict:
+                                #self.segmentIdxDict[_segment] += 1
+                                print self.segmentIdxDict
+                            else:
+                                self.segmentIdxDict[_segment] = 0
+                                print self.segmentIdxDict
 
-                        print segment
+                            segment = _segment + str(self.segmentIdxDict[_segment])
 
                     line_in_file += 1
                     if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
@@ -226,20 +238,26 @@ class addPoints(threading.Thread):
                                     Z2 = float(line[pos_Z + 1:pos_ws + pos_Z + 1])
                             _z_level_change = True
 
-                        if _layer >= _from_to_layer[0] and not _z_level_change:
+                        if _layer >= _from_to_layer[0] and not _z_level_change or first_move_in_layer:
                             if line[0:3] == 'G0 ':
-                                #if g_zero_move >= 1:
-                                #    LayerPoints[g_zero_move].append(LayerPoints[g_zero_move][0])
-                                g_zero_move += 1
-                                # LayerPoints[g_zero_move] = [[X_G0, Y_G0, Z2]] # first point of next segment
+
+                                if _segment in self.segmentIdxDict:
+                                    self.segmentIdxDict[_segment] += 1
+                                else:
+                                    self.segmentIdxDict[_segment] = 0
+
+                                segment = _segment + str(self.segmentIdxDict[_segment])
                                 LayerPoints[segment] = [[X_G0, Y_G0, Z2]]  # first point of next segment
+                                print LayerPoints
+                                first_move_in_layer = False
+
                             else:
                                 if len(LayerPoints) == 0:
-                                    # LayerPoints[g_zero_move] = [[X2, Y2, Z2]]
                                     LayerPoints[segment] = [[X2, Y2, Z2]]
+                                    first_move_in_layer = False
                                 else:
-                                    # LayerPoints[g_zero_move].append([X2, Y2, Z2])
-                                    LayerPoints[segment].append([X2, Y2, Z2])
+                                    if segment in LayerPoints:
+                                        LayerPoints[segment].append([X2, Y2, Z2])
 
                     if _z_level_change and self.runstat:
                         try:
@@ -249,17 +267,33 @@ class addPoints(threading.Thread):
                                 if len(LayerPoints) > 1:
                                     for segment, points in LayerPoints.iteritems():
                                         if self.runstat:
+                                            print len(points)
                                             if len(points) > 1:
                                                 #obj.append(rs.AddPointCloud(points))
                                                 #rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
                                                 #rs.ObjectColor(obj[segment], (getRGBfromI(100000 + _layer * 100)))
                                                 #rs.ObjectLayer(obj[segment], layer='MW 3D Printer PointCloud')
-
                                                 try:
                                                     # .NET
-                                                    #pl.append(AddPolyline(points, _layer, objColor=self.colorDict[segment[:-1]]))
-                                                    pl.append(AddPolyline(points, _layer))
+                                                    try:
+                                                        int(segment[-1])
+                                                        lenIdx = 1
+                                                        int(segment[-2:])
+                                                        lenIdx = 2
+                                                        int(segment[-3:])
+                                                        lenIdx = 3
+                                                    except:
+                                                        pass
 
+                                                    print LayerPoints
+                                                    # print points
+
+                                                    if segment[:-lenIdx] in self.colorDict:
+                                                        pl.append(AddPolyline(points,
+                                                                              _layer,
+                                                                              objColor=self.colorDict[segment[:-lenIdx]]))
+
+                                                    # pl.append(AddPolyline(points, _layer))
                                                     # rhino python script - very slow
                                                     #obj_poly.append(rs.AddPolyline(points))
 
@@ -272,10 +306,8 @@ class addPoints(threading.Thread):
                                                     # rs.AddPipe(obj_poly, 0, 0.3, blend_type=0, cap=2, fit=True)
 
                                                 except:
-                                                    raise
                                                     poly_fail += 1
-
-
+                                                    raise
 
                                     # if _layer == 1:
                                     #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')
@@ -290,10 +322,10 @@ class addPoints(threading.Thread):
                                     # rs.ObjectLayer(obj, layer=str(_layer))
 
                             LayerPoints = {}
-                            g_zero_move = 0
-                            segment_idx = 0
+                            self.segmentIdxDict = {}
                             _z_level_change = False
                             _layer += 1
+                            first_move_in_layer = True
 
                         except:
                             raise
