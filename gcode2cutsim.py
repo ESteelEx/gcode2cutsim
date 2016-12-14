@@ -57,6 +57,7 @@ def startVerification(CLFile, NCiniFile, WD, simType='Verifier'):
                     process = Popen([com, params], stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
                 else:
                     process = Popen(com, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
+
                 break
             except:
                 pass

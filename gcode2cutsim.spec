@@ -43,4 +43,4 @@ if os.path.isfile('gcode2cutsimFDM.exe'):
     os.remove('gcode2cutsimFDM.exe')
 
 shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsimFDM.exe')
-shutil.copy('gcode2cutsimFDM.exe', 'D:\\MW3DPrinting_MachSim\\gcode2cutsimFDM.exe')
+shutil.copy('gcode2cutsimFDM.exe', 'C:\\MW3D_07\\gcode2cutsimFDM.exe')

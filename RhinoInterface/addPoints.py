@@ -307,7 +307,6 @@ class addPoints(threading.Thread):
 
                                                 except:
                                                     poly_fail += 1
-                                                    raise
 
                                     # if _layer == 1:
                                     #     rs.AddLayer(name=str(_layer), parent='MW 3D Printer Slices')

@@ -22,10 +22,13 @@ def GetPointDynamicDrawFunc( sender, args ):
     # pt2 = Rhino.Geometry.Point3d(10,10,0)
     # args.Display.DrawLine(pt1, args.CurrentPoint, System.Drawing.Color.Red, 2)
     # args.Display.DrawLine(pt2, args.CurrentPoint, System.Drawing.Color.Blue, 2)
+
     rs.UnselectAllObjects()
 
-    obj_Layer1 = 'Layer: 1'
-    obj_Layer2 = 'Layer: 2'
+    print rs.GetCursorPos()
+
+    obj_Layer1 = 'Layer: 000001'
+    obj_Layer2 = 'Layer: 000002'
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
 
     settings.NameFilter = obj_Layer1
@@ -39,7 +42,8 @@ def GetPointDynamicDrawFunc( sender, args ):
 
     z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
 
-    obj_LayerZ = 'Layer: ' + str(z_level)
+    zero_str = '000000'
+    obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level)
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
 
     settings.NameFilter = obj_LayerZ
