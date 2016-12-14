@@ -25,7 +25,10 @@ def GetPointDynamicDrawFunc( sender, args ):
 
     rs.UnselectAllObjects()
 
-    print rs.GetCursorPos()
+    redraw = rs.EnableRedraw(True)
+
+    cursPos = rs.GetCursorPos()
+    viewSize = rs.ViewSize()
 
     obj_Layer1 = 'Layer: 000001'
     obj_Layer2 = 'Layer: 000002'
@@ -40,7 +43,13 @@ def GetPointDynamicDrawFunc( sender, args ):
     z_L1 = rs.BoundingBox(ids_L1[0])[0][2]
     z_L2 = rs.BoundingBox(ids_L2[0])[0][2]
 
-    z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
+    zVal = viewSize[1] - cursPos[3][1]
+
+    # print scriptcontext.doc.Objects.GetObjectList(settings)
+
+    #z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
+    #z_level = int(cursPos[2][1] / (z_L2 - z_L1))
+    z_level = int(zVal)
 
     zero_str = '000000'
     obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level)
@@ -51,11 +60,15 @@ def GetPointDynamicDrawFunc( sender, args ):
 
     args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level) + ' - Distance ' + str(z_L2 - z_L1) + ' mm')
 
-    Rhino.Display.RhinoView.Redraw
+    # Rhino.Display.RhinoView.Redraw
 
     rs.SelectObjects(ids_LZ)
 
-    # scriptcontext.doc.Views.Redraw()
+    #rs.Redraw()
+
+    Rhino.Display.RhinoView.Redraw(cursPos[2])
+
+    #scriptcontext.doc.Views.Redraw()
 
 class testchecker():
     def __init__(self):
