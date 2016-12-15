@@ -5,6 +5,20 @@ try:
 except:
     pass
 
+
+def get_num_layer():
+    count = 0
+    while 1:
+        count += 1
+        zero_str = '000000'
+        objName = 'Layer: ' + zero_str[:-len(str(count))] + str(count)
+        objID = rs.ObjectsByName(objName)
+        if objID == [] or count == 500:
+            return count - 1
+
+_NUM_LAYER = get_num_layer()
+
+
 def FindObjectsByName(name):
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NameFilter = name
@@ -17,7 +31,8 @@ def FindObjectsByName(name):
 
     return Rhino.Commands.Result.Success
 
-def GetPointDynamicDrawFunc( sender, args ):
+
+def GetPointDynamicDrawFunc(sender, args):
     # pt1 = Rhino.Geometry.Point3d(0,0,0)
     # pt2 = Rhino.Geometry.Point3d(10,10,0)
     # args.Display.DrawLine(pt1, args.CurrentPoint, System.Drawing.Color.Red, 2)
@@ -25,10 +40,11 @@ def GetPointDynamicDrawFunc( sender, args ):
 
     rs.UnselectAllObjects()
 
-    redraw = rs.EnableRedraw(True)
+    # redraw = rs.EnableRedraw(True)
 
     cursPos = rs.GetCursorPos()
     viewSize = rs.ViewSize()
+    stepSize = int(viewSize[1] / _NUM_LAYER)
 
     obj_Layer1 = 'Layer: 000001'
     obj_Layer2 = 'Layer: 000002'
@@ -45,11 +61,11 @@ def GetPointDynamicDrawFunc( sender, args ):
 
     zVal = viewSize[1] - cursPos[3][1]
 
-    # print scriptcontext.doc.Objects.GetObjectList(settings)
+    z_level = int(zVal / stepSize)
 
-    #z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
-    #z_level = int(cursPos[2][1] / (z_L2 - z_L1))
-    z_level = int(zVal)
+    # print scriptcontext.doc.Objects.GetObjectList(settings)
+    # z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
+    # z_level = int(cursPos[2][1] / (z_L2 - z_L1))
 
     zero_str = '000000'
     obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level)
@@ -60,15 +76,12 @@ def GetPointDynamicDrawFunc( sender, args ):
 
     args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level) + ' - Distance ' + str(z_L2 - z_L1) + ' mm')
 
-    # Rhino.Display.RhinoView.Redraw
-
     rs.SelectObjects(ids_LZ)
 
-    #rs.Redraw()
+    viewport = Rhino.Display.RhinoView.ActiveViewport
+    Rhino.Display.RhinoView.EnableDrawing(True)
+    Rhino.Display.RhinoView.Redraw(viewport)
 
-    Rhino.Display.RhinoView.Redraw(cursPos[2])
-
-    #scriptcontext.doc.Views.Redraw()
 
 class testchecker():
     def __init__(self):
