@@ -188,11 +188,11 @@ class addPoints(threading.Thread):
                             split_line = line.split(',')
                             _segment = split_line[0][1:].strip().rstrip()
                             if _segment in self.segmentIdxDict:
-                                #self.segmentIdxDict[_segment] += 1
-                                print self.segmentIdxDict
+                                self.segmentIdxDict[_segment] += 1
+                                # print self.segmentIdxDict
                             else:
                                 self.segmentIdxDict[_segment] = 0
-                                print self.segmentIdxDict
+                                # print self.segmentIdxDict
 
                             segment = _segment + str(self.segmentIdxDict[_segment])
 
@@ -248,7 +248,7 @@ class addPoints(threading.Thread):
 
                                 segment = _segment + str(self.segmentIdxDict[_segment])
                                 LayerPoints[segment] = [[X_G0, Y_G0, Z2]]  # first point of next segment
-                                print LayerPoints
+                                # print LayerPoints
                                 first_move_in_layer = False
 
                             else:
@@ -267,7 +267,7 @@ class addPoints(threading.Thread):
                                 if len(LayerPoints) > 1:
                                     for segment, points in LayerPoints.iteritems():
                                         if self.runstat:
-                                            print len(points)
+                                            # print len(points)
                                             if len(points) > 1:
                                                 #obj.append(rs.AddPointCloud(points))
                                                 #rs.ObjectName(obj[segment], 'Line: ' + str(line_in_file))
@@ -285,7 +285,7 @@ class addPoints(threading.Thread):
                                                     except:
                                                         pass
 
-                                                    print LayerPoints
+                                                    # print LayerPoints
                                                     # print points
 
                                                     if segment[:-lenIdx] in self.colorDict:

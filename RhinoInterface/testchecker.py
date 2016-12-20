@@ -8,12 +8,14 @@ except:
 
 def get_num_layer():
     count = 0
+    objID = []
     while 1:
         count += 1
         zero_str = '000000'
         objName = 'Layer: ' + zero_str[:-len(str(count))] + str(count)
-        objID = rs.ObjectsByName(objName)
-        if objID == [] or count == 500:
+        objID.append(rs.ObjectsByName(objName))
+        if objID[-1] == []:
+            # rs.HideObjects(objID[:])
             return count - 1
 
 _NUM_LAYER = get_num_layer()
@@ -69,6 +71,8 @@ def GetPointDynamicDrawFunc(sender, args):
 
     zero_str = '000000'
     obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level)
+    print obj_LayerZ
+
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
 
     settings.NameFilter = obj_LayerZ
@@ -76,11 +80,12 @@ def GetPointDynamicDrawFunc(sender, args):
 
     args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level) + ' - Distance ' + str(z_L2 - z_L1) + ' mm')
 
-    rs.SelectObjects(ids_LZ)
+    # rs.ShowObject(ids_LZ)
+    rs.SelectObject(ids_LZ)
 
-    viewport = Rhino.Display.RhinoView.ActiveViewport
-    Rhino.Display.RhinoView.EnableDrawing(True)
-    Rhino.Display.RhinoView.Redraw(viewport)
+    # viewport = Rhino.Display.RhinoView.ActiveViewport
+    # Rhino.Display.RhinoView.EnableDrawing
+    Rhino.Display.RhinoView.Redraw
 
 
 class testchecker():

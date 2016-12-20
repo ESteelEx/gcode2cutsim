@@ -67,7 +67,29 @@ def getSimulationPrecision(fileName):
 
     sim_params = ini_worker.get_section_from_ini(fileName, 'SIMULATION')
 
-    return sim_params['precision']
+    if 'precision' in sim_params:
+        return sim_params['precision']
+    else:
+        return None
+
+# ----------------------------------------------------------------------------------------------------------------------
+def userHelp():
+    print ''
+    print 'GCODE2CUTSIM ver: ' + str(__version__)
+    print '---------------------'
+    print ''
+    print ' A: gcode2cutsim -> Open file dialog and let user select G-Code'
+    print ' B: gcode2cutsim [-re] -> Recalculate all files with Mesh.gcode and Mesh.ini'
+    print ' C: gcode2cutsim [-correct_z_level] <correction factor>'
+    print ' D: gcode2cutsim [GCODE-FILE] [SIMULATION-INI-FILE] [-sim] -> Calculate simulation when simulation files are out of date and open simulation app'
+    print ' E: gcode2cutsim [GCODE-FILE] [SIMULATION-INI-FILE] [-silent] -> Threaded calculation in background'
+    print ''
+    print 'Notice: [-sim] is appended by default except when calculating silently.'
+    print ''
+    print 'Nothing passed -> switching to dialog'
+    print 'Select G-Code from file dialog: '
+    print '___'
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 def main():
@@ -99,8 +121,7 @@ def main():
 
         if len(inputParams) == 1:
             import UI.selectFile as fselect
-            print 'Input file missing. Pass gcode file to process. [gcode2cutsim [GCODE-DATA] [-sim]]'
-            print 'Opening from selection'
+            userHelp()
 
             path, filename = fselect.get_file_list()
             if filename is None:
@@ -112,15 +133,34 @@ def main():
             inputParams += [inputf]
             inputParams += ['-sim']
         elif len(inputParams) >= 2:
+            if len(inputParams) == 2 and inputParams[-1] == '-re':
+                print 'Command ' + inputParams[-1]
+                print 'Recalculating simulation files'
+
+                tmpIP = inputParams[-1]
+                inputParams.pop()
+
+                cl_file = 'Mesh.cl'
+                sim_file = 'Mesh.sim'
+                if os.path.isfile(cl_file):
+                    os.remove(cl_file)
+
+                if os.path.isfile(sim_file):
+                    os.remove(sim_file)
+
+                inputParams.append('Mesh.gcode')
+                inputParams.append('Mesh.ini')
+                inputParams.append(tmpIP)
+
             if not os.path.isfile(inputParams[1]):
-                print 'no such file -> ' + str(inputParams[1])
+                print 'No such file -> ' + str(inputParams[1])
                 return
             else:
                 inputf = str(inputParams[1])
 
             if len(inputParams) >= 3:
                 if not os.path.isfile(inputParams[2]):
-                    print 'no config file -> ' + str(inputParams[1])
+                    print 'No config file -> ' + str(inputParams[1])
                     return
                 else:
                     CD = configData.configData(inputParams[2])
@@ -299,9 +339,10 @@ def main():
                                                                                  LayerWidth=LayerWidth,
                                                                                  ELOverlap=ExtrusionLineOverlap)
                                 if geometryStr is not None:
-                                    if float(geometryStr.split(' ')[2]) >= 1:
+                                    if float(geometryStr.split(' ')[2]) >= LayerThickness * 2.4:
                                         # LayerThickness = 0.2, LayerWidth = 0.48, ELOverlap = 0.15
-                                        print '---'
+                                        print 'Overextrusion detected: '
+                                        print 'Pos in G-Code ---> ' + str(loopCounter)
                                         print geometryStr
 
                                     CLWriter.writeToolChange(geometryStr)
@@ -370,10 +411,9 @@ def main():
                 print line.replace("STOCK", stockDimStr),
 
             print 'Done. CL file written - > ' + outputf
+            print 'Done. SIM file written - > ' + outputfMS
 
         # gcode2cutsimFDM D:\MW3DPrinting_MachSim\Mesh.gcode D:\MW3DPrinting_MachSim\Mesh.ini -MachSim
-
-        print inputParams
 
         if len(inputParams) >= 3:
             if inputParams[-1] == '-sim':

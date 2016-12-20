@@ -10,12 +10,12 @@ def sim_files(gcodef, simf):
         sims = os.path.getsize(simf)
 
         if simt - gcodet > 0:
-            print 'Sim file is newer then G-Code. Up to date.'
+            print 'Simulation file ' + simf + ' is up to date.'
             if gcodes > sims:
                 print 'Sim file seems to be incomplete. Recalculation needed.'
                 update_flg = True
         else:
-            print 'Recalculate sim file'
+            print 'Recalculating simulation files'
             update_flg = True
     else:
         update_flg = True

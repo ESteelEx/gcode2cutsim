@@ -28,7 +28,7 @@ class Tools:
         # LayerThickness = 0.1
         # LayerWidth = 0.20
         # ELOverlap = 0.15
-
+        geometryStr = None
         getcontext().prec = 6 # set precision for decimal class
 
         R = Decimal(LayerThickness) / 2

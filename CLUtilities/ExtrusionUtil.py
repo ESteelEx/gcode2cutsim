@@ -7,6 +7,7 @@ from math import pi
 __author__ = 'Mathias Rohler'
 __version__ = '1.0'
 
+
 class ExtrusionUtil():
     def __init__(self):
         pass
@@ -33,45 +34,44 @@ class ExtrusionUtil():
             return None
 
         if NCline[posX:].find(' ') != -1:
-            valX1 = float(NCline[posX+1:NCline[posX:].find(' ') + posX])
+            valX1 = float(NCline[posX + 1:NCline[posX:].find(' ') + posX])
         else:
-            valX1 = float(NCline[posX+1:])
+            valX1 = float(NCline[posX + 1:])
 
         if NCline[posY:].find(' ') != -1:
             if NCline[posY + 1:].find('G') == -1:
-                valY1 = float(NCline[posY+1:NCline[posY:].find(' ') + posY])
+                valY1 = float(NCline[posY + 1:NCline[posY:].find(' ') + posY])
             else:
                 posG = NCline[posY + 1:].find('G')
                 valY1 = float(NCline[posY + 1:posY + posG])
         else:
-            if NCline[posY+1:].find('G') == -1:
-                valY1 = float(NCline[posY+1:])
+            if NCline[posY + 1:].find('G') == -1:
+                valY1 = float(NCline[posY + 1:])
             else:
-                posG = NCline[posY+1:].find('G')
+                posG = NCline[posY + 1:].find('G')
                 valY1 = float(NCline[posY + 1:posG])
-
 
         if posZ != -1:
             if NCline[posZ:].find(' ') != -1:
-                valZ1 = float(NCline[posZ+1:NCline[posZ:].find(' ') + posZ])
+                valZ1 = float(NCline[posZ + 1:NCline[posZ:].find(' ') + posZ])
             else:
-                valZ1 = float(NCline[posZ+1:])
+                valZ1 = float(NCline[posZ + 1:])
         else:
             valZ1 = None
 
         if posF != -1:
             if NCline[posF:].find(' ') != -1:
-                valF1 = float(NCline[posF+1:NCline[posF:].find(' ') + posF])
+                valF1 = float(NCline[posF + 1:NCline[posF:].find(' ') + posF])
             else:
-                valF1 = float(NCline[posF+1:])
+                valF1 = float(NCline[posF + 1:])
         else:
             valF1 = None
 
         if posE != -1:
             if NCline[posE:].find(' ') != -1:
-                valE1 = float(NCline[posE+1:NCline[posE:].find(' ') + posE])
+                valE1 = float(NCline[posE + 1:NCline[posE:].find(' ') + posE])
             else:
-                valE1 = float(NCline[posE+1:])
+                valE1 = float(NCline[posE + 1:])
         else:
             valE1 = None
 
@@ -113,22 +113,22 @@ class ExtrusionUtil():
         posE1 = line.find('E')
         posE2 = lineLloop.find('E')
 
-        valX1 = float(line[posX1+1:line[posX1:].find(' ') + posX1])
-        valY1 = float(line[posY1+1:line[posY1:].find(' ') + posY1])
-        valE1 = float(line[posE1+1:])
-        valX2 = float(lineLloop[posX2+1:lineLloop[posX2:].find(' ') + posX2])
-        valY2 = float(lineLloop[posY2+1:lineLloop[posY2:].find(' ') + posY2])
-        valE2 = float(lineLloop[posE2+1:])
+        valX1 = float(line[posX1 + 1:line[posX1:].find(' ') + posX1])
+        valY1 = float(line[posY1 + 1:line[posY1:].find(' ') + posY1])
+        valE1 = float(line[posE1 + 1:])
+        valX2 = float(lineLloop[posX2 + 1:lineLloop[posX2:].find(' ') + posX2])
+        valY2 = float(lineLloop[posY2 + 1:lineLloop[posY2:].find(' ') + posY2])
+        valE2 = float(lineLloop[posE2 + 1:])
 
         extrusionLength = pow(pow((valX2 - valX1), 2) + pow((valY2 - valY1), 2), 0.5)
 
         # avoid devision by zero
         if extrusionLength != 0:
-            areaExtrusionLine = abs(valE2-valE1) / extrusionLength
+            areaExtrusionLine = abs(valE2 - valE1) / extrusionLength
         else:
-            areaExtrusionLine = abs(valE2-valE1)
+            areaExtrusionLine = abs(valE2 - valE1)
 
-        areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThicknessT/2)**2))
+        areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThicknessT / 2) ** 2))
         x = (areaExtrusionLineRect / LayerThicknessT)
         LayerWidth = x + LayerThicknessT
 
@@ -181,7 +181,7 @@ class ExtrusionUtil():
         """
         NCData = []
         arrayMoveLength = []
-        arrayEDelta= []
+        arrayEDelta = []
         LayerWidth = 0
         for i in NCBlock:
             # split up NClineand store G,X,Y,Z,F,E data
@@ -194,8 +194,9 @@ class ExtrusionUtil():
             LayerThickness = LayerThicknessAnswer
 
         for i in range(1, len(NCData)):
-            arrayMoveLength.append(self.getMoveLength([NCData[i-1][1], NCData[i][1]], [NCData[i-1][2], NCData[i][2]]))
-            arrayEDelta.append(self.getExtrusionDelta(NCData[i-1][5], NCData[i][5]))
+            arrayMoveLength.append(
+                self.getMoveLength([NCData[i - 1][1], NCData[i][1]], [NCData[i - 1][2], NCData[i][2]]))
+            arrayEDelta.append(self.getExtrusionDelta(NCData[i - 1][5], NCData[i][5]))
 
         # calculate extrusion width
         numCalc = 0
@@ -203,7 +204,7 @@ class ExtrusionUtil():
             if arrayEDelta[i] is not None:
                 numCalc += 1
                 areaExtrusionLine = arrayEDelta[i] / arrayMoveLength[i]
-                areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThickness/2)**2))
+                areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThickness / 2) ** 2))
                 x = (areaExtrusionLineRect / LayerThickness)
                 LayerWidth += x + LayerThickness
 
@@ -224,9 +225,9 @@ class ExtrusionUtil():
             pos = NCline.find('E')
             if pos != -1:
                 if NCline[pos:].find(' ') != -1:
-                    valE = float(NCline[pos+1:NCline[pos:].find(' ') + pos])
+                    valE = float(NCline[pos + 1:NCline[pos:].find(' ') + pos])
                 else:
-                    valE = float(NCline[pos+1:])
+                    valE = float(NCline[pos + 1:])
                 break
             else:
                 valE = 1
@@ -243,16 +244,17 @@ class ExtrusionUtil():
 
         if pos != -1:
             if NCline[pos:].find(' ') != -1:
-                valE = float(NCline[pos+1:NCline[pos:].find(' ') + pos])
+                valE = float(NCline[pos + 1:NCline[pos:].find(' ') + pos])
             else:
-                valE = float(NCline[pos+1:])
+                valE = float(NCline[pos + 1:])
         else:
             valE = 1  # work around for SLM process. Here the extrusion rate is missing.
 
         return valE
 
     # ------------------------------------------------------------------------------------------------------------------
-    def getLayerWidth(self, currentMachinePos, forerunMachinePos, currentExtrusionVal, forerunExtrusionVal, LayerThickness ):
+    def getLayerWidth(self, currentMachinePos, forerunMachinePos, currentExtrusionVal, forerunExtrusionVal,
+                      LayerThickness):
         """
         :param ExtrusionVal:
         :param LayerThickness:
@@ -264,13 +266,13 @@ class ExtrusionUtil():
 
         if moveLength != 0:
             areaExtrusionLine = ExtrusionDelta / moveLength
-            areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThickness/2)**2))
+            areaExtrusionLineRect = areaExtrusionLine - (pi * ((LayerThickness / 2) ** 2))
             x = (areaExtrusionLineRect / LayerThickness)
             LayerWidth = x + LayerThickness
         else:
             LayerWidth = 0
 
-        if LayerWidth >= 1:
+        if LayerWidth >= LayerThickness * 2.4:
             print currentMachinePos
             print forerunMachinePos
             print currentExtrusionVal
@@ -280,4 +282,3 @@ class ExtrusionUtil():
             print '\n'
 
         return LayerWidth
-
