@@ -7,7 +7,7 @@ G-Code parser -> Cutsim and MachSim can read gcode data now.
 __author__ = 'mathiasr'
 __version__= 2.0
 
-import sys, os, win32con, numpy, warnings, wx, copy
+import sys, os, win32con, numpy, warnings, wx, copy, random
 import traceback, subprocess, fileinput
 import win32com.shell.shell as shell
 from subprocess import Popen, PIPE
@@ -376,13 +376,19 @@ def main():
                         if lineC[0:3] == 'G1 ':
                             if line.find('G') == -1:
                                 CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS)
+                                rotationAxis = 'C0 A' + str(random.randint(0, 360)) + ' B0'
+
+                                direction = line
+                                direction = lineC
+
+                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS + rotationAxis)
                                 evalGcode.saveAxValLimits('X', lineC)
                                 evalGcode.saveAxValLimits('Y', lineC)
 
                         elif lineC[0:3] == 'G0 ': # rapid move
                             CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS)
+                            rotationAxis = 'C0 A0 B0'
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS + rotationAxis)
                             evalGcode.saveAxValLimits('Z', lineC)
 
             CLWriter.closeNCFile() # close CL writer and close CL file
