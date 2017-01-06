@@ -78,8 +78,8 @@ def userHelp():
     print 'GCODE2CUTSIM ver: ' + str(__version__)
     print '---------------------'
     print ''
-    print ' A: gcode2cutsim -> Open file dialog and let user select G-Code'
-    print ' B: gcode2cutsim [-re] -> Recalculate all files with Mesh.gcode and Mesh.ini'
+    print ' A: gcode2cutsim -> File dialog. User selected G-Code'
+    print ' B: gcode2cutsim [-re] -> Recalculate all simulation files based on Mesh.gcode and Mesh.ini'
     print ' C: gcode2cutsim [-correct_z_level] <correction factor>'
     print ' D: gcode2cutsim [GCODE-FILE] [SIMULATION-INI-FILE] [-sim] -> Calculate simulation when simulation files are out of date and open simulation app'
     print ' E: gcode2cutsim [GCODE-FILE] [SIMULATION-INI-FILE] [-silent] -> Threaded calculation in background'
@@ -375,20 +375,20 @@ def main():
 
                         if lineC[0:3] == 'G1 ':
                             if line.find('G') == -1:
-                                CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                                CLWriter.writeNCCode('CUT ' + line )#+ ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                                 rotationAxis = 'C0 A' + str(random.randint(0, 360)) + ' B0'
 
                                 direction = line
                                 direction = lineC
 
-                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS + rotationAxis)
+                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS ) # + rotationAxis)
                                 evalGcode.saveAxValLimits('X', lineC)
                                 evalGcode.saveAxValLimits('Y', lineC)
 
                         elif lineC[0:3] == 'G0 ': # rapid move
                             CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                             rotationAxis = 'C0 A0 B0'
-                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS + rotationAxis)
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS ) # + rotationAxis)
                             evalGcode.saveAxValLimits('Z', lineC)
 
             CLWriter.closeNCFile() # close CL writer and close CL file
