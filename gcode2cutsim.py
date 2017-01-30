@@ -341,9 +341,9 @@ def main():
                                 if geometryStr is not None:
                                     if float(geometryStr.split(' ')[2]) >= LayerThickness * 2.4:
                                         # LayerThickness = 0.2, LayerWidth = 0.48, ELOverlap = 0.15
-                                        print 'Overextrusion detected: '
-                                        print 'Pos in G-Code ---> ' + str(loopCounter)
-                                        print geometryStr
+                                        G2CLOG.wlog('INFO', 'Overextrusion detected: ')
+                                        G2CLOG.wlog('INFO', 'Pos in G-Code ---> ' + str(loopCounter))
+                                        G2CLOG.wlog('INFO', geometryStr)
 
                                     CLWriter.writeToolChange(geometryStr)
                                     CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
@@ -375,7 +375,7 @@ def main():
 
                         if lineC[0:3] == 'G1 ':
                             if line.find('G') == -1:
-                                CLWriter.writeNCCode('CUT ' + line )#+ ' TX 0 TY 0 TZ 1 ROLL 0 ;')
+                                CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                                 rotationAxis = 'C0 A' + str(random.randint(0, 360)) + ' B0'
 
                                 direction = line

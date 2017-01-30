@@ -2,6 +2,17 @@ try:
     import rhinoscriptsyntax as rs
     import Rhino, scriptcontext
     import System.Drawing, System.Guid
+
+    from System.Drawing import *
+    from Rhino import *
+    from Rhino.DocObjects import *
+    from Rhino.DocObjects.Tables import *
+    from Rhino.Geometry import *
+    from Rhino.Input import *
+    from Rhino.Commands import *
+    from Rhino.UI.Dialogs import ShowColorDialog
+    from scriptcontext import doc
+
 except:
     pass
 
@@ -12,7 +23,7 @@ def get_num_layer():
     while 1:
         count += 1
         zero_str = '000000'
-        objName = 'Layer: ' + zero_str[:-len(str(count))] + str(count)
+        objName = 'Layer: ' + zero_str[:-len(str(count))] + str(count) + ' Wall1'
         objID.append(rs.ObjectsByName(objName))
         if objID[-1] == []:
             # rs.HideObjects(objID[:])
@@ -48,8 +59,8 @@ def GetPointDynamicDrawFunc(sender, args):
     viewSize = rs.ViewSize()
     stepSize = int(viewSize[1] / _NUM_LAYER)
 
-    obj_Layer1 = 'Layer: 000001'
-    obj_Layer2 = 'Layer: 000002'
+    obj_Layer1 = 'Layer: 000001 Wall1'
+    obj_Layer2 = 'Layer: 000002 Wall1'
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
 
     settings.NameFilter = obj_Layer1
@@ -70,8 +81,7 @@ def GetPointDynamicDrawFunc(sender, args):
     # z_level = int(cursPos[2][1] / (z_L2 - z_L1))
 
     zero_str = '000000'
-    obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level)
-    print obj_LayerZ
+    obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level) + ' Wall1'
 
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
 
@@ -80,8 +90,18 @@ def GetPointDynamicDrawFunc(sender, args):
 
     args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level) + ' - Distance ' + str(z_L2 - z_L1) + ' mm')
 
+    # print dir(ids_LZ)
+
     # rs.ShowObject(ids_LZ)
     rs.SelectObject(ids_LZ)
+    # try:
+        # RhinoObject.IsHidden(ids_LZ)
+        # ids_LZ.RhinoObject.Select
+
+    # except:
+    #    raise
+
+    print obj_LayerZ
 
     # viewport = Rhino.Display.RhinoView.ActiveViewport
     # Rhino.Display.RhinoView.EnableDrawing

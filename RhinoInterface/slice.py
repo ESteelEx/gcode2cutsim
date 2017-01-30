@@ -1,5 +1,4 @@
-import copy, os, subprocess, threading, time
-import addPoints
+import copy, os, subprocess, threading, time, addPoints, subprocess
 
 # import win32ui
 # import win32uiole
@@ -206,14 +205,29 @@ class slicer(threading.Thread):
     # ------------------------------------------------------------------------------------------------------------------
     def run(self):
 
+        #terminator_str = r'C:\\MW3D_07\\terminator.exe'
+
+        #startupinfo = subprocess.STARTUPINFO()
+        #startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW
+
+        #output = subprocess.Popen(terminator_str, startupinfo=startupinfo, stdout=subprocess.PIPE,
+        #                 stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()
+
+        #output = output[0].strip()  # filter version number from output
+
+        #print output
+
+        #print 'Waiting for termination to end'
+        #print 'Done'
+
         if self.objIds is not None:
             self.proof_placement()
         else:
             print 'No Objects selected'
             return
 
-        if self.correctplacement:
-            self.nesting()
+        #if self.correctplacement:
+        #    self.nesting()
 
         if self.correctplacement:
             pass
@@ -336,7 +350,7 @@ class slicer(threading.Thread):
         absargs = self.corePath + r'\Mesh.stl'
         command_string = abscommand + ' ' + absargs
 
-        print 'Starting slicer ...'
+        print 'Starting slicer ... wait'
 
         output = subprocess.Popen(command_string, startupinfo=startupinfo, stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT, stdin=subprocess.PIPE).communicate()

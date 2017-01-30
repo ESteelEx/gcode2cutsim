@@ -7,6 +7,7 @@ import key_stroke_timer
 from Utilities import ini_worker
 from screeninfo import get_monitors
 
+
 class parameterGuardUI(wx.Dialog):
     def __init__(self, pluginPath, corePath, configFile):
         self.pluginPath = pluginPath
@@ -424,8 +425,8 @@ def main():
     else:
         print 'Please pass plugin, core path and config file location.'
         print 'Trying to start with some default development params.'
-        pluginPath = 'D:\\MWAdditive'
-        corePath = 'D:\\MWAdditive'
+        pluginPath = 'D:\\MW3D_07'
+        corePath = 'D:\\MW3D_07'
         configFile = 'Mesh.ini'
         app = wx.App(False)
         PG = parameterGuardUI(pluginPath, corePath, configFile)

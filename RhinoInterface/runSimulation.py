@@ -2,12 +2,13 @@ import sys, os, threading, subprocess
 from subprocess import Popen, PIPE
 
 class runSimulation(threading.Thread):
-    def __init__(self, corePath, pluginPath, silent=False, calc=True, simType='verifier'):
+    def __init__(self, corePath, pluginPath, silent=False, calc=True, simType='verifier', postCommand=None):
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.silent = silent
         self.calc = calc
         self.simType = simType
+        self.postCommand = postCommand
         threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -25,16 +26,24 @@ class runSimulation(threading.Thread):
                       "-silent")
         else:
             if self.calc:
-                command = [self.corePath + r"\gcode2cutsimFDM.exe",
-                           self.corePath + r"\Mesh.gcode",
-                           self.corePath + r"\Mesh.ini"]
+                if self.postCommand is None:
+                    command = [self.corePath + r"\gcode2cutsimFDM.exe",
+                               self.corePath + r"\Mesh.gcode",
+                               self.corePath + r"\Mesh.ini"]
+                else:
+                    command = [self.corePath + r"\gcode2cutsimFDM.exe",
+                               self.corePath + self.postCommand]
 
                 process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
 
             else:
                 if self.simType == 'verifier':
-                    command = [self.corePath + r"\bin\verifier\VerifierApplicationSample.exe",
-                               self.corePath + r"\Mesh_SIMULATION.ini"]
+                    #command = [self.corePath + r"\bin\verifier\VerifierApplicationSample.exe",
+                    #           self.corePath + r"\Mesh_SIMULATION.ini"]
+
+                    command = [self.corePath + r"\gcode2cutsimFDM.exe",
+                               self.corePath + r"\Mesh.gcode",
+                               self.corePath + r"\Mesh.ini"]
 
                     process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
 

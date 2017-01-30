@@ -453,7 +453,82 @@ class controlLayer:
             return
 
         try:
-
             ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'pathWidth', num)
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_min_segment_length(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define min segment length: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'minLength', num)
+            print 'DONE'
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_filter_tolerance(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define filter tolerance: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'filterTolerance', num)
+            print 'DONE'
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_minimum_sparse_ratio(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Define ratio of sparse to solid: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'minimumSparseRatio', num)
+            print 'DONE'
+        except:
+            raise
+
+    # ------------------------------------------------------------------------------------------------------------------
+    def set_connection_sparse_onoff(self):
+        sys.path.append(self.pluginPath)
+        from Utilities import ini_worker
+        reload(ini_worker)
+
+        num = raw_input('Switch connections to on or off: ')
+        try:
+            num = float(num)
+        except:
+            print 'This is not a valid number'
+            return
+
+        try:
+            ini_worker.write_to_section(self.INI_CONFIG, self.feature, 'connectSparse', num)
+            print 'DONE'
         except:
             raise

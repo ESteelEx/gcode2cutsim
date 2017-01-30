@@ -36,7 +36,7 @@ exe = EXE(
     debug=False,
     strip=None,
     upx=True,
-    console=True,
+    console=False,
     icon='bin\\images\\3dPrintVer.ico')
 
 if os.path.isfile('gcode2cutsimFDM.exe'):

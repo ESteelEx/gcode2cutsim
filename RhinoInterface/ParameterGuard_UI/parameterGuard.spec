@@ -5,6 +5,7 @@ from PyInstaller.building.api import PYZ, EXE, COLLECT
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.datastruct import TOC
 from multiprocessing import Queue
+from queue import Queue
 
 # append current directory
 sys.path.append(os.getcwd())
@@ -24,7 +25,7 @@ for proc in psutil.process_iter():
 # , 'watchdog'
 a = Analysis(['parameterGuard.py'],
               pathex=['.'], 
-              hiddenimports=['guard', 'watchdog', 'multiprocessing'],
+              hiddenimports=['Queue', 'multiprocessing.Queue', 'queuelib', 'queuelib.queue', 'queue', 'queue.Queue', 'guard', 'watchdog', 'multiprocessing', 'appdirs', 'six', 'packaging', 'packaging.version', 'packaging.specifiers', 'packaging.requirements'],
               hookspath=None, 
               runtime_hooks=None)
 
@@ -52,4 +53,4 @@ exe = EXE(
 #if os.path.isfile('gcode2cutsim.exe'):
 #    os.remove('gcode2cutsim.exe')
 
-shutil.copy('dist\\paramGuard.exe', 'D:\\MWAdditive\\paramGuard.exe')
+shutil.copy('dist\\paramGuard.exe', 'C:\\MW3D_07\\paramGuard.exe')

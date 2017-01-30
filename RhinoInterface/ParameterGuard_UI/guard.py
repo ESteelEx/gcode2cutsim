@@ -14,6 +14,7 @@ class ParamEventHandler(FileSystemEventHandler):
         self.corePath = corePath
         self.UIs = UIs
         self.no_action_list = ['collapse']
+        print UIs.TS
         self.TS = UIs.TS
 
     def on_modified(self, event):
