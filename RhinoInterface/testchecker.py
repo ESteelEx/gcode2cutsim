@@ -80,28 +80,43 @@ def GetPointDynamicDrawFunc(sender, args):
     # z_level = int(args.CurrentPoint[2] / (z_L2 - z_L1))
     # z_level = int(cursPos[2][1] / (z_L2 - z_L1))
 
+    segmentList = ['Wall',
+                   'DenseInfill',
+                   'SparseInfill',
+                   'Brim',
+                   'Skirt',
+                   'Support']
+
     zero_str = '000000'
-    obj_LayerZ = 'Layer: ' + zero_str[:-len(str(z_level))] + str(z_level) + ' Wall1'
-
+    # obj_LayerZ = []
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
-
-    settings.NameFilter = obj_LayerZ
-    ids_LZ = [rhobj.Id for rhobj in scriptcontext.doc.Objects.GetObjectList(settings)]
+    for segment in segmentList:
+        i = 0
+        while 1:
+            i += 1
+            obj_LayerZ = str('Layer: ' + zero_str[:-len(str(z_level))] + str(z_level) + ' ' + segment + str(i))
+            # obj_LayerZ = 'Layer: 000011 Wall1'
+            try:
+                settings.NameFilter = obj_LayerZ
+                ids_LZ = [rhobj.Id for rhobj in scriptcontext.doc.Objects.GetObjectList(settings)]
+                if len(ids_LZ) == 0:
+                    break
+                rs.SelectObject(ids_LZ)
+            except:
+                print 'not found'
 
     args.Display.DrawDot(args.CurrentPoint, 'Layer ' + str(z_level) + ' - Distance ' + str(z_L2 - z_L1) + ' mm')
 
     # print dir(ids_LZ)
 
     # rs.ShowObject(ids_LZ)
-    rs.SelectObject(ids_LZ)
+
     # try:
         # RhinoObject.IsHidden(ids_LZ)
         # ids_LZ.RhinoObject.Select
 
     # except:
     #    raise
-
-    print obj_LayerZ
 
     # viewport = Rhino.Display.RhinoView.ActiveViewport
     # Rhino.Display.RhinoView.EnableDrawing
