@@ -1,4 +1,4 @@
-import copy, os, subprocess, threading, time, addPoints, subprocess
+import copy, os, sys, subprocess, threading, time, addPoints, subprocess
 
 # import win32ui
 # import win32uiole
@@ -200,10 +200,12 @@ class slicer(threading.Thread):
         self.pluginPath = pluginPath
         self.corePath = corePath
         self.correctplacement = True
+        sys.path.append(self.pluginPath)
         threading.Thread.__init__(self)
 
     # ------------------------------------------------------------------------------------------------------------------
     def run(self):
+        from RhinoInterface import testchecker
 
         #terminator_str = r'C:\\MW3D_07\\terminator.exe'
 
@@ -245,6 +247,8 @@ class slicer(threading.Thread):
         if slice_stat:
             AP = addPoints.addPoints(self.pluginPath, self.corePath)
             AP.start()
+            # AP.join()
+            # testchecker.testchecker().draw_line()
 
     # ------------------------------------------------------------------------------------------------------------------
     def proof_placement(self):
