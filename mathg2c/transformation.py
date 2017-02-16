@@ -178,7 +178,7 @@ True
 True
 >>> numpy.allclose(trans, [1, 2, 3])
 True
->>> numpy.allclose(shear, [0, math.tan(beta), 0])
+>>> numpy.allclose(shear, [0, mathg2c.tan(beta), 0])
 True
 >>> is_same_transform(R, euler_matrix(axes='sxyz', *angles))
 True
@@ -195,7 +195,7 @@ True
 
 from __future__ import division, print_function
 
-import math
+import mathg2c
 
 import numpy
 
@@ -302,14 +302,14 @@ def reflection_from_matrix(matrix):
 def rotation_matrix(angle, direction, point=None):
     """Return matrix to rotate about axis defined by point and direction.
 
-    >>> R = rotation_matrix(math.pi/2, [0, 0, 1], [1, 0, 0])
+    >>> R = rotation_matrix(mathg2c.pi/2, [0, 0, 1], [1, 0, 0])
     >>> numpy.allclose(numpy.dot(R, [0, 0, 0, 1]), [1, -1, 0, 1])
     True
-    >>> angle = (random.random() - 0.5) * (2*math.pi)
+    >>> angle = (random.random() - 0.5) * (2*mathg2c.pi)
     >>> direc = numpy.random.random(3) - 0.5
     >>> point = numpy.random.random(3) - 0.5
     >>> R0 = rotation_matrix(angle, direc, point)
-    >>> R1 = rotation_matrix(angle-2*math.pi, direc, point)
+    >>> R1 = rotation_matrix(angle-2*mathg2c.pi, direc, point)
     >>> is_same_transform(R0, R1)
     True
     >>> R0 = rotation_matrix(angle, direc, point)
@@ -317,15 +317,15 @@ def rotation_matrix(angle, direction, point=None):
     >>> is_same_transform(R0, R1)
     True
     >>> I = numpy.identity(4, numpy.float64)
-    >>> numpy.allclose(I, rotation_matrix(math.pi*2, direc))
+    >>> numpy.allclose(I, rotation_matrix(mathg2c.pi*2, direc))
     True
-    >>> numpy.allclose(2, numpy.trace(rotation_matrix(math.pi/2,
+    >>> numpy.allclose(2, numpy.trace(rotation_matrix(mathg2c.pi/2,
     ...                                               direc, point)))
     True
 
     """
-    sina = math.sin(angle)
-    cosa = math.cos(angle)
+    sina = mathg2c.sin(angle)
+    cosa = mathg2c.cos(angle)
     direction = unit_vector(direction[:3])
     # rotation matrix around unit vector
     R = numpy.diag([cosa, cosa, cosa])
@@ -346,7 +346,7 @@ def rotation_matrix(angle, direction, point=None):
 def rotation_from_matrix(matrix):
     """Return rotation angle and axis from rotation matrix.
 
-    >>> angle = (random.random() - 0.5) * (2*math.pi)
+    >>> angle = (random.random() - 0.5) * (2*mathg2c.pi)
     >>> direc = numpy.random.random(3) - 0.5
     >>> point = numpy.random.random(3) - 0.5
     >>> R0 = rotation_matrix(angle, direc, point)
@@ -379,7 +379,7 @@ def rotation_from_matrix(matrix):
         sina = (R[0, 2] + (cosa-1.0)*direction[0]*direction[2]) / direction[1]
     else:
         sina = (R[2, 1] + (cosa-1.0)*direction[1]*direction[2]) / direction[0]
-    angle = math.atan2(sina, cosa)
+    angle = mathg2c.atan2(sina, cosa)
     return angle, direction, point
 
 
@@ -656,7 +656,7 @@ def shear_matrix(angle, direction, point, normal):
     given by the angle of P-P'-P", where P' is the orthogonal projection
     of P onto the shear plane.
 
-    >>> angle = (random.random() - 0.5) * 4*math.pi
+    >>> angle = (random.random() - 0.5) * 4*mathg2c.pi
     >>> direct = numpy.random.random(3) - 0.5
     >>> point = numpy.random.random(3) - 0.5
     >>> normal = numpy.cross(direct, numpy.random.random(3))
@@ -669,7 +669,7 @@ def shear_matrix(angle, direction, point, normal):
     direction = unit_vector(direction[:3])
     if abs(numpy.dot(normal, direction)) > 1e-6:
         raise ValueError("direction and normal vectors are not orthogonal")
-    angle = math.tan(angle)
+    angle = mathg2c.tan(angle)
     M = numpy.identity(4)
     M[:3, :3] += angle * numpy.outer(direction, normal)
     M[:3, 3] = -angle * numpy.dot(point[:3], normal) * direction
@@ -679,7 +679,7 @@ def shear_matrix(angle, direction, point, normal):
 def shear_from_matrix(matrix):
     """Return shear angle, direction and plane from shear matrix.
 
-    >>> angle = (random.random() - 0.5) * 4*math.pi
+    >>> angle = (random.random() - 0.5) * 4*mathg2c.pi
     >>> direct = numpy.random.random(3) - 0.5
     >>> point = numpy.random.random(3) - 0.5
     >>> normal = numpy.cross(direct, numpy.random.random(3))
@@ -710,7 +710,7 @@ def shear_from_matrix(matrix):
     direction = numpy.dot(M33 - numpy.identity(3), normal)
     angle = vector_norm(direction)
     direction /= angle
-    angle = math.atan(angle)
+    angle = mathg2c.atan(angle)
     # point: eigenvector corresponding to eigenvalue 1
     w, V = numpy.linalg.eig(M)
     i = numpy.where(abs(numpy.real(w) - 1.0) < 1e-8)[0]
@@ -794,13 +794,13 @@ def decompose_matrix(matrix):
         numpy.negative(scale, scale)
         numpy.negative(row, row)
 
-    angles[1] = math.asin(-row[0, 2])
-    if math.cos(angles[1]):
-        angles[0] = math.atan2(row[1, 2], row[2, 2])
-        angles[2] = math.atan2(row[0, 1], row[0, 0])
+    angles[1] = mathg2c.asin(-row[0, 2])
+    if mathg2c.cos(angles[1]):
+        angles[0] = mathg2c.atan2(row[1, 2], row[2, 2])
+        angles[2] = mathg2c.atan2(row[0, 1], row[0, 0])
     else:
         #angles[0] = math.atan2(row[1, 0], row[1, 1])
-        angles[0] = math.atan2(-row[2, 1], row[1, 1])
+        angles[0] = mathg2c.atan2(-row[2, 1], row[1, 1])
         angles[2] = 0.0
 
     return scale, shear, angles, translate, perspective
@@ -821,7 +821,7 @@ def compose_matrix(scale=None, shear=None, angles=None, translate=None,
 
     >>> scale = numpy.random.random(3) - 0.5
     >>> shear = numpy.random.random(3) - 0.5
-    >>> angles = (numpy.random.random(3) - 0.5) * (2*math.pi)
+    >>> angles = (numpy.random.random(3) - 0.5) * (2*mathg2c.pi)
     >>> trans = numpy.random.random(3) - 0.5
     >>> persp = numpy.random.random(4) - 0.5
     >>> M0 = compose_matrix(scale, shear, angles, trans, persp)
@@ -880,7 +880,7 @@ def orthogonalization_matrix(lengths, angles):
     cosa, cosb, cosg = numpy.cos(angles)
     co = (cosa * cosb - cosg) / (sina * sinb)
     return numpy.array([
-        [ a*sinb*math.sqrt(1.0-co*co),  0.0,    0.0, 0.0],
+        [a * sinb * mathg2c.sqrt(1.0 - co * co), 0.0, 0.0, 0.0],
         [-a*sinb*co,                    b*sina, 0.0, 0.0],
         [ a*cosb,                       b*cosa, c,   0.0],
         [ 0.0,                          0.0,    0.0, 1.0]])
@@ -987,7 +987,7 @@ def affine_matrix_from_points(v0, v1, shear=True, scale=True, usesvd=True):
         # Affine transformation; scale is ratio of RMS deviations from centroid
         v0 *= v0
         v1 *= v1
-        M[:ndims, :ndims] *= math.sqrt(numpy.sum(v1) / numpy.sum(v0))
+        M[:ndims, :ndims] *= mathg2c.sqrt(numpy.sum(v1) / numpy.sum(v0))
 
     # move centroids back
     M = numpy.dot(numpy.linalg.inv(M1), numpy.dot(M, M0))
@@ -1058,7 +1058,7 @@ def euler_matrix(ai, aj, ak, axes='sxyz'):
     >>> R = euler_matrix(1, 2, 3, (0, 1, 0, 1))
     >>> numpy.allclose(numpy.sum(R[0]), -0.383436184)
     True
-    >>> ai, aj, ak = (4*math.pi) * (numpy.random.random(3) - 0.5)
+    >>> ai, aj, ak = (4*mathg2c.pi) * (numpy.random.random(3) - 0.5)
     >>> for axes in _AXES2TUPLE.keys():
     ...    R = euler_matrix(ai, aj, ak, axes)
     >>> for axes in _TUPLE2AXES.keys():
@@ -1080,8 +1080,8 @@ def euler_matrix(ai, aj, ak, axes='sxyz'):
     if parity:
         ai, aj, ak = -ai, -aj, -ak
 
-    si, sj, sk = math.sin(ai), math.sin(aj), math.sin(ak)
-    ci, cj, ck = math.cos(ai), math.cos(aj), math.cos(ak)
+    si, sj, sk = mathg2c.sin(ai), mathg2c.sin(aj), mathg2c.sin(ak)
+    ci, cj, ck = mathg2c.cos(ai), mathg2c.cos(aj), mathg2c.cos(ak)
     cc, cs = ci*ck, ci*sk
     sc, ss = si*ck, si*sk
 
@@ -1121,7 +1121,7 @@ def euler_from_matrix(matrix, axes='sxyz'):
     >>> R1 = euler_matrix(al, be, ga, 'syxz')
     >>> numpy.allclose(R0, R1)
     True
-    >>> angles = (4*math.pi) * (numpy.random.random(3) - 0.5)
+    >>> angles = (4*mathg2c.pi) * (numpy.random.random(3) - 0.5)
     >>> for axes in _AXES2TUPLE.keys():
     ...    R0 = euler_matrix(axes=axes, *angles)
     ...    R1 = euler_matrix(axes=axes, *euler_from_matrix(R0, axes))
@@ -1140,24 +1140,24 @@ def euler_from_matrix(matrix, axes='sxyz'):
 
     M = numpy.array(matrix, dtype=numpy.float64, copy=False)[:3, :3]
     if repetition:
-        sy = math.sqrt(M[i, j]*M[i, j] + M[i, k]*M[i, k])
+        sy = mathg2c.sqrt(M[i, j] * M[i, j] + M[i, k] * M[i, k])
         if sy > _EPS:
-            ax = math.atan2( M[i, j],  M[i, k])
-            ay = math.atan2( sy,       M[i, i])
-            az = math.atan2( M[j, i], -M[k, i])
+            ax = mathg2c.atan2(M[i, j], M[i, k])
+            ay = mathg2c.atan2(sy, M[i, i])
+            az = mathg2c.atan2(M[j, i], -M[k, i])
         else:
-            ax = math.atan2(-M[j, k],  M[j, j])
-            ay = math.atan2( sy,       M[i, i])
+            ax = mathg2c.atan2(-M[j, k], M[j, j])
+            ay = mathg2c.atan2(sy, M[i, i])
             az = 0.0
     else:
-        cy = math.sqrt(M[i, i]*M[i, i] + M[j, i]*M[j, i])
+        cy = mathg2c.sqrt(M[i, i] * M[i, i] + M[j, i] * M[j, i])
         if cy > _EPS:
-            ax = math.atan2( M[k, j],  M[k, k])
-            ay = math.atan2(-M[k, i],  cy)
-            az = math.atan2( M[j, i],  M[i, i])
+            ax = mathg2c.atan2(M[k, j], M[k, k])
+            ay = mathg2c.atan2(-M[k, i], cy)
+            az = mathg2c.atan2(M[j, i], M[i, i])
         else:
-            ax = math.atan2(-M[j, k],  M[j, j])
-            ay = math.atan2(-M[k, i],  cy)
+            ax = mathg2c.atan2(-M[j, k], M[j, j])
+            ay = mathg2c.atan2(-M[k, i], cy)
             az = 0.0
 
     if parity:
@@ -1207,12 +1207,12 @@ def quaternion_from_euler(ai, aj, ak, axes='sxyz'):
     ai /= 2.0
     aj /= 2.0
     ak /= 2.0
-    ci = math.cos(ai)
-    si = math.sin(ai)
-    cj = math.cos(aj)
-    sj = math.sin(aj)
-    ck = math.cos(ak)
-    sk = math.sin(ak)
+    ci = mathg2c.cos(ai)
+    si = mathg2c.sin(ai)
+    cj = mathg2c.cos(aj)
+    sj = mathg2c.sin(aj)
+    ck = mathg2c.cos(ak)
+    sk = mathg2c.sin(ak)
     cc = ci*ck
     cs = ci*sk
     sc = si*ck
@@ -1246,8 +1246,8 @@ def quaternion_about_axis(angle, axis):
     q = numpy.array([0.0, axis[0], axis[1], axis[2]])
     qlen = vector_norm(q)
     if qlen > _EPS:
-        q *= math.sin(angle/2.0) / qlen
-    q[0] = math.cos(angle/2.0)
+        q *= mathg2c.sin(angle / 2.0) / qlen
+    q[0] = mathg2c.cos(angle / 2.0)
     return q
 
 
@@ -1269,7 +1269,7 @@ def quaternion_matrix(quaternion):
     n = numpy.dot(q, q)
     if n < _EPS:
         return numpy.identity(4)
-    q *= math.sqrt(2.0 / n)
+    q *= mathg2c.sqrt(2.0 / n)
     q = numpy.outer(q, q)
     return numpy.array([
         [1.0-q[2, 2]-q[3, 3],     q[1, 2]-q[3, 0],     q[1, 3]+q[2, 0], 0.0],
@@ -1334,7 +1334,7 @@ def quaternion_from_matrix(matrix, isprecise=False):
             q[j] = M[i, j] + M[j, i]
             q[k] = M[k, i] + M[i, k]
             q[3] = M[k, j] - M[j, k]
-        q *= 0.5 / math.sqrt(t * M[3, 3])
+        q *= 0.5 / mathg2c.sqrt(t * M[3, 3])
     else:
         m00 = M[0, 0]
         m01 = M[0, 1]
@@ -1435,9 +1435,9 @@ def quaternion_slerp(quat0, quat1, fraction, spin=0, shortestpath=True):
     >>> numpy.allclose(q, q1)
     True
     >>> q = quaternion_slerp(q0, q1, 0.5)
-    >>> angle = math.acos(numpy.dot(q0, q))
-    >>> numpy.allclose(2, math.acos(numpy.dot(q0, q1)) / angle) or \
-        numpy.allclose(2, math.acos(-numpy.dot(q0, q1)) / angle)
+    >>> angle = mathg2c.acos(numpy.dot(q0, q))
+    >>> numpy.allclose(2, mathg2c.acos(numpy.dot(q0, q1)) / angle) or \
+        numpy.allclose(2, mathg2c.acos(-numpy.dot(q0, q1)) / angle)
     True
 
     """
@@ -1454,12 +1454,12 @@ def quaternion_slerp(quat0, quat1, fraction, spin=0, shortestpath=True):
         # invert rotation
         d = -d
         numpy.negative(q1, q1)
-    angle = math.acos(d) + spin * math.pi
+    angle = mathg2c.acos(d) + spin * mathg2c.pi
     if abs(angle) < _EPS:
         return q0
-    isin = 1.0 / math.sin(angle)
-    q0 *= math.sin((1.0 - fraction) * angle) * isin
-    q1 *= math.sin(fraction * angle) * isin
+    isin = 1.0 / mathg2c.sin(angle)
+    q0 *= mathg2c.sin((1.0 - fraction) * angle) * isin
+    q1 *= mathg2c.sin(fraction * angle) * isin
     q0 += q1
     return q0
 
@@ -1485,7 +1485,7 @@ def random_quaternion(rand=None):
         assert len(rand) == 3
     r1 = numpy.sqrt(1.0 - rand[0])
     r2 = numpy.sqrt(rand[0])
-    pi2 = math.pi * 2.0
+    pi2 = mathg2c.pi * 2.0
     t1 = pi2 * rand[1]
     t2 = pi2 * rand[2]
     return numpy.array([numpy.cos(t2)*r2, numpy.sin(t1)*r1,
@@ -1625,10 +1625,10 @@ def arcball_map_to_sphere(point, center, radius):
     n = v0*v0 + v1*v1
     if n > 1.0:
         # position outside of sphere
-        n = math.sqrt(n)
+        n = mathg2c.sqrt(n)
         return numpy.array([v0/n, v1/n, 0.0])
     else:
-        return numpy.array([v0, v1, math.sqrt(1.0 - n)])
+        return numpy.array([v0, v1, mathg2c.sqrt(1.0 - n)])
 
 
 def arcball_constrain_to_axis(point, axis):
@@ -1708,7 +1708,7 @@ def vector_norm(data, axis=None, out=None):
     data = numpy.array(data, dtype=numpy.float64, copy=True)
     if out is None:
         if data.ndim == 1:
-            return math.sqrt(numpy.dot(data, data))
+            return mathg2c.sqrt(numpy.dot(data, data))
         data *= data
         out = numpy.atleast_1d(numpy.sum(data, axis=axis))
         numpy.sqrt(out, out)
@@ -1748,7 +1748,7 @@ def unit_vector(data, axis=None, out=None):
     if out is None:
         data = numpy.array(data, dtype=numpy.float64, copy=True)
         if data.ndim == 1:
-            data /= math.sqrt(numpy.dot(data, data))
+            data /= mathg2c.sqrt(numpy.dot(data, data))
             return data
     else:
         if out is not data:
@@ -1806,7 +1806,7 @@ def angle_between_vectors(v0, v1, directed=True, axis=0):
     i.e. the maximum angle is pi/2.
 
     >>> a = angle_between_vectors([1, -2, 3], [-1, 2, -3])
-    >>> numpy.allclose(a, math.pi)
+    >>> numpy.allclose(a, mathg2c.pi)
     True
     >>> a = angle_between_vectors([1, -2, 3], [-1, 2, -3], directed=False)
     >>> numpy.allclose(a, 0)

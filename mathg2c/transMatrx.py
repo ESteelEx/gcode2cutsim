@@ -1,4 +1,4 @@
-from math import cos, sin, radians
+from mathg2c import cos, sin, radians
 
 def trig(angle):
   r = radians(angle)

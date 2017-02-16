@@ -223,7 +223,7 @@ class slicer(threading.Thread):
         #print 'Done'
 
         if self.objIds is not None:
-            self.proof_placement()
+            self.proof_placement(checkbuildspace=False)
         else:
             print 'No Objects selected'
             return
@@ -251,37 +251,40 @@ class slicer(threading.Thread):
             # testchecker.testchecker().draw_line()
 
     # ------------------------------------------------------------------------------------------------------------------
-    def proof_placement(self):
+    def proof_placement(self, checkbuildspace=True):
 
         # color objects
         self.correctplacement = True
-        print 'Checking positioning'
+
+        print 'Moving to zero level'
         for obj in self.objIds:
             BB = rs.BoundingBox(obj)
             rs.MoveObject(obj, [0, 0, -BB[0][2]])
             BB = rs.BoundingBox(obj)
+            if checkbuildspace:
+                print 'Checking positioning'
 
-            for point in BB:
-                if point[0] < 0 or point[0] > 241:
-                    rs.ObjectColor(obj, (255, 0, 0))
-                    self.correctplacement = False
-                    break
-                else:
-                    rs.ObjectColor(obj, (0, 255, 0))
+                for point in BB:
+                    if point[0] < 0 or point[0] > 241:
+                        rs.ObjectColor(obj, (255, 0, 0))
+                        self.correctplacement = False
+                        break
+                    else:
+                        rs.ObjectColor(obj, (0, 255, 0))
 
-                if point[1] < 0 or point[1] > 209:
-                    rs.ObjectColor(obj, (255, 0, 0))
-                    self.correctplacement = False
-                    break
-                else:
-                    rs.ObjectColor(obj, (0, 255, 0))
+                    if point[1] < 0 or point[1] > 209:
+                        rs.ObjectColor(obj, (255, 0, 0))
+                        self.correctplacement = False
+                        break
+                    else:
+                        rs.ObjectColor(obj, (0, 255, 0))
 
-                if point[2] < 0 or point[2] > 205:
-                    rs.ObjectColor(obj, (255, 0, 0))
-                    self.correctplacement = False
-                    break
-                else:
-                    rs.ObjectColor(obj, (0, 255, 0))
+                    if point[2] < 0 or point[2] > 205:
+                        rs.ObjectColor(obj, (255, 0, 0))
+                        self.correctplacement = False
+                        break
+                    else:
+                        rs.ObjectColor(obj, (0, 255, 0))
 
     # ------------------------------------------------------------------------------------------------------------------
     def nesting(self):

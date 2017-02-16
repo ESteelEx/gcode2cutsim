@@ -13,6 +13,7 @@ import win32com.shell.shell as shell
 from subprocess import Popen, PIPE
 
 # from decimal import *
+from mathg2c import arcSuite
 from CLUtilities import G2CLogging
 from MachineConfig import Tools
 from MachineConfig import JobSetup
@@ -198,12 +199,15 @@ def main():
             # open and create CL file
             CLWriter.openCLFile()
             CLMSWriter.openCLFile()
+            ArcS = arcSuite.arcsuite() # initialize arcsuite
 
             # initialize const
             # ------------------------------------------------------------------------------------------------------------
             startParsing = False
             zValMachine = 0
             LayerThickness = 0
+            forerunMachinePos = (0, 0)
+            rotationValue = 0
             # EXTRUSIONLINEOVERLAP = 0 # [mm]
             ExtrusionLineOverlap = 0 # percent
             # EXTENDADDITIVEBOX = 1 # [mm]
@@ -330,6 +334,14 @@ def main():
                             if forerunMachinePos is not None:
                                 forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
 
+                            print currentMachinePos
+                            print forerunMachinePos
+
+                            rotationValue = ArcS.arc_from_points(currentMachinePos, forerunMachinePos) - 90
+                            print rotationValue
+
+                            # raw_input()
+
                             forerunExtrusionVal = ExUtil.getExtrusionVal(line)
                             LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal,
                                                               forerunExtrusionVal, LayerThicknessForerun)
@@ -376,12 +388,10 @@ def main():
                         if lineC[0:3] == 'G1 ':
                             if line.find('G') == -1:
                                 CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
-                                rotationAxis = 'C0 A' + str(random.randint(0, 360)) + ' B0'
-
                                 direction = line
                                 direction = lineC
-
-                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS ) # + rotationAxis)
+                                rotationAxis = ' C0 A' + str(rotationValue) + ' B0'
+                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS + rotationAxis) # + rotationAxis)
                                 evalGcode.saveAxValLimits('X', lineC)
                                 evalGcode.saveAxValLimits('Y', lineC)
 

@@ -4,7 +4,7 @@ try:
     import Rhino
     import rhinoscriptsyntax as rs
     import scriptcontext
-    import math
+    import mathg2c
     import System.Guid, System.Array, System.Enum
     from System.Drawing import *
     from Rhino import *
@@ -87,7 +87,7 @@ class addPoints(threading.Thread):
         self.INI_CONFIG = self.corePath + r'\Mesh.ini'
         self.runstat = True
         self.segmentIdxDict = {}
-        self.colorDict = {'Wall': (50, 50, 50),
+        self.colorDict = {'Wall': (0, 0, 0),
                           'DenseInfill': (255, 0, 255),
                           'SparseInfill': (0, 255, 255),
                           'Brim': (100, 100, 100),
