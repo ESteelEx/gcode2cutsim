@@ -208,6 +208,7 @@ def main():
             LayerThickness = 0
             forerunMachinePos = (0, 0)
             rotationValue = 0
+            rotationValueLast = 0
             # EXTRUSIONLINEOVERLAP = 0 # [mm]
             ExtrusionLineOverlap = 0 # percent
             # EXTENDADDITIVEBOX = 1 # [mm]
@@ -334,11 +335,9 @@ def main():
                             if forerunMachinePos is not None:
                                 forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
 
-                            print currentMachinePos
-                            print forerunMachinePos
-
                             rotationValue = ArcS.arc_from_points(currentMachinePos, forerunMachinePos) - 90
-                            print rotationValue
+                            rotationValue = ArcS.proof_angle_change(rotationValueLast, rotationValue)
+                            rotationValueLast = rotationValue
 
                             # raw_input()
 

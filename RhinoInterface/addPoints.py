@@ -4,7 +4,7 @@ try:
     import Rhino
     import rhinoscriptsyntax as rs
     import scriptcontext
-    import mathg2c
+    import math
     import System.Guid, System.Array, System.Enum
     from System.Drawing import *
     from Rhino import *

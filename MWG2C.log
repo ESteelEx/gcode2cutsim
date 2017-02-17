@@ -1,8 +1,10 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2017-01-06 12:26:19.051000
-INFO:MWG2C:** Log-File : D:\Development\GitRep\gcode2cutsim_V2/MWG2C.log
+INFO:MWG2C:** Logging started @ : 2017-02-16 22:05:32.083000
+INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:G-Code Evaluation started @ : 2017-01-06 12:26:19.051000
-INFO:MWG2C:File selection canceled ... Nothing to process @ : 2017-01-06 12:26:31.427000
-INFO:MWG2C:** Logging stopped @ : 2017-01-06 12:26:31
+INFO:MWG2C:Starting G2C conversion ... @ : 2017-02-16 22:05:32.085000
+ERROR:MWG2C:CLFileWriter.writeNCCode: Error while writing NC-code
+INFO:MWG2C:Additivebox calculated @ : 2017-02-16 22:05:33.441000
+INFO:MWG2C:All jobs done ... @ : 2017-02-16 22:05:33.572000
+INFO:MWG2C:** Logging stopped @ : 2017-02-16 22:05:33
