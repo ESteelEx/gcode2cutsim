@@ -206,6 +206,7 @@ def main():
             startParsing = False
             zValMachine = 0
             LayerThickness = 0
+            currentMachinePos = (0, 0)
             forerunMachinePos = (0, 0)
             rotationValue = 0
             rotationValueLast = 0
@@ -258,6 +259,7 @@ def main():
 
             next_update_block = 0
             keepGoin = 1
+            counter_G1 = 0
             with open(inputf) as fidO:
 
                 # start reading g-Code file
@@ -313,7 +315,8 @@ def main():
 
                             CLWriter.writeToolChange(geometryStr)
                             CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID Z' + str(zValMachine))
+                            XYpos = 'X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1])
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + XYpos + ' Z' + str(zValMachine))
 
                             LayerThickness = LayerThicknessForerun
                             if LayerThickness < SIMPRECISION:
@@ -327,6 +330,7 @@ def main():
 
                     # get geometry of extrusion lines and layers before proceeding with tool etc.
                     if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over and equal 10
+                        counter_G1 += 1
                         if lineLloop is not None and LayerThicknessForerun != 0:
                             # x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
 
@@ -335,8 +339,13 @@ def main():
                             if forerunMachinePos is not None:
                                 forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
 
-                            rotationValue = ArcS.arc_from_points(currentMachinePos, forerunMachinePos) - 90
-                            rotationValue = ArcS.proof_angle_change(rotationValueLast, rotationValue)
+                            # ToDo THIS IS CONSTRUCTION AREA
+                            rotationValue = ArcS.arc_from_points(currentMachinePos, forerunMachinePos)
+                            rotationValue += 90
+
+                            # quadrant = ArcS.get_quadrant(movementDirection)
+                            #if counter_G1 > 1:
+                            #    rotationValue = ArcS.proof_angle_change(rotationValueLast, rotationValue, quadrant, maxAngleChange=10)
                             rotationValueLast = rotationValue
 
                             # raw_input()
@@ -358,7 +367,8 @@ def main():
 
                                     CLWriter.writeToolChange(geometryStr)
                                     CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine))
+                                    rotationAxis = ' C0 A' + str(rotationValue) + ' B0'
+                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine) + ' ' + rotationAxis)
 
                             LayerWidthMachine = LayerWidth
                             lineLloop = line
