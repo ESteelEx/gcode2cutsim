@@ -25,6 +25,7 @@ from CLUtilities import NCFileReader
 from CLUtilities import configData
 from Utilities import ini_worker
 from Utilities import compare
+from mathg2c import distanceSuite
 
 # warnings.filterwarnings("ignore")
 
@@ -200,6 +201,7 @@ def main():
             CLWriter.openCLFile()
             CLMSWriter.openCLFile()
             ArcS = arcSuite.arcsuite() # initialize arcsuite
+            DistS = distanceSuite.distanceSuite() # initialize arcsuite
 
             # initialize const
             # ------------------------------------------------------------------------------------------------------------
@@ -210,11 +212,14 @@ def main():
             forerunMachinePos = (0, 0)
             rotationValue = 0
             rotationValueLast = 0
+            distance = 0
+            feedRate = 0
             # EXTRUSIONLINEOVERLAP = 0 # [mm]
             ExtrusionLineOverlap = 0 # percent
             # EXTENDADDITIVEBOX = 1 # [mm]
             extendAdditiveBox = 1 # [mm]
             lineLloop = None
+            moveCounter = 0
             # ------------------------------------------------------------------------------------------------------------
 
             G2CLOG.wlog('INFO', 'Starting G2C conversion ...')
@@ -240,7 +245,6 @@ def main():
                                                 # We use this line to find the right line to replace
             CLWriter.writeNCCode(homePosStr)
 
-
             # write information in MachSim File
             CLMSWriter.writeNCCode('MW_UNITS_METRIC 1')
 
@@ -254,8 +258,6 @@ def main():
                                               style=wx.PD_CAN_ABORT | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME)
 
             num_lines = sum(1 for line in open(inputf))
-
-            # line_start
 
             next_update_block = 0
             keepGoin = 1
@@ -282,11 +284,10 @@ def main():
                                 G2CLOG.wlog('INFO', 'User canceled at line: ' + str(loopCounter) + ' - ' + str(perc) + '%')
                                 existent = 2
                                 break
-                        #else:
-                        #    print str(perc) + ' [%]'
 
                     # check where g-code actually starts and give green light to parsing functions True/False
                     if line[0] == 'G':
+                        moveCounter += 1
                         startParsing = True
                     else:
                         startParsing = False
@@ -294,21 +295,20 @@ def main():
                     if line[0] == ';': # cancel/go back to loop if line is commented
                         continue
 
-                    # zLevelChange = evalGcode.proofZlevelChange(line) # True or False
-
-                    # check if layer thickness changed during z-level change
                     pos = line.find('Z')
                     if pos != -1:
                         posShifter = 8
                         while 1:
                             try:
-                                zValForerun = float(line[pos+1:pos+posShifter]) # get z value # TODO automatic detection of white space in line string
+                                # TODO automatic detection of white space in line string
+                                zValForerun = float(line[pos+1:pos+posShifter]) # get z value
                                 break
                             except:
                                 posShifter -= 1
 
                         LayerThicknessForerun = zValForerun - zValMachine
                         if numpy.isclose(LayerThicknessForerun, LayerThickness, 0.05) is False:  # check if in tolerance after subtraction
+                            # this one is occuring only once
                             geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
                                                                              LayerWidth=LayerWidthMachine,
                                                                              ELOverlap=ExtrusionLineOverlap)
@@ -316,11 +316,26 @@ def main():
                             CLWriter.writeToolChange(geometryStr)
                             CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
                             XYpos = 'X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1])
-                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + XYpos + ' Z' + str(zValMachine))
+
+                            distance = DistS.get_distance_between_points(currentMachinePos, forerunMachinePos)
+
+                            timeStr = ' TIME' + str(distance / (1000.0 / 60.0))
+                            moveStr = ' MOVE' + str(moveCounter)
+                            feedStr = ' F' + str(feedRate)
+
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID '
+                                                   + XYpos
+                                                   + ' Z' + str(zValMachine)
+                                                   + feedStr
+                                                   + timeStr
+                                                   + moveStr)
+
+                            moveCounter += 1
 
                             LayerThickness = LayerThicknessForerun
                             if LayerThickness < SIMPRECISION:
                                 SIMPRECISION = LayerThickness
+
                         zValMachine = zValForerun
                         CLMSWriter.Z_level = zValMachine
                         CLWriter.Z_level = zValMachine
@@ -328,27 +343,25 @@ def main():
                         CLMSWriter.layerNr += 1
                         CLMSWriter.path_area_index = 0
 
+
                     # get geometry of extrusion lines and layers before proceeding with tool etc.
                     if line[0:2] == 'G1' and line[0:3].find(' ') != -1: # find white space to intercept G commands over and equal 10
                         counter_G1 += 1
                         if lineLloop is not None and LayerThicknessForerun != 0:
-                            # x, LayerWidth, extrusionLength = ExUtil.getExtrusionParams(line, lineLloop, LayerThicknessForerun) # calc extrusion length
-
                             # get current positions and extrusion values
                             forerunMachinePos = ExUtil.getCoordinates(line)
                             if forerunMachinePos is not None:
                                 forerunMachinePos = (forerunMachinePos[1], forerunMachinePos[2])
 
-                            # ToDo THIS IS CONSTRUCTION AREA
                             rotationValue = ArcS.arc_from_points(currentMachinePos, forerunMachinePos)
                             rotationValue += 90
+                            rotationValue = ArcS.adapt_full_rotation(rotationValue)
+                            ArcS.current_arc = rotationValue
+                            ArcS.first_move = False
 
-                            # quadrant = ArcS.get_quadrant(movementDirection)
-                            #if counter_G1 > 1:
-                            #    rotationValue = ArcS.proof_angle_change(rotationValueLast, rotationValue, quadrant, maxAngleChange=10)
+                            distance = DistS.get_distance_between_points(currentMachinePos, forerunMachinePos)
+
                             rotationValueLast = rotationValue
-
-                            # raw_input()
 
                             forerunExtrusionVal = ExUtil.getExtrusionVal(line)
                             LayerWidth = ExUtil.getLayerWidth(currentMachinePos, forerunMachinePos, currentExtrusionVal,
@@ -356,8 +369,9 @@ def main():
 
                             if numpy.isclose(LayerWidthMachine, LayerWidth, 0.05) is False:  # check if in tolerance after subtraction
                                 geometryStr, midpoint, radius, width = Tool.getGeometry(LayerThickness=LayerThicknessForerun,
-                                                                                 LayerWidth=LayerWidth,
-                                                                                 ELOverlap=ExtrusionLineOverlap)
+                                                                                        LayerWidth=LayerWidth,
+                                                                                        ELOverlap=ExtrusionLineOverlap)
+
                                 if geometryStr is not None:
                                     if float(geometryStr.split(' ')[2]) >= LayerThickness * 2.4:
                                         # LayerThickness = 0.2, LayerWidth = 0.48, ELOverlap = 0.15
@@ -367,8 +381,21 @@ def main():
 
                                     CLWriter.writeToolChange(geometryStr)
                                     CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
-                                    rotationAxis = ' C0 A' + str(rotationValue) + ' B0'
-                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED X' + str(currentMachinePos[0]) + ' Y' + str(currentMachinePos[1]) + ' Z' + str(zValMachine) + ' ' + rotationAxis)
+                                    rotationAxis = 'C0 A' + str(rotationValue) + ' B0'
+
+                                    feedStr = ' F' + str(feedRate)
+                                    timeStr = ' TIME' + str(distance / (1000.0 / 60.0))
+                                    moveStr = ' MOVE' + str(moveCounter)
+
+                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED X'
+                                                           + str(currentMachinePos[0]) + ' Y'
+                                                           + str(currentMachinePos[1]) + ' Z' + str(zValMachine) + ' '
+                                                           + rotationAxis
+                                                           + feedStr
+                                                           + timeStr
+                                                           + moveStr)
+
+                                    moveCounter += 1
 
                             LayerWidthMachine = LayerWidth
                             lineLloop = line
@@ -376,7 +403,7 @@ def main():
                         else:
                             lineLloop = line
 
-                    if line[0:3] == "G1 " or line[0:3] == 'G0 ':
+                    if line[0:3] == 'G1 ' or line[0:3] == 'G0 ':
                         # get current machine position from NC line
                         currentMachinePos = ExUtil.getCoordinates(line)
                         if currentMachinePos is not None:
@@ -390,6 +417,10 @@ def main():
                         lineMS = copy.deepcopy(line)
                         lineMS = StrManipulate.vartype(line, 'F', 'int')
                         line = StrManipulate.sepStr(line, 'F')
+
+                        if len(lineMS.split('F')) > 1:
+                            feedRate = int(lineMS.split('F')[1])
+
                         line = StrManipulate.insertWS(line, 'X')
                         line = StrManipulate.insertWS(line, 'Y')
                         line = StrManipulate.insertWS(line, 'Z')
@@ -399,15 +430,30 @@ def main():
                                 CLWriter.writeNCCode('CUT ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                                 direction = line
                                 direction = lineC
-                                rotationAxis = ' C0 A' + str(rotationValue) + ' B0'
-                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' + lineMS + rotationAxis) # + rotationAxis)
+                                rotationAxis = 'C0 A' + str(rotationValue) + ' B0'
+                                feedStr = ' F' + str(feedRate)
+                                timeStr = ' TIME' + str(distance / (1000.0 / 60.0))
+
+                                moveStr = ' MOVE' + str(moveCounter)
+
+                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED '
+                                                       + lineMS
+                                                       + rotationAxis
+                                                       + feedStr
+                                                       + timeStr
+                                                       + moveStr)
+
                                 evalGcode.saveAxValLimits('X', lineC)
                                 evalGcode.saveAxValLimits('Y', lineC)
 
                         elif lineC[0:3] == 'G0 ': # rapid move
                             CLWriter.writeNCCode('MOVE ' + line + ' TX 0 TY 0 TZ 1 ROLL 0 ;')
                             rotationAxis = 'C0 A0 B0'
-                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS ) # + rotationAxis)
+
+                            timeStr = ' TIME' + str(distance / (1000.0 / 60.0))
+                            moveStr = ' MOVE' + str(moveCounter)
+
+                            CLMSWriter.writeNCCode('MW_MACHMOVE RAPID ' + lineMS + timeStr + moveStr) # + rotationAxis)
                             evalGcode.saveAxValLimits('Z', lineC)
 
             CLWriter.closeNCFile() # close CL writer and close CL file
@@ -479,9 +525,5 @@ def main():
 if __name__ == '__main__':
     G2CLOG = G2CLogging.G2CLogging()
     main()
-    # G2CLOG.writeToLog('hehe')
     G2CLOG.closeLogging()
 
-    # open log file
-    # params = 'MWG2C.log'
-    # shell.ShellExecuteEx(nShow=win32con.SW_SHOWNORMAL, lpFile='notepad', lpParameters=params)
