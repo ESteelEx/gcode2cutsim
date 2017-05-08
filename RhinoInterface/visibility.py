@@ -41,9 +41,11 @@ class visibility:
         view = rs.CurrentView()
 
         for obj in object_ids:
-            if not rs.IsVisibleInView(obj, view):
-                objects_visible = False
-                break
+            rs.HideObjects(obj)
+
+            #if not rs.IsVisibleInView(obj, view):
+            #    rs.HideObjects(obj)
+            #    objects_visible = False
 
         # if objects_visible:
         #     rs.HideObjects(object_ids)

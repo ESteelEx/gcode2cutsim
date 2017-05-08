@@ -117,6 +117,11 @@ def main():
         SLIDERPOSITION_START = 25  # percentage
         SLIDERPOSITION_END = 33  # percentage
         silent_process = False
+        if os.path.exists('C:\MW3DPrinting\Mesh.ini'):
+            sim_params = ini_worker.get_section_from_ini('C:\MW3DPrinting\Mesh.ini', 'SIMULATION')
+        else:
+            sim_params = {}
+            sim_params['rot_axis'] = 'False'
 
         # get all input parameters from user
         inputParams = sys.argv
@@ -380,20 +385,36 @@ def main():
                                         G2CLOG.wlog('INFO', geometryStr)
 
                                     CLWriter.writeToolChange(geometryStr)
-                                    CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
+                                    # CLMSWriter.writeToolChange(str(width), NC_Style='MachSim')
+
                                     rotationAxis = 'C0 A' + str(rotationValue) + ' B0'
 
                                     feedStr = ' F' + str(feedRate)
                                     timeStr = ' TIME' + str(distance / (1000.0 / 60.0))
                                     moveStr = ' MOVE' + str(moveCounter)
 
-                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED X'
-                                                           + str(currentMachinePos[0]) + ' Y'
-                                                           + str(currentMachinePos[1]) + ' Z' + str(zValMachine) + ' '
-                                                           + rotationAxis
-                                                           + feedStr
-                                                           + timeStr
-                                                           + moveStr)
+                                    if 'rot_axis' not in sim_params:
+                                        sim_params['rot_axis'] = 'False'
+
+                                    if sim_params['rot_axis'] == 'True':
+
+                                        CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' +
+                                                               'X' + str(currentMachinePos[0]) +
+                                                               ' Y' + str(currentMachinePos[1]) +
+                                                               ' Z' + str(zValMachine) + ' '
+                                                               + rotationAxis
+                                                               + feedStr
+                                                               + timeStr
+                                                               + moveStr)
+                                    else:
+
+                                        CLMSWriter.writeNCCode('MW_MACHMOVE FEED ' +
+                                                               'X' + str(currentMachinePos[0]) +
+                                                               ' Y' + str(currentMachinePos[1]) +
+                                                               ' Z' + str(zValMachine) + ' '
+                                                               + feedStr
+                                                               + timeStr
+                                                               + moveStr)
 
                                     moveCounter += 1
 
@@ -433,15 +454,27 @@ def main():
                                 rotationAxis = 'C0 A' + str(rotationValue) + ' B0'
                                 feedStr = ' F' + str(feedRate)
                                 timeStr = ' TIME' + str(distance / (1000.0 / 60.0))
-
                                 moveStr = ' MOVE' + str(moveCounter)
 
-                                CLMSWriter.writeNCCode('MW_MACHMOVE FEED '
-                                                       + lineMS
-                                                       + rotationAxis
-                                                       + feedStr
-                                                       + timeStr
-                                                       + moveStr)
+                                if 'rot_axis' not in sim_params:
+                                    sim_params['rot_axis'] = 'False'
+
+                                if sim_params['rot_axis'] == 'True':
+
+                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED '
+                                                           + lineMS
+                                                           + rotationAxis
+                                                           + feedStr
+                                                           + timeStr
+                                                           + moveStr)
+
+                                else:
+
+                                    CLMSWriter.writeNCCode('MW_MACHMOVE FEED '
+                                                           + lineMS
+                                                           + feedStr
+                                                           + timeStr
+                                                           + moveStr)
 
                                 evalGcode.saveAxValLimits('X', lineC)
                                 evalGcode.saveAxValLimits('Y', lineC)

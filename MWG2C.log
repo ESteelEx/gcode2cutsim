@@ -1,10 +1,14 @@
 INFO:MWG2C:***** G2C Logger started ***********************************
 INFO:MWG2C:** 0.1
-INFO:MWG2C:** Logging started @ : 2017-02-16 22:05:32.083000
+INFO:MWG2C:** Logging started @ : 2017-05-05 15:59:39.419000
 INFO:MWG2C:** Log-File : C:\Users\ModuleWoks\Documents\Development\GitRep\gcode2cutsim/MWG2C.log
 INFO:MWG2C:************************************************************
-INFO:MWG2C:Starting G2C conversion ... @ : 2017-02-16 22:05:32.085000
+INFO:MWG2C:Starting G2C conversion ... @ : 2017-05-05 15:59:39.421000
 ERROR:MWG2C:CLFileWriter.writeNCCode: Error while writing NC-code
-INFO:MWG2C:Additivebox calculated @ : 2017-02-16 22:05:33.441000
-INFO:MWG2C:All jobs done ... @ : 2017-02-16 22:05:33.572000
-INFO:MWG2C:** Logging stopped @ : 2017-02-16 22:05:33
+INFO:MWG2C:Overextrusion detected:  @ : 2017-05-05 15:59:48.697000
+INFO:MWG2C:Pos in G-Code ---> 32092 @ : 2017-05-05 15:59:48.697000
+INFO:MWG2C:line ps 0.98157 0  pe 0.98157 0.250 @ : 2017-05-05 15:59:48.697000
+INFO:MWG2C:User canceled at line: 33793 - 9.0% @ : 2017-05-05 15:59:49.420000
+INFO:MWG2C:Additivebox calculated @ : 2017-05-05 15:59:49.428000
+INFO:MWG2C:All jobs done ... @ : 2017-05-05 15:59:50.324000
+INFO:MWG2C:** Logging stopped @ : 2017-05-05 15:59:50

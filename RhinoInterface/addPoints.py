@@ -90,8 +90,8 @@ class addPoints(threading.Thread):
         self.colorDict = {'Wall': (0, 0, 0),
                           'DenseInfill': (255, 0, 255),
                           'SparseInfill': (0, 255, 255),
-                          'Brim': (100, 100, 100),
-                          'Skirt': (180, 180, 180),
+                          'Brim': (230, 230, 230),
+                          'Skirt': (200, 230, 200),
                           'Support': (250, 250, 250)}
 
         threading.Thread.__init__(self)
@@ -180,6 +180,7 @@ class addPoints(threading.Thread):
                     if line.find('WARNING') == -1:  # if we do NOT find a WARNING
                         split_line = line.split(',')
                         _segment = split_line[0][1:].strip().rstrip()
+                        _backplot_width = split_line[0][1:].strip().rstrip()
 
                         if _segment not in self.segmentIdxDict:
                             self.segmentIdxDict[_segment] = 0

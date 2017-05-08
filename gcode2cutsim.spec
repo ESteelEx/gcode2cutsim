@@ -33,14 +33,14 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     name=os.path.join('dist', 'gcode2cutsim.exe'),
-    debug=True,
+    debug=False,
     strip=None,
     upx=True,
-    console=True,
+    console=False,
     icon='bin\\images\\3dPrintVer.ico')
 
 if os.path.isfile('gcode2cutsimFDM.exe'):
     os.remove('gcode2cutsimFDM.exe')
 
 shutil.copy('dist\\gcode2cutsim.exe', 'gcode2cutsimFDM.exe')
-shutil.copy('gcode2cutsimFDM.exe', 'D:\\MW3DPrinting_MachSim\\gcode2cutsimFDM.exe')
+shutil.copy('gcode2cutsimFDM.exe', 'C:\\MW3DPrinting\\gcode2cutsimFDM.exe')
