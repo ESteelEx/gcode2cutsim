@@ -56,6 +56,8 @@ def startVerification(CLFile, NCiniFile, WD, simType='Verifier'):
         if os.path.isfile(com):
             try:
                 if simType == 'Verifier':
+                    print com
+                    print params
                     process = Popen([com, params], stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
                 else:
                     process = Popen(com, stdout=PIPE, stderr=PIPE, stdin=PIPE, shell=True)
@@ -198,7 +200,9 @@ def main():
             outputf = inputf + 'cl'
             outputfMS = inputf + 'sim'
 
+        rushed_through_calculation = False
         if compare.sim_files(inputf, outputf) or compare.sim_files(inputf, outputfMS):
+
 
             CLWriter = CLFileWriter.CLFileWriter(outputf) # start CL File writer
             CLMSWriter = CLFileWriter.CLFileWriter(outputfMS)
@@ -517,6 +521,8 @@ def main():
             print 'Done. CL file written - > ' + outputf
             print 'Done. SIM file written - > ' + outputfMS
 
+            rushed_through_calculation = True
+
         # gcode2cutsimFDM D:\MW3DPrinting_MachSim\Mesh.gcode D:\MW3DPrinting_MachSim\Mesh.ini -MachSim
 
         if len(inputParams) >= 3:
@@ -534,12 +540,13 @@ def main():
                 iniDirName = outputf[0:posDir+1]
                 NCiniFile = iniDirName + iniFileName
 
-                fh = open(NCiniFile, 'w')
+                if rushed_through_calculation:
+                    fh = open(NCiniFile, 'w')
 
-                fh.write('nc=' + outputf[posDir+1:] + '\n')
-                fh.write('precision=' + str(SIMPRECISION) + '\n')
-                fh.write('model=3\n')
-                fh.close()
+                    fh.write('nc=' + outputf[posDir+1:] + '\n')
+                    fh.write('precision=' + str(SIMPRECISION) + '\n')
+                    fh.write('model=3\n')
+                    fh.close()
 
                 if inputParams[-2] == '-MachSim' or inputParams[-2] == '-Verifier':
                     startVerification(outputf, NCiniFile, WD, simType=inputParams[-2][1:])

@@ -228,7 +228,7 @@ class slicer(threading.Thread):
             print 'No Objects selected'
             return
 
-        #if self.correctplacement:
+        # if self.correctplacement:
         #    self.nesting()
 
         if self.correctplacement:
@@ -247,6 +247,8 @@ class slicer(threading.Thread):
         if slice_stat:
             AP = addPoints.addPoints(self.pluginPath, self.corePath)
             AP.start()
+            # start simulation calculation in background
+            os.system(self.corePath + r'\gcode2cutsimFDM.exe ' + self.corePath + r'\Mesh.gcode ' + self.corePath + r'\Mesh.ini -silent')
             # AP.join()
             # testchecker.testchecker().draw_line()
 

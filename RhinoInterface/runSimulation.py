@@ -41,11 +41,15 @@ class runSimulation(threading.Thread):
                     #command = [self.corePath + r"\bin\verifier\VerifierApplicationSample.exe",
                     #           self.corePath + r"\Mesh_SIMULATION.ini"]
 
-                    command = [self.corePath + r"\gcode2cutsimFDM.exe",
-                               self.corePath + r"\Mesh.gcode",
-                               self.corePath + r"\Mesh.ini"]
+                    command = self.corePath + r"\gcode2cutsimFDM.exe " + \
+                              self.corePath + r"\Mesh.gcode " + \
+                              self.corePath + r"\Mesh.ini"
 
-                    process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+                    print command
+
+                    # process = Popen(command, stdout=PIPE, stderr=PIPE, stdin=PIPE)
+
+                    os.system(command)
 
                 elif self.simType == 'machSim':
                     command = self.corePath + r'\gcode2cutsimFDM.exe'
